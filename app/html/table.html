@@ -1,0 +1,67 @@
+<%inherit file="base.html"/>
+
+<%block name="resources">
+    <script type="text/javascript" src="/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/js/data_table.js"></script>
+    <link rel="stylesheet" href="/css/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="/js/bootstrap-slider.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap-slider.css" />
+
+</%block>
+
+<%block name="content">
+<div id="sidebar" class="sidebar fright">
+   <div id="wrapper" class="sidebar">
+   <ul>
+      <li>
+         <div class="horizontal">Name</div>
+         <div class="horizontal">Cell Type</div>
+      </li>
+   </ul>
+
+   <form id="table-filter" class="pure-form">
+   % if not sliders is UNDEFINED:
+    <ul>
+    % for slider in sliders:
+    <li>${slider['name']}<input class="table-filter range" name="${slider['column']}" type="range" data-slider-scale="${slider['scale']}" data-slider-min="${slider['min']}" data-slider-max="${slider['max']}" data-slider-step="${slider['step']}" data-slider-value="${slider['init']}"/></li>
+    % endfor
+   % endif
+   </ul>
+
+   <button name="submit">Submit</button>
+   </form>
+   
+   </div>
+</div>
+
+<div id="content-wrapper" class="content">
+    <table id="data" class="table table-hover table-condensed">
+    <thead>
+    <tr>
+    <th>Gene Name</th>
+    <th>Cell Type</th>
+    <th>Protein Type</th>
+    <th>Expression</th>
+    <th>Expression Next</th>
+    <th>Expression Difference</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    % if not data is UNDEFINED:
+        % for item in data:
+            <tr>
+                <td><a href="/gene?id=${item['id']}">${item["geneName"]}</a></td>
+                <td>${item["cellType"]}</td>
+                <td>${item["geneType"]}</td>
+                <td>${item["expr"]}</td>
+                <td>${item["expr_next"]}</td>
+                <td>${item["expr_diff"]}</td>
+            </tr>
+        % endfor
+    % endif
+    </tbody>
+    </table>
+</div>
+
+</%block>

@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <title>${Title}</title>
+    <link rel="stylesheet" type="text/css" href="/css/fonts.css" />
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <script type="text/javascript" src="/js/jquery.js"></script>
+    <script type="text/javascript" src="/js/script.js"></script>
+##
+    <%block name="resources" />
+## load local css
+    % if style is UNDEFINED:
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    % else:
+    <link rel="stylesheet" type="text/css" href="${style}" />
+    % endif
+    % if not extraCSS is UNDEFINED:
+      % for item in extraCSS:
+        <link rel="stylesheet" type="text/css" href="${item}" />
+      % endfor
+    % endif
+## load local scripts
+    % if not script is UNDEFINED:
+      <script type="text/javascript" src="${script}"></script>
+    % elif not scripts is UNDEFINED:
+      % for item in scripts:
+        <script type="text/javascript" src="${item}"></script>
+      % endfor
+    % endif
+
+    <%block name="head"/>
+  </head>
+  <body>
+    <div id="body">
+      <div id="top-bar">
+        <div id="top-bar-wrapper">
+          <form class="top-bar-item pure-form" name="search" action="/search" method="get">
+            <input class="pure-input-1" name="query" type="text" placeholder="Search"
+            % if not query is UNDEFINED:
+            value="${query}"
+            % endif
+            ></input>
+          </form>
+          <div id="top-bar-menu" class="top-bar-item pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+              <li class="pure-menu-item"><a href="/gene?id=5" class="pure-menu-link">VCAM1</a></li>
+              <li class="pure-menu-item"><a href="/data" class="pure-menu-link">Data Table</a></li>
+              <li class="pure-menu-item"><a href="/" class="pure-menu-link">Root</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="content" class="mains fleft">
+        <%block name="content"/>
+      </div>
+      <div id="footer" class="fleft"></div>
+    </div>
+  </body>
+</html>

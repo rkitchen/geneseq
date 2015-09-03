@@ -1,0 +1,126 @@
+<%inherit file="base.html"/>
+
+##Variable Names
+##geneName
+##cellType
+##expr
+##expr_next
+##geneID
+##geneID_human
+##geneID_mouse 
+
+
+<%block name="content">
+<div id="sidebar" class="sidebar fright">
+   <div id="wrapper" class="sidebar">
+   <ul>
+      <li>
+         <div class="horizontal">Name</div>
+         <div class="horizontal">Cell Type</div>
+      </li>
+   </ul>
+   <table>
+##Name/Celltype
+      <tr class="sidebar-table-heading">
+      <td>Name:</td>
+      <td>Cell Type:</td>
+      </tr>
+
+     <tr class="sidebar-table-data">
+     <td>
+      % if not geneName is UNDEFINED:
+         ${geneName}
+      % else:
+         Not Found
+      % endif
+      </td>
+      <td>
+      % if not cellType is UNDEFINED:
+         ${cellType}
+      % else:
+         Not Found
+      % endif
+      </td>
+      </tr>
+##expression
+      <tr class="sidebar-table-heading">
+      <td>Expression:</td>
+      <td>Expression Next:</td>
+      </tr>
+
+      <tr class="sidebar-table-data">
+      <td>
+      % if not expr is UNDEFINED:
+         ${expr}
+      % else:
+         Not Found
+      % endif
+      </td>
+      <td>
+      % if not expr_next is UNDEFINED:
+         ${expr_next}
+      % else:
+         Not Found
+      % endif
+      </td>
+      </tr>
+##Protein type
+      <tr class="sidebar-table-heading">
+      <td colspan="2">Gene Type:</td>
+      </tr>
+      <tr class="sidebar-table-data">
+      <td colspan="2">
+      % if not geneType is UNDEFINED:
+         ${geneType}
+      % else:
+         Not Found
+      % endif
+      </td>
+      </tr>
+##ID
+      <tr class="sidebar-table-heading">
+      <td colspan="2">GeneID:</td>
+      </tr>
+      <tr class="sidebar-table-data">
+      <td colspan="2">
+      % if not geneID is UNDEFINED:
+         ${geneID}
+      % else:
+         Not Found
+      % endif
+      </td>
+      </tr>
+##ID Human
+      <tr class="sidebar-table-heading">
+      <td colspan="2">GeneID Human:</td>
+      </tr>
+      <tr class="sidebar-table-data">
+      <td colspan="2">
+      % if not geneID_human is UNDEFINED:
+         ${geneID_human}
+      % else:
+         Not Found
+      % endif
+      </td>
+      </tr>
+##ID Mouse
+      <tr class="sidebar-table-heading">
+      <td colspan="2">GeneID Mouse:</td>
+      </tr>
+      <tr class="sidebar-table-data">
+      <td colspan="2">
+      % if not geneID_mouse is UNDEFINED:
+         ${geneID_mouse}
+      % else:
+         Not Found
+      % endif
+      </td>
+      </tr>
+   </table>
+   </div>
+</div>
+
+   <div id="content-wrapper" class="content">
+   test
+   </div>
+</%block>

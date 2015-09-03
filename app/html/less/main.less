@@ -1,0 +1,169 @@
+/*################### Globals ##################*/
+body {
+   margin:0;
+   font-family:aller;
+   background:rgb(240,240,240);
+}
+ul {
+   list-style-type:none;
+   padding:0;
+}
+a {
+   text-decoration: none;
+   color:inherit;
+}
+
+.borders {
+   background:@color-grey-dark;
+}
+
+@color-grey-dark: #505050;
+@color-grey-medium: #cccccc;
+@color-background: #f0f0f0;
+@color-accent: @color-grey-dark - #222;
+
+/*################### Main Divs ##################*/
+div.mains{
+   position: relative;
+}
+div#header{
+   height:50px;
+   margin-top:0;
+}
+div#content{
+   padding: 30px 330px 30px 40px;
+}
+div#content-wrapper{
+   color:rgb(14, 52, 79);
+   max-width: 724px;
+   min-height: 800px;
+}
+
+div#footer {
+   .borders;
+   height: 50px;
+   width: 100%;
+   position: relative;
+}
+
+/*###################  Top Bar ##################*/
+#top-bar {
+   font-family:aller;
+   font-size:1em;
+   text-align:center;
+   color:rgb(40,40,40);
+   .borders;
+   //min-width:974px;
+   width: 100%;
+   height:auto;
+   position:relative;
+   padding-top: 10px;
+}
+
+#top-bar a {
+   text-decoration: none !important;
+}
+
+#top-bar-wrapper {
+   max-width:800px;
+   width: 100%;
+   display: block;
+   position: relative;
+   margin: auto;
+}
+
+#top-bar form {
+   margin-bottom:10px;
+}
+
+#top-bar #top-bar-menu {
+   text-align: left;
+}
+
+#top-bar #top-bar-menu a {
+   padding: 5px 10px;
+}
+
+#top-bar #top-bar-menu li {
+   height: auto;
+}
+
+.top-bar-item {
+   position: relative;
+   display: block;
+}
+#top-bar input[type=text] {
+   height:30px;
+   border-style:none;
+   padding: 0 15px;
+   width:100%;
+}
+#top-bar span {
+   font-family:aller;
+   font-size:1.5em;
+   position:absolute;
+   margin:auto;
+   //height:40px;
+   top:0;
+   bottom:0;
+}
+
+/*###################  Sidebar ##################*/
+#sidebar {
+   width: 300px;
+   background: @color-grey-medium;
+   height: 100%;
+   position: absolute;
+   top: 0;
+   bottom: 0;
+   right: 0;
+
+   border-left-style: solid;
+   border-left-color: @color-grey-dark;
+   border-left-width: 4px;
+
+   padding: 10px 20px;
+}
+
+#sidebar #wrapper {
+
+}
+
+#sidebar div.horizontal {
+   display: inline-block;
+}
+
+#sidebar table {
+   width: 100%;
+}
+
+#sidebar tr.sidebar-table-heading {
+   color: @color-accent;
+
+   border-top-color: @color-accent;
+   border-top-style: solid;
+   border-top-width: 2px;
+
+}
+
+#sidebar td {
+   padding: 5px 0;
+}
+
+#sidebar tr.sidebar-table-data {
+   color: @color-grey-dark;
+   margin-top: 5px;
+}
+
+/*###################  Table ##################*/
+.table-hover > tbody > tr:hover {
+   background-color: @color-background - #222;
+}
+
+#data tbody tr.hover {
+   cursor:pointer
+}
+
+form#table-filter div.slider {
+   margin: 5px 0;
+}
