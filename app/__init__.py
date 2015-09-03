@@ -39,6 +39,16 @@ class Data(object):
     def getTable(self, **kwargs):
         return self.pipe.getDataTable(**kwargs)
 
+    def serializeJSON(self, data):
+        # TODO search for all unserializable
+        # objects rather than specific
+        for item in data:
+            item['expr'] = str(item['expr'])
+            item['expr_next'] = str(item['expr_next'])
+            item['expr_diff'] = str(item['expr_diff'])
+
+        return data
+
     def GET(self, **kwargs):
         kwargs['Title'] = "Data"
         tmpl = lookup.get_template("table.html")
@@ -58,10 +68,7 @@ class Data(object):
         if method == 'data_table':
             table = self.getTable(limit=5)
 
-            for item in table:
-                item['expr'] = str(item['expr'])
-                item['expr_next'] = str(item['expr_next'])
-                item['expr_diff'] = str(item['expr_diff'])
+            table = self.serializeJSON(table)
 
             ret = dict()
             ret['data'] = table
@@ -81,10 +88,9 @@ class Data(object):
             limit = None
             if 'limit' in kwargs:
                 limit = kwargs['limit']
-            print(self.pipe.getDataTable(ranges=ranges, limit=limit))
-
-
-
+            new_data = self.pipe.getDataTable(ranges=ranges, limit=limit)
+            print('new_data: %s' % new_data)
+            return json.dumps(self.serializeJSON(new_data))
 
 
 class Gene(object):

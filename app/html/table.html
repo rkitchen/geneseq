@@ -23,7 +23,7 @@
    % if not sliders is UNDEFINED:
     <ul>
     % for slider in sliders:
-    <li>${slider['name']}<input class="table-filter range" name="${slider['column']}" type="range" data-slider-scale="${slider['scale']}" data-slider-min="${slider['min']}" data-slider-max="${slider['max']}" data-slider-step="${slider['step']}" data-slider-value="${slider['init']}"/></li>
+    <li class="table-filter range"><span id="name">${slider['name']}</span><span id="value"></span><input class="table-filter range" name="${slider['column']}" type="range" data-slider-scale="${slider['scale']}" data-slider-min="${slider['min']}" data-slider-max="${slider['max']}" data-slider-step="${slider['step']}" data-slider-value="${slider['init']}"/></li>
     % endfor
    % endif
    </ul>
@@ -38,12 +38,12 @@
     <table id="data" class="table table-hover table-condensed">
     <thead>
     <tr>
-    <th>Gene Name</th>
-    <th>Cell Type</th>
-    <th>Protein Type</th>
-    <th>Expression</th>
-    <th>Expression Next</th>
-    <th>Expression Difference</th>
+    <th value="geneName">Gene Name</th>
+    <th value="cellType">Cell Type</th>
+    <th value="geneType">Gene Type</th>
+    <th value="expr">Expression</th>
+    <th value="expr_next">Expression Next</th>
+    <th value="expr_diff">Expression Difference</th>
     </tr>
     </thead>
 

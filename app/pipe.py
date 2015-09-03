@@ -80,9 +80,14 @@ class Pipe:
 
 #   gets rows from mysql that match certain filter requirements
 #   TODO better query generation logic
-    def getDataTable(self, start=1, limit=50, query=None, **kwargs):
+    def getDataTable(self, start=1, limit=None, query=None, **kwargs):
         self.connect()
         cur = self.cur_dict
+
+        if limit is None:
+            for item in self.select['table_sliders']:
+                if item['column'] == 'limit':
+                    limit = item['init']
 
         # req = 'SELECT %s' % ",".join(self.select['table'])
         req = self.buildQuery('table', limit=limit, **kwargs)

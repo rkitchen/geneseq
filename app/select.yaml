@@ -65,4 +65,4 @@ table_sliders:
         min: 0
         max: 200
         step: 10
-        init: 10
+        init: 100
