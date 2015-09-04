@@ -19,6 +19,10 @@
 
 var sliders = [];
 var returned_data;
+var data = {
+    'order': 'expr',
+    'direction': true
+};
 
 var tableLinks = function() {
     $('#data tbody tr').click( function() {
@@ -29,14 +33,21 @@ var tableLinks = function() {
 }
 
 
-var tableUpdate = function(slider) {
+var tableUpdate = function() {
     $('#data tbody').empty();
 
     var post_data = {};
+
+    if (data.order) {
+        post_data.order = data.order;
+    }
+
     post_data['method'] = 'sliders';
     $.each(sliders, function(index, slider) {
         post_data[slider.name] = slider.getValue();
     });
+
+    console.log(post_data);
 
     $.post('/table', post_data,
     function(data, status) {
@@ -67,6 +78,20 @@ var tableUpdate = function(slider) {
 
 $(document).ready(function() {
     tableLinks();
+
+    //sorting function
+
+    $("table#data th").each(function(index, item) {
+        var key = item.getAttribute('value');
+        console.log('key: ' + key)
+        $(item).click({value: key}, function(event) {
+            console.log(event);
+            console.log('table header clicked: ' + event.data.value);
+            data.order = event.data.value;
+            tableUpdate();
+        })
+    });
+
 
     $("input.table-filter.range").each(function(index, item) {
         var slider = new Slider(item)

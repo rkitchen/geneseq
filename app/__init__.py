@@ -82,14 +82,18 @@ class Data(object):
                 if '%s[]' % slider['column'] in kwargs:
                     key = slider['column']
                     translated = self.pipe.select['translate'][key]
-                    slider_data = kwargs['%s[]' % key]
+                    slider_data = kwargs.pop('%s[]' % key)
                     ranges[translated] = {'min': slider_data[0],
                                           'max': slider_data[1]}
-            limit = None
-            if 'limit' in kwargs:
-                limit = kwargs['limit']
-            new_data = self.pipe.getDataTable(ranges=ranges, limit=limit)
-            print('new_data: %s' % new_data)
+            # limit = None
+            # if 'limit' in kwargs:
+            #     limit = kwargs['limit']
+            kwargs['ranges'] = ranges
+            print('kwargs from request')
+            print()
+            print('kwargs from request: ' + str(kwargs))
+            new_data = self.pipe.getDataTable(**kwargs)
+            # print('new_data: %s' % new_data)
             return json.dumps(self.serializeJSON(new_data))
 
 

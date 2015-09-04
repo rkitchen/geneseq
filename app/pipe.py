@@ -3,6 +3,8 @@ import yaml
 import os
 from decimal import *
 
+_ROUND_DECIMAL = 1
+
 
 class Pipe:
 
@@ -11,11 +13,15 @@ class Pipe:
         self.path = os.path.dirname(os.path.realpath(__file__))
         self.select = self.loadConfig()
 
+    def translate(self, key):
+        if key in self.select['translate']:
+            return self.select['translate'][key]
+
     def buildQuery(self, ids=None, limit=10, **kwargs):
         print(kwargs)
         req = ["SELECT"]
         if ids is not None:
-            if ids is list:
+            if type(ids) is list:
                 req.append(','.join(ids))
             elif ids in self.select['SELECT']:
                 req.append(','.join(self.select['SELECT'][ids]))
@@ -37,16 +43,36 @@ class Pipe:
             req.append('WHERE')
             req.append(kwargs['where'])
 
-        req.append('LIMIT')
-        req.append(str(limit))
         if 'order' in kwargs:
             req.append('ORDER BY')
-            req.append(kwargs['order'])
+            if type(kwargs['order']) is dict:
+                req.append(self.translate(kwargs['order']['by']))
+                direction = kwargs['order']['direction']
+                if direction:
+                    direction = 'ASC'
+                else:
+                    direction = 'DESC'
+                req.append(direction)
+            else:
+                req.append(self.translate(kwargs['order']))
+                if 'direction' in kwargs:
+                    direction = kwargs['direction']
+                    if type(direction) is bool:
+                        if kwargs['direction']:
+                            direction = 'ASC'
+                        else:
+                            direction = 'DESC'
+                    req.append(direction)
         if 'extra' in kwargs:
-            req.append(kwargs['extra'])
+            if type(kwargs['extra']) is list:
+                req += kwargs['extra']
+            else:
+                req.append(kwargs['extra'])
 
+        req.append('LIMIT')
+        req.append(str(limit))
         print(req)
-        return ' '.join(req)
+        return ' '.join(req) + ';'
 
     def getRange(self, column):
         self.connect()
@@ -119,6 +145,7 @@ class Pipe:
         data = data[0]
 
         data = self.fixData(data)
+        data = self.roundData(data, roundn=2)
 
         self.close()
         return data
@@ -158,13 +185,13 @@ class Pipe:
 
         return data
 
-    def roundData(self, data):
+    def roundData(self, data, roundn=_ROUND_DECIMAL):
         if 'expr' in data:
-            data['expr'] = round(data['expr'], 3)
+            data['expr'] = round(data['expr'], roundn)
         if 'expr_next' in data:
-            data['expr_next'] = round(data['expr_next'], 3)
+            data['expr_next'] = round(data['expr_next'], roundn)
         if 'expr_diff' in data:
-            data['expr_diff'] = round(data['expr_diff'], 3)
+            data['expr_diff'] = round(data['expr_diff'], roundn)
         return data
 
     #  closes a mysql connection
