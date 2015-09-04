@@ -88,6 +88,12 @@ class Data(object):
             # limit = None
             # if 'limit' in kwargs:
             #     limit = kwargs['limit']
+            if 'direction' in kwargs:
+                if kwargs['direction'] == 'true':
+                    kwargs['direction'] = True
+                elif kwargs['direction'] == 'false':
+                    kwargs['direction'] = False
+
             kwargs['ranges'] = ranges
             print('kwargs from request')
             print()

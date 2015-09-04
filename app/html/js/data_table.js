@@ -40,6 +40,7 @@ var tableUpdate = function() {
 
     if (data.order) {
         post_data.order = data.order;
+        post_data.direction = data.direction;
     }
 
     post_data['method'] = 'sliders';
@@ -87,6 +88,7 @@ $(document).ready(function() {
         $(item).click({value: key}, function(event) {
             console.log(event);
             console.log('table header clicked: ' + event.data.value);
+            if (data.order == event.data.value) data.direction = !data.direction;
             data.order = event.data.value;
             tableUpdate();
         })
