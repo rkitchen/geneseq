@@ -1,0 +1,9 @@
+data/
+debug/
+server_venv/
+__pycache__/
+*.pyc
+node_modules/
+files-from
+systemd.sh
+bootstrap-slider
