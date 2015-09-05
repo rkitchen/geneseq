@@ -2,33 +2,53 @@ import pymysql
 import yaml
 import os
 from decimal import *
+import app.settings as settings
+import logging
 
 _ROUND_DECIMAL = 1
+logger = logging.getLogger(__name__)
 
 
-class Pipe:
+class Pipe(settings.Settings):
+    """class handling connection and queries to database"""
 
     def __init__(self):
+        """initializes variables"""
+        super().__init__()
         # Pipe initializing
+        logger.debug('initializing pipe')
         self.path = os.path.dirname(os.path.realpath(__file__))
-        self.select = self.loadConfig()
-
-    def translate(self, key):
-        if key in self.select['translate']:
-            return self.select['translate'][key]
 
     def buildQuery(self, ids=None, limit=10, **kwargs):
-        print(kwargs)
+        """builds a mysql query string from set of arguments
+
+        Args:
+            ids: (list,str) mysql column names for SELECT
+                list: list of column names to be parsed
+                str:  identifier for set of colnames 
+                      from config or string of colnames
+            ranges: (dict) list of min/max ranges for expr/expr_next/expr_diff
+                keys: column names
+                values:
+                    min: minimum
+                    max: maximum
+            where: (str) mysql conditional string
+            order: (dict,str) ORDER BY
+                dict:
+                    by: value for ORDER BY
+                    direction: ASC or DESC
+                               True   False
+                str: if passed as string direction should
+                     accompany in kwargs
+            extra: (str) anything extra to be appended
+            limit: (int) LIMIT
+
+        Returns:
+            str: complete mysql query string
+        """
+        logger.debug('kwargs: %s' % kwargs)
         req = ["SELECT"]
-        if ids is not None:
-            if type(ids) is list:
-                req.append(','.join(ids))
-            elif ids in self.select['SELECT']:
-                req.append(','.join(self.select['SELECT'][ids]))
-            else:
-                req.append(ids)
-        else:
-            req.append('*')
+        req.append(self.parseIDs(ids))
 
         req.append('FROM processed')
         if 'ranges' in kwargs:
@@ -75,21 +95,30 @@ class Pipe:
         return ' '.join(req) + ';'
 
     def getRange(self, column):
+        """gets range of values from database column
+
+        Args:
+            column: (str) name of column to be queried
+
+        Returns:
+            list: [min,max]
+        """
         self.connect()
-        cur = self.cur_dict
+        cur = self.cur
         req = self.buildQuery(ids='max(%s),min(%s)' % (column, column))
         cur.execute(req)
         res = cur.fetchall()
         self.close()
         return res[0]
 
-    def loadConfig(self):
-        f = open("%s/select.yaml" % self.path, 'r')
-        raw = f.read()
-        f.close()
-        return yaml.load(raw)
-
     def search_like(self, query):
+        """searches for a row with geneName matching query
+            Args:
+                query: (str) genename to be searched
+            Returns:
+                list: list id numbers with matching names
+        """
+        # TODO more robust searching
         self.connect()
         # TODO sanitize query
         req = self.buildQuery('id', where='geneName LIKE %s' % query)
@@ -104,16 +133,21 @@ class Pipe:
             data.append(item[0])
         return data
 
-#   gets rows from mysql that match certain filter requirements
-#   TODO better query generation logic
     def getDataTable(self, start=1, limit=None, query=None, **kwargs):
+        """gets multiple rows from database matching filter requirements
+
+        Args:
+            limit: (int) limit number of results
+                   uses default if not specified
+        Returns:
+            list: list of rows matching criteria
+                  each row contained in dictionary
+        """
         self.connect()
         cur = self.cur_dict
 
         if limit is None:
-            for item in self.select['table_sliders']:
-                if item['column'] == 'limit':
-                    limit = item['init']
+            limit = self.getDefaultLimit()
 
         # req = 'SELECT %s' % ",".join(self.select['table'])
         req = self.buildQuery('table', limit=limit, **kwargs)
@@ -133,6 +167,13 @@ class Pipe:
         return data
 
     def getGene(self, id):
+        """gets data for specific gene from database
+
+        Args:
+            id: (int) database id number for gene
+        Returns:
+            dict: gene data
+        """
         self.connect()
         cur = self.cur_dict
 
@@ -153,7 +194,7 @@ class Pipe:
         try:
             cur.execute(req)
         except:
-            # makes sure that request string gets logged.
+            # TODO makes sure that request string gets logged.
             # Actual error doesn't print it
             # logger.warning('error with request: %s' % req)
             raise
@@ -162,6 +203,13 @@ class Pipe:
         return data
 
     def fixData(self, data):
+        """parses data to sync variable names and datatypes.
+        Converts expression to from float to Decimal()
+        Args:
+            data: (dict) data from mysql
+        Returns:
+            dict: adjusted data
+        """
         if 'expression' in data:
             data['expr'] = Decimal(str(data['expression']))
             del data['expression']
@@ -186,6 +234,14 @@ class Pipe:
         return data
 
     def roundData(self, data, roundn=_ROUND_DECIMAL):
+        """rounds expression, expression_next, and difference,
+        default round value is _ROUND_DECIMAL
+        Args:
+            data: (dict) fixed mysql data
+            roundn: (int) number of decimal places to round to
+        Returns:
+            dict: rounded data
+        """
         if 'expr' in data:
             data['expr'] = round(data['expr'], roundn)
         if 'expr_next' in data:
@@ -194,16 +250,18 @@ class Pipe:
             data['expr_diff'] = round(data['expr_diff'], roundn)
         return data
 
-    #  closes a mysql connection
     def close(self):
-        # ogger.info('connection closing')
+        """Closes database connection and cursors"""
+        logger.info('connection closing')
         self.cur.close()
         self.cur_dict.close()
         self.conn.close()
 
-#  opens a mysql connection and creates cursors
     def connect(self):
-        # logger.info('connection opening')
+        """Opens mysql connection
+        and creates cursors and dict_cursor
+        """
+        logger.info('connection opening')
         self.conn = pymysql.connect(host='localhost',
                                     user='pipe',
                                     passwd='JcLAz2tpujdMnzsQ',

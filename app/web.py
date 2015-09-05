@@ -4,9 +4,11 @@ import json
 import logging
 from mako import exceptions
 from mako.lookup import TemplateLookup
-from app.pipe import Pipe as Pipe
+import app.pipe
+import app.settings
 
 logger = logging.getLogger(__name__)
+_pipe = app.pipe.Pipe()
 
 path = os.path.dirname(os.path.realpath(__file__))
 print(path)
@@ -14,12 +16,24 @@ lookup = TemplateLookup(directories=['%s/html' % path])
 print(lookup)
 
 
+class Parent(app.settings.Settings):
+    """parent class for the webapp classes. attaches pipe
+    to each object"""
+    def __init__(self):
+        super().__init__()
+        self.pipe = _pipe
+
+
 # service mounted on /
 # currently renders nothing, eventually some kind of landing page
-class Root(object):
+class Root(Parent):
+    """service mounted on /
+    currently renders nothing, will be landing page
+    """
     exposed = True
 
     def GET(self, **kwargs):
+        logger.debug('Root get request::kwargs: %s' % str(kwargs))
         kwargs['Title'] = 'Home'
         tmpl = lookup.get_template("index.html")
         try:
@@ -30,23 +44,40 @@ class Root(object):
 
 # service mounted on /data
 # renders interactive data table
-class Data(object):
+class Data(Parent):
+    """displays mysql data in a table
+    mounted on /data and /table"""
     exposed = True
 
-    def __init__(self):
-        self.pipe = Pipe()
+    def fixSliderInit(self):
+        """changes slider init to string for slider jquery
 
-    def getSliders(self):
-        sliders = self.pipe.select['table_sliders']
+        Returns:
+            dict: sliders
+        """
+        sliders = self.getTableSliders()
         for slider in sliders:
             slider['init'] = str(slider['init'])
         print(sliders)
         return sliders
 
     def getTable(self, **kwargs):
+        """gets data from database
+
+        Args:
+            kwargs: (dict) same as for builQuery()
+        Returns:
+            dict: data from database
+        """
         return self.pipe.getDataTable(**kwargs)
 
     def serializeJSON(self, data):
+        """changes Decimal() types to str for json
+        Args:
+            data: (dict)
+        Returns:
+            dict: data with Decimal() replaced
+        """
         # TODO search for all unserializable
         # objects rather than specific
         for item in data:
@@ -57,63 +88,71 @@ class Data(object):
         return data
 
     def GET(self, **kwargs):
-        kwargs['Title'] = "Data"
+        """responds to GET requests
+        Args:
+            None yet
+        Returns:
+            str: table.html
+        """
+        data = {'Title': 'Data',
+                'data': self.getTable(),
+                'sliders': self.fixSliderInit()}
         tmpl = lookup.get_template("table.html")
-        table = self.getTable()
-        kwargs['data'] = table
-        kwargs['sliders'] = self.getSliders()
-        print(table)
+        print(data['data'])
         try:
-            return tmpl.render(**kwargs)
+            return tmpl.render(**data)
         except:
             return exceptions.html_error_template().render()
 
     def POST(self, method='data_table', **kwargs):
-        for item in kwargs:
-                print('%s\t%s' % (item, kwargs[item]))
-
-        if method == 'data_table':
-            table = self.getTable(limit=5)
-
-            table = self.serializeJSON(table)
-
-            ret = dict()
-            ret['data'] = table
-            ret['recordsTotal'] = len(ret['data'])
-            ret['recordsFiltered'] = ret['recordsTotal']
-
-            return json.dumps(ret)
-        elif method == 'sliders':
+        """responds to POST requests, currently has two
+        methods. data_table returns
+        Args:
+            direction: (bool,str)
+                bool: True = ASC, False = DESC
+                str: ASC/DESC
+            sliders: (bool) true if sliders present in kwargs
+            <SLIDER_NAME>[]: {'min', 'max'} dictionary containing
+                             min/max from range sliders
+            limit: (int) limits number of rows returned in table
+        Returns:
+            JSON: table rows serialized in json
+        """
+        logger.debug('kwargs from request: %s' % str(kwargs))
+        if 'sliders' in kwargs and kwargs['sliders'] == 'true':
             ranges = dict()
-            for slider in self.getSliders():
+            for slider in self.fixSliderInit():
                 if '%s[]' % slider['column'] in kwargs:
                     key = slider['column']
-                    translated = self.pipe.select['translate'][key]
                     slider_data = kwargs.pop('%s[]' % key)
+                    translated = self.translate(key)
                     ranges[translated] = {'min': slider_data[0],
                                           'max': slider_data[1]}
-            # limit = None
-            # if 'limit' in kwargs:
-            #     limit = kwargs['limit']
-            if 'direction' in kwargs:
+
+            kwargs['ranges'] = ranges
+        if 'direction' in kwargs:
                 if kwargs['direction'] == 'true':
                     kwargs['direction'] = True
                 elif kwargs['direction'] == 'false':
                     kwargs['direction'] = False
-
-            kwargs['ranges'] = ranges
-            print('kwargs from request')
-            print()
-            print('kwargs from request: ' + str(kwargs))
-            new_data = self.pipe.getDataTable(**kwargs)
-            # print('new_data: %s' % new_data)
-            return json.dumps(self.serializeJSON(new_data))
+        new_data = self.pipe.getDataTable(**kwargs)
+        return json.dumps(self.serializeJSON(new_data))
 
 
-class Gene(object):
+class Gene(Parent):
+    """webapp handling requests for specific genes
+    mounted on /gene
+    """
     exposed = True
 
     def GET(self, id=None, **kwargs):
+        """responds to GET requests
+        Args:
+            id: (int) mysql row id number of gene
+        Returns:
+            html: gene.html with gene information and graphs
+                rendered
+        """
         if id is None:
             return 'No id given'
         else:
@@ -124,36 +163,36 @@ class Gene(object):
                     print(e)
                     # TODO return proper error message
                     return 'invalid id given'
-            pipe = Pipe()
             tmpl = lookup.get_template("data.html")
-            data = pipe.getGene(id)
+            data = self.pipe.getGene(id)
             data['Title'] = data['geneName']
-            print(data)
-            """data = dict()
-         data['geneName'] = 'GRHL1'
-         data['geneID'] = 'ENSMUSG00000020656.11'
-         data['geneID_human'] = 'ENSG00000134317'
-         data['geneID_mouse'] = 'ENSMUSG00000020656'
-         data['cellType'] = 'Astrocyte'
-         data['expr'] = 36.2531
-         data['expr_next'] = 6.5397
-         data['Title'] = data['geneName']"""
             try:
                 return tmpl.render(**data)
             except:
                 return exceptions.html_error_template().render()
 
 
-class Search(object):
+class Search(Parent):
+    """handles search functionality
+    mounted on /search
+    """
     exposed = True
 
     def GET(self, query=None, **kwargs):
+        """responds to GET requests
+        Args:
+            query: (str) search query
+        Returns
+            html: search.html
+        """
         tmpl = lookup.get_template("search.html")
         kwargs['Title'] = 'Search'
+        # TODO create proper search functionality
         if query is not None:
-            kwargs['geneID'] = Pipe().search_like(query)[0]
+            kwargs['geneID'] = self.pipe.search_like(query)[0]
         return tmpl.render(**kwargs)
 
+# mounts all webapps to cherrypy tree
 cherrypy.config.update({'tools.staticdir.root': path})
 # cherrypy.config.update('%s/global.conf' % path)
 cherrypy.tree.mount(Gene(), '/gene', config='%s/gene.conf' % path)
@@ -161,9 +200,12 @@ cherrypy.tree.mount(Data(), '/data', config='%s/data.conf' % path)
 cherrypy.tree.mount(Data(), '/table', config='%s/data.conf' % path)
 cherrypy.tree.mount(Search(), '/search', config='%s/search.conf' % path)
 cherrypy.tree.mount(Root(), '/', config='%s/root.conf' % path)
-for app in [v[1] for v in cherrypy.tree.apps.items()]:
-    app.merge('%s/apps.conf' % path)
+# attaches config files to each webapp
+for item in [v[1] for v in cherrypy.tree.apps.items()]:
+    item.merge('%s/apps.conf' % path)
+cherrypy.log.access_log = logger
 
 
 def application(environ, start_response):
+    """passes application to wsgi"""
     return cherrypy.tree(environ, start_response)

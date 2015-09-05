@@ -103,7 +103,7 @@ $(document).ready(function() {
             console.log(item);
             for (var i = 0; i < sliders.length; i++) {
                 if (sliders[i].getValue() == item) {
-                    $(sliders[i].element).siblings("span#value").text(item.join(':'));
+                    $(sliders[i].element).siblings("span#value").text(item);
                 }
             }
         });
