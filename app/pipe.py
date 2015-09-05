@@ -1,5 +1,4 @@
 import pymysql
-import yaml
 import os
 from decimal import *
 import app.settings as settings
@@ -25,7 +24,7 @@ class Pipe(settings.Settings):
         Args:
             ids: (list,str) mysql column names for SELECT
                 list: list of column names to be parsed
-                str:  identifier for set of colnames 
+                str:  identifier for set of colnames
                       from config or string of colnames
             ranges: (dict) list of min/max ranges for expr/expr_next/expr_diff
                 keys: column names
@@ -46,6 +45,7 @@ class Pipe(settings.Settings):
         Returns:
             str: complete mysql query string
         """
+        logger.info('building query')
         logger.debug('kwargs: %s' % kwargs)
         req = ["SELECT"]
         req.append(self.parseIDs(ids))
@@ -91,7 +91,7 @@ class Pipe(settings.Settings):
 
         req.append('LIMIT')
         req.append(str(limit))
-        print(req)
+        logger.info('query built: %s' % req)
         return ' '.join(req) + ';'
 
     def getRange(self, column):
@@ -118,6 +118,7 @@ class Pipe(settings.Settings):
             Returns:
                 list: list id numbers with matching names
         """
+        logger.info('searching database for match, query: %s' % query)
         # TODO more robust searching
         self.connect()
         # TODO sanitize query
@@ -131,6 +132,7 @@ class Pipe(settings.Settings):
         data = list()
         for item in res:
             data.append(item[0])
+        logger.debug('search results: %s' % data)
         return data
 
     def getDataTable(self, start=1, limit=None, query=None, **kwargs):
@@ -143,6 +145,8 @@ class Pipe(settings.Settings):
             list: list of rows matching criteria
                   each row contained in dictionary
         """
+        logger.info('getting data table')
+        logger.debug('limit: %s\n\t\tkwargs: %s' % (limit, kwargs))
         self.connect()
         cur = self.cur_dict
 
@@ -174,6 +178,7 @@ class Pipe(settings.Settings):
         Returns:
             dict: gene data
         """
+        logger.info('getting gene, id: %s' % str(id))
         self.connect()
         cur = self.cur_dict
 
@@ -200,6 +205,7 @@ class Pipe(settings.Settings):
             raise
 
         self.close()
+        logger.debug('gene data: %s' % data)
         return data
 
     def fixData(self, data):

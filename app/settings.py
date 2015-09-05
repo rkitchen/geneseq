@@ -21,6 +21,7 @@ class Settings(object):
 
     def loadConfig(self):
         """Loads config from yaml file"""
+        logger.debug('loading config from file')
         f = open("%s/settings.yaml" % self.path, 'r')
         raw = f.read()
         f.close()
@@ -35,6 +36,7 @@ class Settings(object):
             str: translated key
             None: returns nothing if no match found
         """
+        logger.info('translating, key: %s' % key)
         if key in self.config['translate']:
             return self.config['translate'][key]
 
@@ -48,10 +50,10 @@ class Settings(object):
                 if item['column'] == 'limit':
                     return item['init']
 
-    # returns set of SELECT column names in 
+    # returns set of SELECT column names in
     # mysql syntax form
     def parseIDs(self, ids):
-        """returns set of SELECT column names in 
+        """returns set of SELECT column names in
         mysql syntax
 
         Args:

@@ -11,9 +11,8 @@ logger = logging.getLogger(__name__)
 _pipe = app.pipe.Pipe()
 
 path = os.path.dirname(os.path.realpath(__file__))
-print(path)
+logger.debug('path: %s ' % path)
 lookup = TemplateLookup(directories=['%s/html' % path])
-print(lookup)
 
 
 class Parent(app.settings.Settings):
@@ -33,7 +32,8 @@ class Root(Parent):
     exposed = True
 
     def GET(self, **kwargs):
-        logger.debug('Root get request::kwargs: %s' % str(kwargs))
+        logger.info('/ GET request')
+        logger.debug('GET kwargs: %s' % str(kwargs))
         kwargs['Title'] = 'Home'
         tmpl = lookup.get_template("index.html")
         try:
@@ -88,12 +88,14 @@ class Data(Parent):
         return data
 
     def GET(self, **kwargs):
-        """responds to GET requests
+        """responds to data GET requests
         Args:
             None yet
         Returns:
             str: table.html
         """
+        logger.info('/data GET request')
+        logger.debug('GET kwargs: %s' % kwargs)
         data = {'Title': 'Data',
                 'data': self.getTable(),
                 'sliders': self.fixSliderInit()}
@@ -118,8 +120,10 @@ class Data(Parent):
         Returns:
             JSON: table rows serialized in json
         """
-        logger.debug('kwargs from request: %s' % str(kwargs))
+        logger.info('/data POST request')
+        logger.debug('POST kwargs: %s' % str(kwargs))
         if 'sliders' in kwargs and kwargs['sliders'] == 'true':
+            logger.info('found sliers in POST')
             ranges = dict()
             for slider in self.fixSliderInit():
                 if '%s[]' % slider['column'] in kwargs:
@@ -131,10 +135,11 @@ class Data(Parent):
 
             kwargs['ranges'] = ranges
         if 'direction' in kwargs:
-                if kwargs['direction'] == 'true':
-                    kwargs['direction'] = True
-                elif kwargs['direction'] == 'false':
-                    kwargs['direction'] = False
+            logger.info('found direction in POST')
+            if kwargs['direction'] == 'true':
+                kwargs['direction'] = True
+            elif kwargs['direction'] == 'false':
+                kwargs['direction'] = False
         new_data = self.pipe.getDataTable(**kwargs)
         return json.dumps(self.serializeJSON(new_data))
 
@@ -153,6 +158,8 @@ class Gene(Parent):
             html: gene.html with gene information and graphs
                 rendered
         """
+        logger.info('/gene GET request id: %s' % str(id))
+        logger.debug('GET kwargs: %s' % kwargs)
         if id is None:
             return 'No id given'
         else:
@@ -185,6 +192,8 @@ class Search(Parent):
         Returns
             html: search.html
         """
+        logger.info('/search GET request')
+        logger.debug('GET query: %s\n\t\tkwargs: %s' % (query, kwargs))
         tmpl = lookup.get_template("search.html")
         kwargs['Title'] = 'Search'
         # TODO create proper search functionality
@@ -203,7 +212,6 @@ cherrypy.tree.mount(Root(), '/', config='%s/root.conf' % path)
 # attaches config files to each webapp
 for item in [v[1] for v in cherrypy.tree.apps.items()]:
     item.merge('%s/apps.conf' % path)
-cherrypy.log.access_log = logger
 
 
 def application(environ, start_response):
