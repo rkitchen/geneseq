@@ -43,7 +43,7 @@ var tableUpdate = function() {
         post_data.direction = data.direction;
     }
 
-    post_data['method'] = 'sliders';
+    post_data['sliders'] = true;
     $.each(sliders, function(index, slider) {
         post_data[slider.name] = slider.getValue();
     });
@@ -93,7 +93,6 @@ $(document).ready(function() {
             tableUpdate();
         })
     });
-
 
     $("input.table-filter.range").each(function(index, item) {
         var slider = new Slider(item)

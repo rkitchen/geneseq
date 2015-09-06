@@ -15,7 +15,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -
                /var/log/uwsgi \
    && chown -R http:http /var/log/uwsgi
 
-RUN /bin/bash -c "service mysql start || echo 'CREATE DATABASE gene_locale' | mysql -u root || service mysql stop"
 
 COPY pip_requirements.txt /tmp/
-RUN pip3 install < /tmp/pip_requirements.txt
+RUN pip3 install -r /tmp/pip_requirements.txt
