@@ -32,12 +32,19 @@
     <table id="data" class="table table-hover table-condensed">
     <thead>
     <tr>
-    <th value="geneName">Gene Name</th>
-    <th value="cellType">Cell Type</th>
-    <th value="geneType">Gene Type</th>
-    <th value="expr">Expression</th>
-    <th value="expr_next">Expression Next</th>
-    <th value="expr_diff">Expression Difference</th>
+    % if not columnNames is UNDEFINED:
+        % for column in columnNames:
+            <th value="geneName" value="${column[1]}" class="sort_none">${column[0]} \
+            <i class="material-icons"> \
+            % if column[1] == order:
+                arrow_drop_down \
+            % else:
+                more_horiz \
+            % endif
+            </i></th>
+        % endfor
+        </i></th>
+    % endif
     </tr>
     </thead>
 

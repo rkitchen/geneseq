@@ -1,7 +1,29 @@
 translate:
+    cellType: celltype
     expr: expression
     expr_next: expression_next
     expr_diff: expression - expression_next
+
+table_columns:
+    -
+        - Gene Name
+        - geneName
+    -
+        - Cell Type
+        - cellType
+    -
+        - Gene Type
+        - geneType
+    -
+        - Expression
+        - expr
+    -
+        - Expression Next
+        - expr_next
+    -
+        - Expression Difference
+        - expr_diff
+
 SELECT:
     gene:
         - id

@@ -83,6 +83,9 @@ class Pipe(settings.Settings):
                         else:
                             direction = 'DESC'
                     req.append(direction)
+                # direction not specified, using ASC as default
+                else:
+                    req.append('ASC')
         if 'extra' in kwargs:
             if type(kwargs['extra']) is list:
                 req += kwargs['extra']

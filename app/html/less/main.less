@@ -156,12 +156,36 @@ div#footer {
 }
 
 /*###################  Table ##################*/
+table#data {
+   tbody {
+      font-size: 14px
+
+      tr.hover {
+      cursor: pointer;
+      }
+   }
+
+   thead th {
+      text-align: left;
+      white-space: nowrap;
+      /*background-image: url('/img/sort_asc.png');
+      background-repeat: no-repeat;
+      background-position: center right;*/
+
+      &:hover {
+         cursor: pointer;
+         i {
+            color: red;
+         }
+      }
+
+      i {
+         vertical-align: middle;
+      }
+   }
+}
 .table-hover > tbody > tr:hover {
    background-color: @color-background - #222;
-}
-
-#data tbody tr.hover {
-   cursor:pointer
 }
 
 form#table-filter div.slider {

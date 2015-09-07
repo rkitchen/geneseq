@@ -38,7 +38,24 @@ class Settings(object):
         """
         logger.info('translating, key: %s' % key)
         if key in self.config['translate']:
-            return self.config['translate'][key]
+            colName = self.config['translate'][key]
+            logger.debug('key found, translated to: %s' % colName)
+            return colName
+        else:
+            logger.debug('key not found')
+            return key
+
+    def getColumnNames(self):
+        """Gets the visible and variable names of the columns
+        displayed in the html data table
+
+        Returns:
+            list: data on a column
+                list:
+                    [0] Human readable name
+                    [1] Variable name in condensed
+        """
+        return self.config['table_columns']
 
     def getDefaultLimit(self):
         """finds default limit set in limit-slider config

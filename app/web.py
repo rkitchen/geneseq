@@ -87,7 +87,7 @@ class Data(Parent):
 
         return data
 
-    def GET(self, **kwargs):
+    def GET(self, order='expr', **kwargs):
         """responds to data GET requests
         Args:
             None yet
@@ -98,9 +98,11 @@ class Data(Parent):
         logger.debug('GET kwargs: %s' % kwargs)
         data = {'Title': 'Data',
                 'data': self.getTable(),
-                'sliders': self.fixSliderInit()}
+                'sliders': self.fixSliderInit(),
+                'columnNames': self.getColumnNames(),
+                'order': order}
         tmpl = lookup.get_template("table.html")
-        print(data['data'])
+        logger.debug('kwargs sent to mako for data table: %s' % data)
         try:
             return tmpl.render(**data)
         except:
