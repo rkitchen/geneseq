@@ -12,16 +12,16 @@ table_columns:
         - Cell Type
         - cellType
     -
-        - Gene Type
+        - Gene Types
         - geneType
     -
         - Expression
         - expr
     -
-        - Expression Next
+        - Enrichment
         - expr_next
     -
-        - Expression Difference
+        - Difference
         - expr_diff
 
 SELECT:

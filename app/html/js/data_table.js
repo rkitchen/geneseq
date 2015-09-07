@@ -24,6 +24,16 @@ var data = {
     'direction': true
 };
 
+var getSortIcon = function(item, order, direction) {
+    console.log('item: ' + item);
+    console.log('order: ' + order);
+    console.log('direction: ' + direction);
+    if (item == order) {
+        if (direction) return 'arrow_drop_down';
+        else return 'arrow_drop_up';
+    } else return 'more_horiz';
+}
+
 var tableLinks = function() {
     $('#data tbody tr').click( function() {
         window.location = $(this).find('a').attr('href');
@@ -71,6 +81,12 @@ var tableUpdate = function() {
                 table.append(['<tr><td>',row.join('</td><td>'),'</td></tr>'].join(''))
             });
 
+            $('table#data thead th').each(function(index,item) {
+                $(item).children('i').
+                    text(getSortIcon(item.getAttribute('value'),
+                    post_data.order, post_data.direction));
+            });
+
             tableLinks();
         }
     });
@@ -88,7 +104,9 @@ $(document).ready(function() {
         $(item).click({value: key}, function(event) {
             console.log(event);
             console.log('table header clicked: ' + event.data.value);
-            if (data.order == event.data.value) data.direction = !data.direction;
+            if (data.order == event.data.value) {
+                data.direction = !data.direction;
+            } else data.direction = true;
             data.order = event.data.value;
             tableUpdate();
         })
