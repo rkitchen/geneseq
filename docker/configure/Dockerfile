@@ -1,4 +1,4 @@
-FROM geneseq:install-1.0
+FROM geneseq/install:latest
 MAINTAINER Michael Laraia <micheal.laraia@gmail.com>
 
 ENV MYSQL_USER=pipe \

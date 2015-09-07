@@ -1,5 +1,4 @@
 CREATE TABLE `processed` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `celltype` varchar(30) DEFAULT NULL,
   `expression` float DEFAULT NULL,
   `expression_next` float DEFAULT NULL,
@@ -14,7 +13,5 @@ CREATE TABLE `processed` (
   `confidence` float DEFAULT NULL,
   `geneID_expressionMatrixID` varchar(45) DEFAULT NULL,
   `WGCNAModuleID` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `SEARCH` (`geneName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1125 DEFAULT CHARSET=utf8;

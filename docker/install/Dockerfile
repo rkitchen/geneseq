@@ -2,6 +2,8 @@ FROM ubuntu:14.04
 MAINTAINER Michael Laraia <micheal.laraia@gmail.com>
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -q -y python3 \
    python3-pip \
+   uwsgi-plugin-python3 \
+   curl \
    uwsgi \
    git \
    vim \
