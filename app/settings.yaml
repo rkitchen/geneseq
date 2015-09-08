@@ -2,7 +2,6 @@ translate:
     cellType: celltype
     expr: expression
     expr_next: expression_next
-    expr_diff: expression - expression_next
 
 table_columns:
     -
@@ -20,9 +19,6 @@ table_columns:
     -
         - Enrichment
         - expr_next
-    -
-        - Difference
-        - expr_diff
 
 SELECT:
     gene:
@@ -48,7 +44,6 @@ SELECT:
         - geneType
         - expr
         - expr_next
-        - expr_diff
 table_sliders:
     -
         name: Expression
@@ -61,7 +56,7 @@ table_sliders:
             - 0
             - 70000
     -
-        name: Expression Next
+        name: Fold Enrichment
         column: expr_next
         scale: logarithmic
         min: 0

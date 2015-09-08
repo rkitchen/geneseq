@@ -11,14 +11,22 @@ class Settings(object):
 
     def __init__(self):
         self.path = os.path.dirname(os.path.realpath(__file__))
-        self.config = self.loadConfig()
+        self.settings = self.loadConfig()
 
     def getConfig(self):
         """gets config dictionary
         Returns:
             dict: config dictionary
         """
-        return copy.deepcopy(self.config)
+        return copy.deepcopy(self.settings)
+
+    def setCurrentCount(self, count):
+        sliders = self.settings['table_sliders']
+        self.settings['count'] = count
+        for slider in sliders:
+            if slider['column'] == 'limit':
+                logger.debug('found limit slider, changing max to %s' % count)
+                slider['max'] = count
 
     def loadConfig(self):
         """Loads config from yaml file"""
@@ -38,8 +46,8 @@ class Settings(object):
             None: returns nothing if no match found
         """
         logger.info('translating, key: %s' % key)
-        if key in self.config['translate']:
-            colName = self.config['translate'][key]
+        if key in self.settings['translate']:
+            colName = self.settings['translate'][key]
             logger.debug('key found, translated to: %s' % colName)
             return colName
         else:
@@ -56,7 +64,7 @@ class Settings(object):
                     [0] Human readable name
                     [1] Variable name in condensed
         """
-        return copy.deepcopy(self.config['table_columns'])
+        return copy.deepcopy(self.settings['table_columns'])
 
     def getDefaultLimit(self):
         """finds default limit set in limit-slider config
@@ -64,7 +72,7 @@ class Settings(object):
         Returns:
             int: default query limit
         """
-        for item in self.config['table_sliders']:
+        for item in self.settings['table_sliders']:
                 if item['column'] == 'limit':
                     return copy.deepcopy(item['init'])
 
@@ -85,8 +93,8 @@ class Settings(object):
             return '*'
         if type(ids) is list:
             return ','.join(ids)
-        elif ids in self.config['SELECT']:
-            return (','.join(self.config['SELECT'][ids]))
+        elif ids in self.settings['SELECT']:
+            return (','.join(self.settings['SELECT'][ids]))
         else:
             return copy.deepcopy(ids)
 
@@ -102,4 +110,4 @@ class Settings(object):
                     max:      (int) max value of slider
                     init:(int,list) initial value/range of slider
         """
-        return copy.deepcopy(self.config['table_sliders'])
+        return copy.deepcopy(self.settings['table_sliders'])

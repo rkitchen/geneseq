@@ -62,7 +62,8 @@ var tableUpdate = function() {
         history_update.push(slider.name + '=' + value);
     });
     console.log(history_update.join('&'));
-    history.replaceState({}, '', 'data?' + history_update);
+    history.replaceState(null, null, '/data?' + history_update.join('&'));
+    //history.pushState(null,null,'/data?expr=[55,67]&expr_next=[55,77]');
     console.log(post_data);
 
     $.post('/table', post_data,

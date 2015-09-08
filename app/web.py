@@ -8,19 +8,19 @@ import app.pipe
 import app.settings
 
 logger = logging.getLogger(__name__)
-_pipe = app.pipe.Pipe()
+_settings = app.settings.Settings()
+_pipe = app.pipe.Pipe(_settings)
 
 path = os.path.dirname(os.path.realpath(__file__))
 logger.debug('path: %s ' % path)
 lookup = TemplateLookup(directories=['%s/html' % path])
 
 
-class Parent(app.settings.Settings):
+class Parent(object):
     """parent class for the webapp classes. attaches pipe
     to each object"""
     def __init__(self):
         super().__init__()
-        self.pipe = _pipe
 
 
 # service mounted on /
@@ -55,23 +55,21 @@ class Data(Parent):
         Returns:
             dict: sliders
         """
-        sliders = list(self.getTableSliders())
+        sliders = _settings.getTableSliders()
         for slider in sliders:
             init = slider['init']
             logger.debug('init object: %s type %s' % (init, type(init)))
             # checks if slider initial values were passed
             # in kwargs
             column = slider['column']
-            for i in (0, 1):
-                if '%s[%d]' % (column, i) in kwargs:
-                    value = int(kwargs['%s[%d]' % (column, i)])
-                    logger.debug('value %s type %s' % (value, type(value)))
-                    init[i] = value
+            if column in kwargs:
+                value = json.loads(kwargs[column])
+                init = value
             logger.debug('slider %s init %s' % (column, init))
 
             slider['init'] = str(init)
         logger.debug(sliders)
-        logger.debug(self.getTableSliders())
+        logger.debug(_settings.getTableSliders())
         return sliders
 
     def getTable(self, **kwargs):
@@ -82,7 +80,7 @@ class Data(Parent):
         Returns:
             dict: data from database
         """
-        return self.pipe.getDataTable(**kwargs)
+        return _pipe.getDataTable(**kwargs)
 
     def serializeJSON(self, data):
         """changes Decimal() types to str for json
@@ -96,7 +94,6 @@ class Data(Parent):
         for item in data:
             item['expr'] = str(item['expr'])
             item['expr_next'] = str(item['expr_next'])
-            item['expr_diff'] = str(item['expr_diff'])
 
         return data
 
@@ -112,7 +109,7 @@ class Data(Parent):
         data = {'Title': 'Data',
                 'data': self.getTable(),
                 'sliders': self.fixSliderInit(kwargs),
-                'columnNames': self.getColumnNames(),
+                'columnNames': _settings.getColumnNames(),
                 'order': order}
         tmpl = lookup.get_template("table.html")
         logger.debug('kwargs sent to mako for data table: %s' % data)
@@ -146,7 +143,7 @@ class Data(Parent):
                     slider_data = json.loads(kwargs.pop(key))
                     if type(slider_data) is not list:
                         continue
-                    translated = self.translate(key)
+                    translated = _settings.translate(key)
                     ranges[translated] = {'min': slider_data[0],
                                           'max': slider_data[1]}
 
@@ -157,7 +154,7 @@ class Data(Parent):
                 kwargs['direction'] = True
             elif kwargs['direction'] == 'false':
                 kwargs['direction'] = False
-        new_data = self.pipe.getDataTable(**kwargs)
+        new_data = _pipe.getDataTable(**kwargs)
         return json.dumps(self.serializeJSON(new_data))
 
 
@@ -188,7 +185,7 @@ class Gene(Parent):
                     # TODO return proper error message
                     return 'invalid id given'
             tmpl = lookup.get_template("data.html")
-            data = self.pipe.getGene(id)
+            data = _pipe.getGene(id)
             data['Title'] = data['geneName']
             try:
                 return tmpl.render(**data)
@@ -215,7 +212,7 @@ class Search(Parent):
         kwargs['Title'] = 'Search'
         # TODO create proper search functionality
         if query is not None:
-            kwargs['geneID'] = self.pipe.search_like(query)[0]
+            kwargs['geneID'] = _pipe.search_like(query)[0]
         return tmpl.render(**kwargs)
 
 # mounts all webapps to cherrypy tree

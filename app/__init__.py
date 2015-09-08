@@ -2,7 +2,6 @@ import logging
 import logging.handlers
 import os
 import time
-from app.web import cherrypy
 
 # define logfile path
 path = os.path.dirname(os.path.realpath(__file__))
@@ -73,6 +72,8 @@ logger.addHandler(general)
 
 error_file = '%s/cherry_error/error.log' % debug_path
 access_file = '%s/cherry_access/access.log' % debug_path
+
+from app.web import cherrypy
 
 cherrypy.log.error_file = ""
 cherrypy.log.access_file = ""

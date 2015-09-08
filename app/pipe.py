@@ -1,5 +1,4 @@
 import pymysql
-import os
 from decimal import *
 import app.settings as settings
 import logging
@@ -8,15 +7,18 @@ _ROUND_DECIMAL = 1
 logger = logging.getLogger(__name__)
 
 
-class Pipe(settings.Settings):
+class Pipe(object):
     """class handling connection and queries to database"""
 
-    def __init__(self):
+    def __init__(self, config):
         """initializes variables"""
-        super().__init__()
         # Pipe initializing
         logger.debug('initializing pipe')
-        self.path = os.path.dirname(os.path.realpath(__file__))
+        if not isinstance(config, settings.Settings):
+            raise ValueError
+        self.rowcount = None
+        config.setCurrentCount(self.updateRowCount())
+        self.settings = config
 
     def buildQuery(self, ids=None, limit=10, **kwargs):
         """builds a mysql query string from set of arguments
@@ -26,7 +28,7 @@ class Pipe(settings.Settings):
                 list: list of column names to be parsed
                 str:  identifier for set of colnames
                       from config or string of colnames
-            ranges: (dict) list of min/max ranges for expr/expr_next/expr_diff
+            ranges: (dict) list of min/max ranges for expr/expr_next
                 keys: column names
                 values:
                     min: minimum
@@ -48,7 +50,7 @@ class Pipe(settings.Settings):
         logger.info('building query')
         logger.debug('kwargs: %s' % kwargs)
         req = ["SELECT"]
-        req.append(self.parseIDs(ids))
+        req.append(self.settings.parseIDs(ids))
 
         req.append('FROM processed')
         if 'ranges' in kwargs:
@@ -66,7 +68,7 @@ class Pipe(settings.Settings):
         if 'order' in kwargs:
             req.append('ORDER BY')
             if type(kwargs['order']) is dict:
-                req.append(self.translate(kwargs['order']['by']))
+                req.append(self.settings.translate(kwargs['order']['by']))
                 direction = kwargs['order']['direction']
                 if direction:
                     direction = 'ASC'
@@ -74,7 +76,7 @@ class Pipe(settings.Settings):
                     direction = 'DESC'
                 req.append(direction)
             else:
-                req.append(self.translate(kwargs['order']))
+                req.append(self.settings.translate(kwargs['order']))
                 if 'direction' in kwargs:
                     direction = kwargs['direction']
                     if type(direction) is bool:
@@ -154,7 +156,7 @@ class Pipe(settings.Settings):
         cur = self.cur_dict
 
         if limit is None:
-            limit = self.getDefaultLimit()
+            limit = self.settings.getDefaultLimit()
 
         # req = 'SELECT %s' % ",".join(self.select['table'])
         req = self.buildQuery('table', limit=limit, **kwargs)
@@ -237,9 +239,6 @@ class Pipe(settings.Settings):
             s = s.title()
             data['geneType'] = s
 
-        if 'expr_diff' not in data:
-            data['expr_diff'] = data['expr'] - data['expr_next']
-
         return data
 
     def roundData(self, data, roundn=_ROUND_DECIMAL):
@@ -255,9 +254,33 @@ class Pipe(settings.Settings):
             data['expr'] = round(data['expr'], roundn)
         if 'expr_next' in data:
             data['expr_next'] = round(data['expr_next'], roundn)
-        if 'expr_diff' in data:
-            data['expr_diff'] = round(data['expr_diff'], roundn)
         return data
+
+    def updateRowCount(self):
+        """gets the mysql row count and sets class count
+        variable
+
+        Returns:
+            int: current row count
+        """
+        self.connect()
+        cur = self.cur
+        cur.execute('SELECT COUNT(*) FROM processed')
+        count = cur.fetchall()[0][0]
+        logger.debug('count is currently %s' % count)
+        self.close()
+        self.rowcount = count
+        return count
+
+    def getRowCount(self):
+        """gets the current rowcount, calls updateRowCount
+        if it hasn't been set yet
+        Returns:
+            int: current row count
+        """
+        if self.rowcount is None:
+            self.updateRowCount
+        return self.rowcount
 
     def close(self):
         """Closes database connection and cursors"""
