@@ -1,6 +1,7 @@
 import yaml
 import os
 import logging
+import copy
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ class Settings(object):
         Returns:
             dict: config dictionary
         """
-        return self.config
+        return copy.deepcopy(self.config)
 
     def loadConfig(self):
         """Loads config from yaml file"""
@@ -55,7 +56,7 @@ class Settings(object):
                     [0] Human readable name
                     [1] Variable name in condensed
         """
-        return self.config['table_columns']
+        return copy.deepcopy(self.config['table_columns'])
 
     def getDefaultLimit(self):
         """finds default limit set in limit-slider config
@@ -65,7 +66,7 @@ class Settings(object):
         """
         for item in self.config['table_sliders']:
                 if item['column'] == 'limit':
-                    return item['init']
+                    return copy.deepcopy(item['init'])
 
     # returns set of SELECT column names in
     # mysql syntax form
@@ -87,7 +88,7 @@ class Settings(object):
         elif ids in self.config['SELECT']:
             return (','.join(self.config['SELECT'][ids]))
         else:
-            return ids
+            return copy.deepcopy(ids)
 
     def getTableSliders(self):
         """gets list of sliders from configuration
@@ -101,4 +102,4 @@ class Settings(object):
                     max:      (int) max value of slider
                     init:(int,list) initial value/range of slider
         """
-        return self.config['table_sliders']
+        return copy.deepcopy(self.config['table_sliders'])

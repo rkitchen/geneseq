@@ -1,10 +1,10 @@
 /*$(document).ready(function() {
     $('#data').DataTable({
-        "processing": true,
-        "serverSide": true,
-        "ajax": {
-            "url": "/table",
-            "type": "POST"
+        'processing': true,
+        'serverSide': true,
+        'ajax': {
+            'url': '/table',
+            'type': 'POST'
         },
         'columns': [
             {'data': 'geneName'},
@@ -32,15 +32,15 @@ var getSortIcon = function(item, order, direction) {
         if (direction) return 'arrow_drop_down';
         else return 'arrow_drop_up';
     } else return 'more_horiz';
-}
+};
 
 var tableLinks = function() {
-    $('#data tbody tr').click( function() {
+    $('#data tbody tr').click(function() {
         window.location = $(this).find('a').attr('href');
-    }).hover( function() {
+    }).hover(function() {
         $(this).toggleClass('hover');
     });
-}
+};
 
 
 var tableUpdate = function() {
@@ -54,10 +54,13 @@ var tableUpdate = function() {
     }
 
     post_data['sliders'] = true;
+    var history_update = [];
     $.each(sliders, function(index, slider) {
-        post_data[slider.name] = slider.getValue();
+        value = slider.getValue();
+        post_data[slider.name] = value;
+        history_update.push(slider.name + '=' + value);
     });
-
+    console.log(history_update.join('&'));
     console.log(post_data);
 
     $.post('/table', post_data,
@@ -70,18 +73,23 @@ var tableUpdate = function() {
         if (status == 'success') {
             var table = $('table#data tbody');
             $.each(data, function(index, item) {
-                var row = []
-                row.push('<a href="/gene?id=' + item.id +'">' + item.geneName + '</a>')
-                row.push(item.cellType)
-                row.push(item.geneType)
-                row.push(item.expr)
-                row.push(item.expr_next)
-                row.push(item.expr_diff)
+                var row = [];
+                row.push('<a href="/gene?id=' +
+                    item.id + '">' +
+                    item.geneName +
+                    '</a>');
+                row.push(item.cellType);
+                row.push(item.geneType);
+                row.push(item.expr);
+                row.push(item.expr_next);
+                row.push(item.expr_diff);
 
-                table.append(['<tr><td>',row.join('</td><td>'),'</td></tr>'].join(''))
+                table.append(['<tr><td>',
+                    row.join('</td><td>'),
+                    '</td></tr>'].join(''));
             });
 
-            $('table#data thead th').each(function(index,item) {
+            $('table#data thead th').each(function(index, item) {
                 $(item).children('i').
                     text(getSortIcon(item.getAttribute('value'),
                     post_data.order, post_data.direction));
@@ -90,7 +98,7 @@ var tableUpdate = function() {
             tableLinks();
         }
     });
-}
+};
 
 
 $(document).ready(function() {
@@ -98,9 +106,9 @@ $(document).ready(function() {
 
     //sorting function
 
-    $("table#data th").each(function(index, item) {
+    $('table#data th').each(function(index, item) {
         var key = item.getAttribute('value');
-        console.log('key: ' + key)
+        console.log('key: ' + key);
         $(item).click({value: key}, function(event) {
             console.log(event);
             console.log('table header clicked: ' + event.data.value);
@@ -109,18 +117,18 @@ $(document).ready(function() {
             } else data.direction = true;
             data.order = event.data.value;
             tableUpdate();
-        })
+        });
     });
 
-    $("input.table-filter.range").each(function(index, item) {
-        var slider = new Slider(item)
-        slider.name=item.getAttribute('name');
+    $('input.table-filter.range').each(function(index, item) {
+        var slider = new Slider(item);
+        slider.name = item.getAttribute('name');
         slider.on('slideStop', tableUpdate);
         slider.on('slide', function(item) {
             console.log(item);
             for (var i = 0; i < sliders.length; i++) {
                 if (sliders[i].getValue() == item) {
-                    $(sliders[i].element).siblings("span#value").text(item);
+                    $(sliders[i].element).siblings('span#value').text(item);
                 }
             }
         });

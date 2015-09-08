@@ -71,16 +71,6 @@ table_sliders:
             - 0
             - 5000
     -
-        name: Expression Difference
-        column: expr_diff
-        scale: logarithmic
-        min: 0
-        max: 70000
-        step: 10
-        init:
-            - 0
-            - 70000
-    -
         name: Result Limit
         column: limit
         scale: linear

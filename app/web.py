@@ -49,16 +49,29 @@ class Data(Parent):
     mounted on /data and /table"""
     exposed = True
 
-    def fixSliderInit(self):
+    def fixSliderInit(self, kwargs):
         """changes slider init to string for slider jquery
 
         Returns:
             dict: sliders
         """
-        sliders = self.getTableSliders()
+        sliders = list(self.getTableSliders())
         for slider in sliders:
-            slider['init'] = str(slider['init'])
-        print(sliders)
+            init = slider['init']
+            logger.debug('init object: %s type %s' % (init, type(init)))
+            # checks if slider initial values were passed
+            # in kwargs
+            column = slider['column']
+            for i in (0, 1):
+                if '%s[%d]' % (column, i) in kwargs:
+                    value = int(kwargs['%s[%d]' % (column, i)])
+                    logger.debug('value %s type %s' % (value, type(value)))
+                    init[i] = value
+            logger.debug('slider %s init %s' % (column, init))
+
+            slider['init'] = str(init)
+        logger.debug(sliders)
+        logger.debug(self.getTableSliders())
         return sliders
 
     def getTable(self, **kwargs):
@@ -98,7 +111,7 @@ class Data(Parent):
         logger.debug('GET kwargs: %s' % kwargs)
         data = {'Title': 'Data',
                 'data': self.getTable(),
-                'sliders': self.fixSliderInit(),
+                'sliders': self.fixSliderInit(kwargs),
                 'columnNames': self.getColumnNames(),
                 'order': order}
         tmpl = lookup.get_template("table.html")
@@ -127,7 +140,7 @@ class Data(Parent):
         if 'sliders' in kwargs and kwargs['sliders'] == 'true':
             logger.info('found sliers in POST')
             ranges = dict()
-            for slider in self.fixSliderInit():
+            for slider in self.fixSliderInit(dict()):
                 if '%s[]' % slider['column'] in kwargs:
                     key = slider['column']
                     slider_data = kwargs.pop('%s[]' % key)
