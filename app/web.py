@@ -141,9 +141,11 @@ class Data(Parent):
             logger.info('found sliers in POST')
             ranges = dict()
             for slider in self.fixSliderInit(dict()):
-                if '%s[]' % slider['column'] in kwargs:
+                if slider['column'] in kwargs:
                     key = slider['column']
-                    slider_data = kwargs.pop('%s[]' % key)
+                    slider_data = json.loads(kwargs.pop(key))
+                    if type(slider_data) is not list:
+                        continue
                     translated = self.translate(key)
                     ranges[translated] = {'min': slider_data[0],
                                           'max': slider_data[1]}

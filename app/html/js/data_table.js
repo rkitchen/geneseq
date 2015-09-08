@@ -57,10 +57,12 @@ var tableUpdate = function() {
     var history_update = [];
     $.each(sliders, function(index, slider) {
         value = slider.getValue();
+        if (typeof value != 'number') value = '[' + value + ']';
         post_data[slider.name] = value;
         history_update.push(slider.name + '=' + value);
     });
     console.log(history_update.join('&'));
+    history.replaceState({}, '', 'data?' + history_update);
     console.log(post_data);
 
     $.post('/table', post_data,
