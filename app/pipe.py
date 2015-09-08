@@ -125,7 +125,7 @@ class Pipe(settings.Settings):
         # TODO more robust searching
         self.connect()
         # TODO sanitize query
-        req = self.buildQuery('id', where='geneName LIKE %s' % query)
+        req = self.buildQuery('id', where="geneName LIKE '%s'" % query)
         # req = 'SELECT id FROM processed WHERE geneName LIKE "%s"' % query
         cur = self.cur
         cur.execute(req)
