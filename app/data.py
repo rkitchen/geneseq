@@ -45,7 +45,12 @@ class Data(object):
         logger.debug('gene: %s' % gene)
         for k, v in gene.items():
             logger.debug('%s is type %s' % (v, type(v)))
-        data = list()
+        columns = list()
+        values = list()
+        count = 1
         for k, v in gene.items():
-            data.append({'name': k, 'values': v})
-        return data
+            columns.append((count, k))
+            for number in v:
+                values.append((count, number))
+            count += 1
+        return {'names': columns, 'values': values}
