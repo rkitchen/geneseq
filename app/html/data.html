@@ -9,6 +9,12 @@
 ##geneID_human
 ##geneID_mouse 
 
+<%block name="resources">
+   <script type="text/javascript" src="/js/d3.js"></script>
+   <script type="text/javascript" src="/js/expression-chart.js"></script>
+   <link rel="stylesheet" type="text/css" href="/css/graphics.css">
+</%block>
+
 
 <%block name="content">
 <div id="sidebar" class="sidebar fright">
@@ -22,17 +28,19 @@
       </tr>
 
      <tr class="sidebar-table-data">
-     <td>
       % if not geneName is UNDEFINED:
+         <td id="geneName" value="${geneName}"
          ${geneName}
       % else:
+         <td>
          Not Found
       % endif
       </td>
-      <td>
       % if not cellType is UNDEFINED:
+         <td id="cellType" value="${cellType}">
          ${cellType}
       % else:
+         <td>
          Not Found
       % endif
       </td>
@@ -44,17 +52,19 @@
       </tr>
 
       <tr class="sidebar-table-data">
-      <td>
       % if not expr is UNDEFINED:
+         <td id="expr" value="${expr}">
          ${expr}
       % else:
+         <td>
          Not Found
       % endif
       </td>
-      <td>
       % if not expr_next is UNDEFINED:
+         <td id="expr_next" value="${expr_next}">
          ${expr_next}
       % else:
+         <td>
          Not Found
       % endif
       </td>
@@ -64,10 +74,11 @@
       <td colspan="2">Gene Type:</td>
       </tr>
       <tr class="sidebar-table-data">
-      <td colspan="2">
       % if not geneType is UNDEFINED:
+         <td colspan="2" id="geneType" value="${geneType}">
          ${geneType}
       % else:
+         <td colspan="2">
          Not Found
       % endif
       </td>
@@ -77,10 +88,11 @@
       <td colspan="2">GeneID:</td>
       </tr>
       <tr class="sidebar-table-data">
-      <td colspan="2">
       % if not geneID is UNDEFINED:
+         <td colspan="2" id="geneID" value="${geneID}">
          ${geneID}
       % else:
+         <td colspan="2">
          Not Found
       % endif
       </td>
@@ -90,10 +102,11 @@
       <td colspan="2">GeneID Human:</td>
       </tr>
       <tr class="sidebar-table-data">
-      <td colspan="2">
       % if not geneID_human is UNDEFINED:
+         <td colspan="2" id="geneID_human" value="${geneID_human}">
          ${geneID_human}
       % else:
+         <td colspan="2">
          Not Found
       % endif
       </td>
@@ -103,10 +116,11 @@
       <td colspan="2">GeneID Mouse:</td>
       </tr>
       <tr class="sidebar-table-data">
-      <td colspan="2">
       % if not geneID_mouse is UNDEFINED:
+         <td colspan="2" id="geneID_mouse" value="${geneID_mouse}">
          ${geneID_mouse}
       % else:
+         <td colspan="2">
          Not Found
       % endif
       </td>

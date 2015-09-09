@@ -1,4 +1,3 @@
-import pymysql
 from decimal import *
 import app.settings as settings
 import logging
@@ -26,8 +25,7 @@ class Pipe(object):
         Returns:
             dict: rounded data
         """
-        if 'expr' in data:
-            data['expr'] = round(data['expr'], roundn)
-        if 'expr_next' in data:
-            data['expr_next'] = round(data['expr_next'], roundn)
+        for k, v in data.items():
+            if isinstance(v, Decimal):
+                data[k] = round(v, roundn)
         return data
