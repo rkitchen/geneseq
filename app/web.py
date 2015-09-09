@@ -4,12 +4,12 @@ import json
 import logging
 from mako import exceptions
 from mako.lookup import TemplateLookup
-import app.pipe
+import app.mysql_pipe
 import app.settings
 
 logger = logging.getLogger(__name__)
 _settings = app.settings.Settings()
-_pipe = app.pipe.Pipe(_settings)
+_pipe = app.mysql_pipe.Pipe(_settings)
 
 path = os.path.dirname(os.path.realpath(__file__))
 logger.debug('path: %s ' % path)
