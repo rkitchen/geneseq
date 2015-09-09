@@ -5,7 +5,7 @@ import logging
 from mako import exceptions
 from mako.lookup import TemplateLookup
 from app.data import Data
-from decimal import Decimal
+import decimal
 import app.mysql_pipe
 import app.mongo_pipe
 import app.settings
@@ -94,9 +94,10 @@ class Table(Parent):
         """
         # TODO search for all unserializable
         # objects rather than specific
-        for key, item in data.items():
-            if isinstance(item, Decimal):
-                data[key] = str(item)
+        for item in data:
+            for key, value in item.items():
+                if type(value) is decimal.Decimal:
+                    item[key] = str(value)
         return data
 
     def GET(self, order='expr', **kwargs):
