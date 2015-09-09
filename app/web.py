@@ -4,7 +4,10 @@ import json
 import logging
 from mako import exceptions
 from mako.lookup import TemplateLookup
+from app.data import Data
+from decimal import Decimal
 import app.mysql_pipe
+import app.mongo_pipe
 import app.settings
 
 logger = logging.getLogger(__name__)
@@ -20,7 +23,7 @@ class Parent(object):
     """parent class for the webapp classes. attaches pipe
     to each object"""
     def __init__(self):
-        super().__init__()
+        pass
 
 
 # service mounted on /
@@ -44,7 +47,7 @@ class Root(Parent):
 
 # service mounted on /data
 # renders interactive data table
-class Data(Parent):
+class Table(Parent):
     """displays mysql data in a table
     mounted on /data and /table"""
     exposed = True
@@ -91,10 +94,9 @@ class Data(Parent):
         """
         # TODO search for all unserializable
         # objects rather than specific
-        for item in data:
-            item['expr'] = str(item['expr'])
-            item['expr_next'] = str(item['expr_next'])
-
+        for key, item in data.items():
+            if isinstance(item, Decimal):
+                data[key] = str(item)
         return data
 
     def GET(self, order='expr', **kwargs):
@@ -184,6 +186,7 @@ class Gene(Parent):
                     print(e)
                     # TODO return proper error message
                     return 'invalid id given'
+            app.mongo_pipe.Pipe(_settings).getGene(id)
             tmpl = lookup.get_template("data.html")
             data = _pipe.getGene(id)
             data['Title'] = data['geneName']
@@ -219,8 +222,8 @@ class Search(Parent):
 cherrypy.config.update({'tools.staticdir.root': path})
 # cherrypy.config.update('%s/global.conf' % path)
 cherrypy.tree.mount(Gene(), '/gene', config='%s/gene.conf' % path)
-cherrypy.tree.mount(Data(), '/data', config='%s/data.conf' % path)
-cherrypy.tree.mount(Data(), '/table', config='%s/data.conf' % path)
+cherrypy.tree.mount(Data(_settings), '/data', config='%s/data.conf' % path)
+cherrypy.tree.mount(Table(), '/table', config='%s/data.conf' % path)
 cherrypy.tree.mount(Search(), '/search', config='%s/search.conf' % path)
 cherrypy.tree.mount(Root(), '/', config='%s/root.conf' % path)
 # attaches config files to each webapp
