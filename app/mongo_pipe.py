@@ -4,6 +4,7 @@ import logging
 from decimal import Decimal
 
 logger = logging.getLogger(__name__)
+_ROUND_DECIMAL = 2
 
 
 class Pipe(app.pipe.Pipe):
@@ -27,7 +28,7 @@ class Pipe(app.pipe.Pipe):
                 for i, item in enumerate(v):
                     if type(item) is float:
                         logger.debug('converting float to decimal %s' % item)
-                        v[i] = Decimal(item)
+                        v[i] = round(item, _ROUND_DECIMAL)
                 data[k] = v
         return data
 

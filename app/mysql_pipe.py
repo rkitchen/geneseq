@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class Pipe(pipe.Pipe):
-    """class handling connection and queries to database"""
+    """class handling connection and queries to mysqldatabase"""
 
     def __init__(self, config):
         """initializes variables"""

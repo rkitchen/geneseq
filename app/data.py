@@ -16,27 +16,29 @@ class Data(object):
         self._settings = config
         self._mongo = mongo_pipe.Pipe(config)
 
-    def serializeJSON(self, data):
-        """changes Decimal() types to str for json
-        Args:
-            data: (dict)
-        Returns:
-            dict: data with Decimal() replaced
-        """
-        # TODO search for all unserializable
-        # objects rather than specific
-        for key, item in data.items():
-            if isinstance(item, Decimal) | 1:
-                logger.debug('converting decimal to string %s' % item)
-                data[key] = str(item)
-        return json.dumps(data)
+    # def serializeJSON(self, data):
+    #     """changes Decimal() types to str for json
+    #     Args:
+    #         data: (dict)
+    #     Returns:
+    #         dict: data with Decimal() replaced
+    #     """
+    #     # TODO search for all unserializable
+    #     # objects rather than specific
+    #     for key, item in data.items():
+    #         if isinstance(item, Decimal) | 1:
+    #             logger.debug('converting decimal to string %s' % item)
+    #             data[key] = [float(number) for number in item]
+    #             logger.debug(data[key])
+    #     return json.dumps(data)
 
     def GET(self, **kwargs):
         data = self.getData(kwargs['geneid'])
-        return self.serializeJSON(data)
+        return json.dumps(data)
 
     def POST(self, **kwargs):
-        pass
+        data = self.getData(kwargs['geneid'])
+        return json.dumps(data)
 
     def getData(self, geneId):
         gene = self._mongo.getGene(geneId)
