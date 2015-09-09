@@ -53,4 +53,7 @@ class Data(object):
             for number in v:
                 values.append((count, number))
             count += 1
-        return {'names': columns, 'values': values}
+        ret = {'names': columns, 'values': values}
+        ret['min'] = min([x[1] for x in values])
+        ret['max'] = max([x[1] for x in values])
+        return ret
