@@ -39,7 +39,6 @@ class Pipe(app.pipe.Pipe):
         result = result['expr_data']
         logger.debug('mongo result data %s' % result)
         result = self.fixData(result)
-        result = self.roundData(result)
         return result
 
     def connect(self):
