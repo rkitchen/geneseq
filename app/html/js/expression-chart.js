@@ -2,7 +2,7 @@ var w = 400;
 var h = 250;
 
 var margin = {};
-margin.left = 30;
+margin.left = 60;
 margin.right = 20;
 margin.top = 15;
 margin.bottom = 200;
@@ -92,7 +92,7 @@ $(document).ready(function() {
                 .attr('fill', function(d) {
                     return colorscale(d[0]);
                 })
-                .attr("r", 7);
+                .attr("r", 5);
         }
     });
 });
