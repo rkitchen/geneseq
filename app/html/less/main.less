@@ -28,9 +28,9 @@ div#header{
    margin-top:0;
 }
 div#content{
-   padding: 30px 340px 30px 60px;
+   
 }
-div#content-wrapper{
+div#content-wrapper {
    color:rgb(14, 52, 79);
    //max-width: 724px;
    min-height: 800px;
@@ -107,7 +107,7 @@ div#footer {
 
 /*###################  Sidebar ##################*/
 #sidebar {
-   width: 300px;
+   width: 250px;
    background: @color-grey-medium;
    height: 100%;
    position: absolute;
@@ -153,9 +153,17 @@ div#footer {
 }
 
 /*###################  Table ##################*/
+
+div#content-wrapper.data-table {
+   padding: 30px 340px 30px 60px;
+}
+
 table#data {
+
+   width: 100%;
+
    tbody {
-      font-size: 13px;
+      font-size: 11px;
 
       tr.hover {
          cursor: pointer;
@@ -165,6 +173,7 @@ table#data {
    thead th {
       text-align: left;
       white-space: nowrap;
+      font-size: 13px;
       /*background-image: url('/img/sort_asc.png');
       background-repeat: no-repeat;
       background-position: center right;*/
@@ -185,10 +194,16 @@ table#data {
    background-color: @color-background - #222;
 }
 
-form#table-filter div.slider {
-   margin: 20px 0;
-}
+form#table-filter {
+   div.slider {
+      margin: 20px 0;
+   }
 
-form#table-filter li.table-filter.range span#value {
-   margin-left: 20px;
+   /*li.table-filter.range {
+      padding-left:0px;
+   }*/
+
+   span#value {
+      margin-left: 20px;
+   }
 }
