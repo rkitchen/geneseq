@@ -49,11 +49,13 @@ class Data(object):
         values = list()
         count = 1
         for k, v in gene.items():
-            columns.append((count, k))
+            name = ' '.join(k.split('_')).title()
+            columns.append((count, name))
             for number in v:
                 values.append((count, number))
             count += 1
         ret = {'names': columns, 'values': values}
         ret['min'] = min([x[1] for x in values])
         ret['max'] = max([x[1] for x in values])
+        logger.debug('data to return: %s' % ret)
         return ret

@@ -188,7 +188,7 @@ class Gene(Parent):
                     # TODO return proper error message
                     return 'invalid id given'
             app.mongo_pipe.Pipe(_settings).getGene(id)
-            tmpl = lookup.get_template("data.html")
+            tmpl = lookup.get_template("gene.html")
             data = _pipe.getGene(id)
             data['Title'] = data['geneName']
             try:

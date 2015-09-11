@@ -9,3 +9,5 @@ systemd.sh
 bootstrap-slider
 SMFG
 d3
+*.sublime-project
+*.sublime-workspace
