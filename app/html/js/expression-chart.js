@@ -7,9 +7,8 @@ margin.right = 20;
 margin.top = 15;
 margin.bottom = 200;
 
-var xscale = d3.scale.linear();
+var xscale = d3.scale.ordinal();
 var yscale = d3.scale.linear();
-var namescale = d3.scale.ordinal();
 
 var yaxis = d3.svg.axis()
     .scale(yscale)
@@ -18,7 +17,7 @@ var yaxis = d3.svg.axis()
     .outerTickSize(0)
     .ticks(5);
 var xaxis = d3.svg.axis()
-    .scale(namescale)
+    .scale(xscale)
     .innerTickSize(-h)
     .outerTickSize(0)
     .orient('bottom');
@@ -26,9 +25,9 @@ var colorscale;
 var data;
 
 $(document).ready(function() {
-    id = $('#geneID').attr('value');
+    id = $('#_id').attr('value');
 
-    $.post('/data?geneid=' + id, {},
+    $.post('/data', {gene_id: id},
         function(return_data, status) {
 
         data = return_data;
@@ -38,15 +37,14 @@ $(document).ready(function() {
 
         if (status == 'success') {
             console.log(0);
-            xscale.domain([0, data.names.length])
-                  .range([0, w]);
+            xscale.domain(data.names)
+                  .rangePoints([0, w]);
             console.log(1);
             yscale.domain([data.min, data.max])
                   .range([h, 0]);
             console.log(data.names);
-            namescale.domain(data.names.map(function(d) {return d[1]}))
-                .range(data.names.map(function(d) {return xscale(d[0])}));
-            xaxis.scale(namescale);
+            /*namescale.domain(data.names.map(function(d) {return d[1]}))
+                .range(data.names.map(function(d) {return xscale(d[0])}));*/
 
             if (data.names.length <= 10) {
                 colorscale = d3.scale.category10();

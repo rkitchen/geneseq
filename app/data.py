@@ -2,19 +2,19 @@ from app import mongo_pipe
 import app.settings
 import logging
 import json
-from decimal import Decimal
+import pprint
 
 logger = logging.getLogger(__name__)
 
 
-class Data(object):
+class Charts(object):
     exposed = True
     _mongo = None
     _settings = None
 
     def __init__(self, config):
         self._settings = config
-        self._mongo = mongo_pipe.Pipe(config)
+        self.pipe = mongo_pipe.Pipe(config)
 
     # def serializeJSON(self, data):
     #     """changes Decimal() types to str for json
@@ -33,29 +33,28 @@ class Data(object):
     #     return json.dumps(data)
 
     def GET(self, **kwargs):
-        data = self.getData(kwargs['geneid'])
+        data = self.getData(kwargs['gene_id'])
         return json.dumps(data)
 
     def POST(self, **kwargs):
-        data = self.getData(kwargs['geneid'])
+        logger.debug('Charts POST')
+        logger.debug(pprint.pformat(kwargs))
+        data = self.getData(kwargs['gene_id'])
         return json.dumps(data)
 
-    def getData(self, geneId):
-        gene = self._mongo.getGene(geneId)
-        logger.debug('gene: %s' % gene)
-        for k, v in gene.items():
-            logger.debug('%s is type %s' % (v, type(v)))
+    def getData(self, human_id):
+        logger.debug('getting charts for %s' % human_id)
+
+        # TODO multiple charts
+        expr = self.pipe.gene.getAllMouseExpression(human_id)[0]
+        data = list()
         columns = list()
-        values = list()
-        count = 1
-        for k, v in gene.items():
-            name = ' '.join(k.split('_')).title()
-            columns.append((count, name))
-            for number in v:
-                values.append((count, number))
-            count += 1
-        ret = {'names': columns, 'values': values}
-        ret['min'] = min([x[1] for x in values])
-        ret['max'] = max([x[1] for x in values])
+        for item in expr['expression']:
+            name = ' '.join(item['_id'].split('_')).title()
+            data.append((name, item['value']))
+            columns.append(name)
+        ret = {'values': data, 'names': columns}
+        ret['min'] = min([x[1] for x in data])
+        ret['max'] = max([x[1] for x in data])
         logger.debug('data to return: %s' % ret)
         return ret

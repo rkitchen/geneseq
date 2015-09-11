@@ -3,6 +3,9 @@ translate:
     expr: expression
     expr_next: expression_next
 
+readable:
+    gene_chr: Chromosome
+
 table_columns:
     -
         - Gene Name

@@ -4,7 +4,7 @@ import json
 import logging
 from mako import exceptions
 from mako.lookup import TemplateLookup
-from app.data import Data
+from app.data import Charts
 import decimal
 import app.mysql_pipe
 import app.mongo_pipe
@@ -12,7 +12,7 @@ import app.settings
 
 logger = logging.getLogger(__name__)
 _settings = app.settings.Settings()
-_pipe = app.mysql_pipe.Pipe(_settings)
+_pipe = app.mongo_pipe.Pipe(_settings)
 
 path = os.path.dirname(os.path.realpath(__file__))
 logger.debug('path: %s ' % path)
@@ -179,23 +179,33 @@ class Gene(Parent):
         logger.debug('GET kwargs: %s' % kwargs)
         if id is None:
             return 'No id given'
-        else:
-            if not isinstance(id, int):
-                try:
-                    id = int(id)
-                except ValueError as e:
-                    print(e)
-                    # TODO return proper error message
-                    return 'invalid id given'
-            app.mongo_pipe.Pipe(_settings).getGene(id)
-            tmpl = lookup.get_template("gene.html")
-            data = _pipe.getGene(id)
-            data['Title'] = data['geneName']
-            data['kwargs'] = data
-            try:
-                return tmpl.render(**data)
-            except:
-                return exceptions.html_error_template().render()
+        # else:
+        #     if not isinstance(id, int):
+        #         try:
+        #             id = int(id)
+        #         except ValueError as e:
+        #             print(e)
+        #             # TODO return proper error message
+        #             return 'invalid id given'
+        tmpl = lookup.get_template("gene.html")
+        kwargs['Title'] = 'test'
+        gene = _pipe.gene.getGene(id)
+        header = list()
+        for k, v in gene.items():
+            name = _settings.translate_readable(k)
+            if name == k:
+                name = ' '.join(k.split('_')).title()
+
+            item = dict()
+            item['name'] = name
+            item['var'] = k
+            item['value'] = v
+            header.append(item)
+        kwargs['header'] = header
+        try:
+            return tmpl.render(**kwargs)
+        except:
+            return exceptions.html_error_template().render()
 
 
 class Search(Parent):
@@ -224,7 +234,7 @@ class Search(Parent):
 cherrypy.config.update({'tools.staticdir.root': path})
 # cherrypy.config.update('%s/global.conf' % path)
 cherrypy.tree.mount(Gene(), '/gene', config='%s/gene.conf' % path)
-cherrypy.tree.mount(Data(_settings), '/data', config='%s/data.conf' % path)
+cherrypy.tree.mount(Charts(_settings), '/data', config='%s/data.conf' % path)
 cherrypy.tree.mount(Table(), '/table', config='%s/data.conf' % path)
 cherrypy.tree.mount(Search(), '/search', config='%s/search.conf' % path)
 cherrypy.tree.mount(Root(), '/', config='%s/root.conf' % path)

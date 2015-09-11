@@ -20,125 +20,12 @@
 <div id="gene_data">
    <div id="wrapper" class="gene_data">
       <ul class="gene_data">
-      % for key in ['geneName', 'cellType', 'expr','expr_next','geneID']:
-      <li><div>${key}</div><div>${kwargs[key]}</div></li>
+      % for item in header:
+      <li><div>${item['name']}</div><div id="${item['var']}" value="${item['value']}">${item['value']}</div></li>
       % endfor
       </ul>
    </div>
 </div>
-
-<div id="sidebar" class="sidebar fright">
-   <div id="wrapper" class="sidebar">
-
-   <table>
-##Name/Celltype
-      <tr class="sidebar-table-heading">
-      <td>Name:</td>
-      <td>Cell Type:</td>
-      </tr>
-
-     <tr class="sidebar-table-data">
-      % if not geneName is UNDEFINED:
-         <td id="geneName" value="${geneName}"
-         ${geneName}
-      % else:
-         <td>
-         Not Found
-      % endif
-      </td>
-      % if not cellType is UNDEFINED:
-         <td id="cellType" value="${cellType}">
-         ${cellType}
-      % else:
-         <td>
-         Not Found
-      % endif
-      </td>
-      </tr>
-##expression
-      <tr class="sidebar-table-heading">
-      <td>Expression:</td>
-      <td>Fold Enrichment:</td>
-      </tr>
-
-      <tr class="sidebar-table-data">
-      % if not expr is UNDEFINED:
-         <td id="expr" value="${expr}">
-         ${expr}
-      % else:
-         <td>
-         Not Found
-      % endif
-      </td>
-      % if not expr_next is UNDEFINED:
-         <td id="expr_next" value="${expr_next}">
-         ${expr_next}
-      % else:
-         <td>
-         Not Found
-      % endif
-      </td>
-      </tr>
-##Protein type
-      <tr class="sidebar-table-heading">
-      <td colspan="2">Gene Type:</td>
-      </tr>
-      <tr class="sidebar-table-data">
-      % if not geneType is UNDEFINED:
-         <td colspan="2" id="geneType" value="${geneType}">
-         ${geneType}
-      % else:
-         <td colspan="2">
-         Not Found
-      % endif
-      </td>
-      </tr>
-##ID
-      <tr class="sidebar-table-heading">
-      <td colspan="2">GeneID:</td>
-      </tr>
-      <tr class="sidebar-table-data">
-      % if not geneID is UNDEFINED:
-         <td colspan="2" id="geneID" value="${geneID}">
-         ${geneID}
-      % else:
-         <td colspan="2">
-         Not Found
-      % endif
-      </td>
-      </tr>
-##ID Human
-      <tr class="sidebar-table-heading">
-      <td colspan="2">GeneID Human:</td>
-      </tr>
-      <tr class="sidebar-table-data">
-      % if not geneID_human is UNDEFINED:
-         <td colspan="2" id="geneID_human" value="${geneID_human}">
-         ${geneID_human}
-      % else:
-         <td colspan="2">
-         Not Found
-      % endif
-      </td>
-      </tr>
-##ID Mouse
-      <tr class="sidebar-table-heading">
-      <td colspan="2">GeneID Mouse:</td>
-      </tr>
-      <tr class="sidebar-table-data">
-      % if not geneID_mouse is UNDEFINED:
-         <td colspan="2" id="geneID_mouse" value="${geneID_mouse}">
-         ${geneID_mouse}
-      % else:
-         <td colspan="2">
-         Not Found
-      % endif
-      </td>
-      </tr>
-   </table>
-   </div>
-</div>
-
    <div id="content-wrapper" class="content">
 ## main content block
    </div>
