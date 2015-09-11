@@ -191,6 +191,7 @@ class Gene(Parent):
             tmpl = lookup.get_template("gene.html")
             data = _pipe.getGene(id)
             data['Title'] = data['geneName']
+            data['kwargs'] = data
             try:
                 return tmpl.render(**data)
             except:

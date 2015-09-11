@@ -17,6 +17,16 @@
 
 
 <%block name="content">
+<div id="gene_data">
+   <div id="wrapper" class="gene_data">
+      <ul class="gene_data">
+      % for key in ['geneName', 'cellType', 'expr','expr_next','geneID']:
+      <li><div>${key}</div><div>${kwargs[key]}</div></li>
+      % endfor
+      </ul>
+   </div>
+</div>
+
 <div id="sidebar" class="sidebar fright">
    <div id="wrapper" class="sidebar">
 
