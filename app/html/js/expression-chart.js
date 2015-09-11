@@ -25,7 +25,7 @@ var xaxis = d3.svg.axis()
 var colorscale;
 var data;
 
-$(document).ready(function() {
+/*$(document).ready(function() {
     id = $('#geneID').attr('value');
 
     $.post('/data?geneid=' + id, {},
@@ -95,4 +95,4 @@ $(document).ready(function() {
                 .attr("r", 5);
         }
     });
-});
+});*/

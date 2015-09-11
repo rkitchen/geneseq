@@ -12,7 +12,7 @@ import app.settings
 
 logger = logging.getLogger(__name__)
 _settings = app.settings.Settings()
-_pipe = app.mysql_pipe.Pipe(_settings)
+_pipe = app.mongo_pipe.Pipe(_settings)
 
 path = os.path.dirname(os.path.realpath(__file__))
 logger.debug('path: %s ' % path)
@@ -179,23 +179,27 @@ class Gene(Parent):
         logger.debug('GET kwargs: %s' % kwargs)
         if id is None:
             return 'No id given'
-        else:
-            if not isinstance(id, int):
-                try:
-                    id = int(id)
-                except ValueError as e:
-                    print(e)
-                    # TODO return proper error message
-                    return 'invalid id given'
-            app.mongo_pipe.Pipe(_settings).getGene(id)
-            tmpl = lookup.get_template("gene.html")
-            data = _pipe.getGene(id)
-            data['Title'] = data['geneName']
-            data['kwargs'] = data
-            try:
-                return tmpl.render(**data)
-            except:
-                return exceptions.html_error_template().render()
+        # else:
+        #     if not isinstance(id, int):
+        #         try:
+        #             id = int(id)
+        #         except ValueError as e:
+        #             print(e)
+        #             # TODO return proper error message
+        #             return 'invalid id given'
+        tmpl = lookup.get_template("gene.html")
+        data = _pipe.getGene(id)
+        mice = _pipe.gene.getMice(id)
+        for mouse in mice:
+            print(1)
+            expr = _pipe.gene.getRawMouseExpression(mouse['mouse_id'])
+            _pipe.gene.compMouseExpression(mouse['mouse_id'], expr)
+        data['Title'] = 'test'
+        data['kwargs'] = data
+        try:
+            return tmpl.render(**data)
+        except:
+            return exceptions.html_error_template().render()
 
 
 class Search(Parent):
