@@ -20,8 +20,8 @@
 <div id="gene_data">
    <div id="wrapper" class="gene_data">
       <ul class="gene_data">
-      % for key in ['gene_name', 'source', 'gene_id']:
-      <li><div>${key}</div><div>${kwargs[key]}</div></li>
+      % for item in header:
+      <li><div>${item['name']}</div><div id="${item['var']}" value="${item['value']}">${item['value']}</div></li>
       % endfor
       </ul>
    </div>

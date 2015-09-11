@@ -81,7 +81,7 @@ class Gene(object):
     def __init__(self, pipe):
         self.pipe = pipe
 
-    def getGene(self, id, fields={}):
+    def getGene(self, human_id, fields={}):
         pipe = self.pipe
         pipe.connect()
 
@@ -91,7 +91,7 @@ class Gene(object):
                   'gene_id': 1,
                   'gene_chr': 1}
         preset.update(fields)
-        gene = pipe.db.human.find_one({'_id': id}, preset)
+        gene = pipe.db.human.find_one({'_id': human_id}, preset)
         pipe.disconnect()
 
         if gene is None:
@@ -99,7 +99,7 @@ class Gene(object):
             return gene
 
         logger.debug('found gene data %s' % gene)
-        return pipe.fixData(gene)
+        return gene
 
     def getMice(self, human_id):
         pipe = self.pipe
@@ -118,7 +118,7 @@ class Gene(object):
         logger.debug(pprint.pformat(mice))
         return mice
 
-    def getRawMouseExpression(self, mouse_id, fields=[]):
+    def getMouseExpression(self, mouse_id):
         logger.debug('getting gene expression for mouseid %s' % mouse_id)
         pipe = self.pipe
         pipe.connect()
@@ -126,10 +126,9 @@ class Gene(object):
         aggregate = [{'$match': {'_id': mouse_id}},
                      {'$unwind': '$expression'},
                      {'$unwind': '$expression.values'},
-                     {'$group': {'_id': '$expression.name',
-                                 'average': {'$avg': '$expression.values'}}},
-                     {'$sort': {'average': -1}}]
-        cursor = pipe.db.mouse.aggregate(aggregate + fields)
+                     {'$project': {'_id': '$expression.name',
+                                   'value': '$expression.values'}}]
+        cursor = pipe.db.mouse.aggregate(aggregate)
         pipe.disconnect()
         data = list()
         for item in cursor:
@@ -139,11 +138,39 @@ class Gene(object):
 
     def compMouseExpression(self, mouse_id, data=None, fix=True):
         logger.debug('computing mouse gene expression')
-        if data is None:
-            data = self.getRawMouseExpression(mouse_id)
+        pipe = self.pipe
+        pipe.connect()
+
+        aggregate = [{'$match': {'_id': mouse_id}},
+                     {'$unwind': '$expression'},
+                     {'$unwind': '$expression.values'},
+                     {'$group': {'_id': '$expression.name',
+                                 'average': {'$avg': '$expression.values'}}},
+                     {'$sort': {'average': -1}},
+                     {'$limit': 2}]
+        cursor = pipe.db.mouse.aggregate(aggregate)
+        pipe.disconnect()
+        data = list()
+        for item in cursor:
+            data.append(item)
+
+        logger.debug('processing data %s' % pprint.pformat(data))
+
         ret = {'max': data[0]['average'], 'next': data[1]['average']}
         ret['fold'] = ret['max'] / ret['next']
         logger.debug('mouse gene expression computed %s' % pprint.pformat(ret))
         return self.pipe.fixData(ret)
 
-
+    def getAllMouseExpression(self, human_id):
+        logger.debug('id %s' % human_id)
+        mice = self.getMice(human_id)
+        logger.debug('mice %s' % mice)
+        data = list()
+        for mouse in mice:
+            item = dict()
+            mouse_id = mouse['mouse_id']
+            expression = self.getMouseExpression(mouse_id)
+            item['mouse_id'] = mouse_id
+            item['expression'] = expression
+            data.append(item)
+        return data

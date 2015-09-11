@@ -4,7 +4,7 @@ import json
 import logging
 from mako import exceptions
 from mako.lookup import TemplateLookup
-from app.data import Data
+from app.data import Charts
 import decimal
 import app.mysql_pipe
 import app.mongo_pipe
@@ -188,16 +188,22 @@ class Gene(Parent):
         #             # TODO return proper error message
         #             return 'invalid id given'
         tmpl = lookup.get_template("gene.html")
-        data = _pipe.getGene(id)
-        mice = _pipe.gene.getMice(id)
-        for mouse in mice:
-            print(1)
-            expr = _pipe.gene.getRawMouseExpression(mouse['mouse_id'])
-            _pipe.gene.compMouseExpression(mouse['mouse_id'], expr)
-        data['Title'] = 'test'
-        data['kwargs'] = data
+        kwargs['Title'] = 'test'
+        gene = _pipe.gene.getGene(id)
+        header = list()
+        for k, v in gene.items():
+            name = _settings.translate_readable(k)
+            if name == k:
+                name = ' '.join(k.split('_')).title()
+
+            item = dict()
+            item['name'] = name
+            item['var'] = k
+            item['value'] = v
+            header.append(item)
+        kwargs['header'] = header
         try:
-            return tmpl.render(**data)
+            return tmpl.render(**kwargs)
         except:
             return exceptions.html_error_template().render()
 
@@ -228,7 +234,7 @@ class Search(Parent):
 cherrypy.config.update({'tools.staticdir.root': path})
 # cherrypy.config.update('%s/global.conf' % path)
 cherrypy.tree.mount(Gene(), '/gene', config='%s/gene.conf' % path)
-cherrypy.tree.mount(Data(_settings), '/data', config='%s/data.conf' % path)
+cherrypy.tree.mount(Charts(_settings), '/data', config='%s/data.conf' % path)
 cherrypy.tree.mount(Table(), '/table', config='%s/data.conf' % path)
 cherrypy.tree.mount(Search(), '/search', config='%s/search.conf' % path)
 cherrypy.tree.mount(Root(), '/', config='%s/root.conf' % path)

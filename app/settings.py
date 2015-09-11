@@ -43,13 +43,31 @@ class Settings(object):
             key (str): key to search in config
         Returns:
             str: translated key
-            None: returns nothing if no match found
+            None: returns key if no match found
         """
         logger.info('translating, key: %s' % key)
         if key in self.settings['translate']:
             colName = self.settings['translate'][key]
             logger.debug('key found, translated to: %s' % colName)
             return colName
+        else:
+            logger.debug('key not found')
+            return key
+
+    def translate_readable(self, key):
+        """translates variables names to their human readable form
+
+        Args:
+            key (str): key to search in config
+        Returns:
+            str: translated key
+            None: returns key if no match found
+        """
+        logger.info('translating key %s' % key)
+        if key in self.settings['readable']:
+            name = self.settings['readable'][key]
+            logger.debug('key found, translated to %s' % name)
+            return name
         else:
             logger.debug('key not found')
             return key
