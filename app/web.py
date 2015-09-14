@@ -100,7 +100,7 @@ class Table(Parent):
                     item[key] = str(value)
         return data
 
-    def GET(self, order='expr', **kwargs):
+    def GET(self, order='expression', **kwargs):
         """responds to data GET requests
         Args:
             None yet
@@ -109,16 +109,16 @@ class Table(Parent):
         """
         logger.info('/data GET request')
         logger.debug('GET kwargs: %s' % kwargs)
-        # _pipe.table.getTable()
-        data = {'Title': 'Data',
-                'data': self.getTable(),
-                'sliders': self.fixSliderInit(kwargs),
-                'columnNames': _settings.getColumnNames(),
-                'order': order}
+        data = _pipe.table.getTable()
+        kwargs = {'Title': 'Mouse Expression Table',
+                  'data': data,
+                  'sliders': self.fixSliderInit(kwargs),
+                  'columnNames': _settings.getColumnNames(),
+                  'order': order}
         tmpl = lookup.get_template("table.html")
-        logger.debug('kwargs sent to mako for data table: %s' % data)
+        logger.debug('kwargs sent to mako for data table: %s' % kwargs)
         try:
-            return tmpl.render(**data)
+            return tmpl.render(**kwargs)
         except:
             return exceptions.html_error_template().render()
 

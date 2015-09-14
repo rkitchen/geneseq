@@ -20,7 +20,7 @@ class Pipe(app.pipe.Pipe):
         self.gene = Gene(self)
         self.table = Table(self)
 
-    def fixData(self, data, round=_ROUND_DECIMAL):
+    def fixData(self, data, roundn=_ROUND_DECIMAL):
         """parses data to sync variable names and datatypes.
         Converts expression to from float to Decimal()
         Args:
@@ -28,15 +28,20 @@ class Pipe(app.pipe.Pipe):
         Returns:
             dict: adjusted data
         """
-        for k, v in data.items():
-            if type(v) is list:
-                for i, item in enumerate(v):
-                    if type(item) is float:
-                        logger.debug('converting float to decimal %s' % item)
-                        v[i] = round(item, round)
-                data[k] = v
-            elif k == 'source':
-                data[k] = v.title()
+        if type(data) is float:
+            logger.debug('rounding float %s' % data)
+            return round(data, roundn)
+        elif type(data) is str:
+            if data == 'source':
+                return data.title()
+        elif type(data) is dict:
+            for k, v in data.items():
+                    data[k] = self.fixData(v)
+            return data
+        elif type(data) is list:
+            for i, v in enumerate(data):
+                data[i] = self.fixData(v)
+            return data
         return data
 
     def getGene(self, ids):
@@ -186,17 +191,22 @@ class Table(object):
         pipe = self.pipe
         pipe.connect()
         logger.debug('starting aggregation')
-        pipe.db.mouse.aggregate([{'$unwind': '$expression'},
-                                 {'$unwind': '$expression.values'},
-                                 {'$group': {'_id': {'id': '$_id',
-                                             'cell': '$expression.name'},
-                                             'avg':
-                                             {'$avg': '$expression.values'}}},
-                                 {'$sort': {'avg': -1}},
-                                 {'$group': {'_id': '$_id.id',
-                                             'cell': {'$first': '$_id.cell'},
-                                             'value': {'$first': '$avg'}}},
-                                 {'$sort': {'_id': 1}}],
-                                allowDiskUse=True)
+        cursor = pipe.db.mouse.aggregate([{'$unwind': '$expression'},
+            {'$unwind': '$expression.values'},
+            {'$group': {'_id': {'id': '$_id',
+                                'cell': '$expression.name'},
+                        'avg':
+                        {'$avg': '$expression.values'}}},
+            {'$sort': {'avg': -1}},
+            {'$group': {'_id': '$_id.id',
+                        'cell': {'$first': '$_id.cell'},
+                        'value': {'$first': '$avg'}}},
+            {'$sort': {'_id': 1}}, {'$limit': 10}],
+            allowDiskUse=True)
         logger.debug('finish aggregation')
+        data = list()
+        for item in cursor:
+            data.append(item)
         pipe.disconnect()
+        logger.debug(pprint.pformat(data))
+        return pipe.fixData(data)
