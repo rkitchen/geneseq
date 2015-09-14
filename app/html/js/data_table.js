@@ -69,7 +69,7 @@ var tableUpdate = function() {
     function(data, status) {
         console.log('data: ' + data);
         console.log('status: ' + status);
-        data = jQuery.parseJSON(data);
+        json = jQuery.parseJSON(data);
         returned_data = data;
 
         if (status == 'success') {

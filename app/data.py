@@ -46,15 +46,18 @@ class Charts(object):
         logger.debug('getting charts for %s' % human_id)
 
         # TODO multiple charts
-        expr = self.pipe.gene.getAllMouseExpression(human_id)[0]
-        data = list()
-        columns = list()
-        for item in expr['expression']:
-            name = ' '.join(item['_id'].split('_')).title()
-            data.append((name, item['value']))
-            columns.append(name)
-        ret = {'values': data, 'names': columns}
-        ret['min'] = min([x[1] for x in data])
-        ret['max'] = max([x[1] for x in data])
+        expr = self.pipe.gene.getAllMouseExpression(human_id)
+        ret = list()
+        for item in expr:
+            values = list()
+            columns = list()
+            for cellType in item['expression']:
+                name = ' '.join(cellType['_id'].split('_')).title()
+                values.append((name, cellType['value']))
+                columns.append(name)
+            data = {'values': values, 'names': columns}
+            data['min'] = min([x[1] for x in values])
+            data['max'] = max([x[1] for x in values])
+            ret.append(data)
         logger.debug('data to return: %s' % ret)
         return ret

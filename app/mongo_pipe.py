@@ -176,6 +176,8 @@ class Gene(object):
             item = dict()
             mouse_id = mouse['mouse_id']
             expression = self.getMouseExpression(mouse_id)
+            if expression == []:
+                continue
             item['mouse_id'] = mouse_id
             item['expression'] = expression
             data.append(item)
