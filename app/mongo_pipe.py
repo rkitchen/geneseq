@@ -18,6 +18,7 @@ class Pipe(app.pipe.Pipe):
         super().__init__(config)
         self.settings = config
         self.gene = Gene(self)
+        self.table = Table(self)
 
     def fixData(self, data, round=_ROUND_DECIMAL):
         """parses data to sync variable names and datatypes.
@@ -174,3 +175,28 @@ class Gene(object):
             item['expression'] = expression
             data.append(item)
         return data
+
+
+class Table(object):
+
+    def __init__(self, pipe):
+        self.pipe = pipe
+
+    def getTable(self, sort=None, limit=None):
+        pipe = self.pipe
+        pipe.connect()
+        logger.debug('starting aggregation')
+        pipe.db.mouse.aggregate([{'$unwind': '$expression'},
+                                 {'$unwind': '$expression.values'},
+                                 {'$group': {'_id': {'id': '$_id',
+                                             'cell': '$expression.name'},
+                                             'avg':
+                                             {'$avg': '$expression.values'}}},
+                                 {'$sort': {'avg': -1}},
+                                 {'$group': {'_id': '$_id.id',
+                                             'cell': {'$first': '$_id.cell'},
+                                             'value': {'$first': '$avg'}}},
+                                 {'$sort': {'_id': 1}}],
+                                allowDiskUse=True)
+        logger.debug('finish aggregation')
+        pipe.disconnect()

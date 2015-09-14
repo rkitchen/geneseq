@@ -109,6 +109,7 @@ class Table(Parent):
         """
         logger.info('/data GET request')
         logger.debug('GET kwargs: %s' % kwargs)
+        # _pipe.table.getTable()
         data = {'Title': 'Data',
                 'data': self.getTable(),
                 'sliders': self.fixSliderInit(kwargs),
