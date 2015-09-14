@@ -50,11 +50,10 @@
     % if not data is UNDEFINED:
         % for item in data:
             <tr>
-                <td><a href="/gene?id=${item['id']}">${item["geneName"]}</a></td>
-                <td>${item["cellType"]}</td>
-                <td>${item["geneType"]}</td>
-                <td>${item["expr"]}</td>
-                <td>${item["expr_next"]}</td>
+                <td><a href="/gene?id=${item['human_id']}">${item[columnNames[0][1]]}</a></td>
+        % for i in range(1, len(columnNames)):
+                <td>${item[columnNames[i][1]]}</td>
+        % endfor
             </tr>
         % endfor
     % endif

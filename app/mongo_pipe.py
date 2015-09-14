@@ -32,8 +32,8 @@ class Pipe(app.pipe.Pipe):
             logger.debug('rounding float %s' % data)
             return round(data, roundn)
         elif type(data) is str:
-            if data == 'source':
-                return data.title()
+            if data in ['source', 'cell']:
+                return ' '.join(data.split('_')).title()
         elif type(data) is dict:
             for k, v in data.items():
                     data[k] = self.fixData(v)
@@ -187,22 +187,51 @@ class Table(object):
     def __init__(self, pipe):
         self.pipe = pipe
 
-    def getTable(self, sort=None, limit=None):
+    def getTable(self, sort=('expression', -1), limit=10,
+                 expression=None, enrichment=None, **kwargs):
+        logger.debug('expression %s' % expression)
+        logger.debug('enrichment %s' % enrichment)
+        logger.debug('kwargs %s' % kwargs)
         pipe = self.pipe
         pipe.connect()
         logger.debug('starting aggregation')
-        cursor = pipe.db.mouse.aggregate([{'$unwind': '$expression'},
-            {'$unwind': '$expression.values'},
-            {'$group': {'_id': {'id': '$_id',
-                                'cell': '$expression.name'},
-                        'avg':
-                        {'$avg': '$expression.values'}}},
-            {'$sort': {'avg': -1}},
-            {'$group': {'_id': '$_id.id',
-                        'cell': {'$first': '$_id.cell'},
-                        'value': {'$first': '$avg'}}},
-            {'$sort': {'_id': 1}}, {'$limit': 10}],
-            allowDiskUse=True)
+        # cursor = pipe.db.mouse.aggregate([{'$unwind': '$expression'},
+        #     {'$unwind': '$expression.values'},
+        #     {'$group': {'_id': {'id': '$_id',
+        #                         'cell': '$expression.name'},
+        #                 'avg':
+        #                 {'$avg': '$expression.values'}}},
+        #     {'$sort': {'avg': -1}},
+        #     {'$group': {'_id': '$_id.id',
+        #                 'cell': {'$first': '$_id.cell'},
+        #                 'value': {'$first': '$avg'}}},
+        #     {'$sort': {'_id': 1}}, {'$limit': 100}],
+        #     allowDiskUse=True)
+        aggregate = dict()
+        pipeline = list()
+        match = {'processed': {'$exists': True}}
+        if expression is not None or enrichment is not None:
+            if type(expression) is list:
+                match['processed.expression'] = {'$gt': expression[0], '$lt': expression[1]}
+            if type(enrichment) is list:
+                match['processed.enrichment'] = {'$gt': enrichment[0], '$lt': enrichment[1]}
+        pipeline.append({'$match': match})
+        pipeline.append(
+            {'$project': {
+                '_id': 1, 'cell': '$processed.type',
+                'expression': '$processed.expression',
+                'enrichment': '$processed.enrichment',
+                'human_id': '$processed.human_id'}})
+
+        if type(sort) is list or type(sort) is tuple:
+            pipeline.append({'$sort': {sort[0]: sort[1]}})
+        if limit is not None:
+            pipeline.append({'$limit': limit})
+
+        aggregate['pipeline'] = pipeline
+        aggregate['allowDiskUse'] = True
+        logger.debug('mongo aggregation:\n%s' % pprint.pformat(aggregate))
+        cursor = pipe.db.mouse.aggregate(**aggregate)
         logger.debug('finish aggregation')
         data = list()
         for item in cursor:

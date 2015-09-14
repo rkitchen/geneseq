@@ -19,17 +19,15 @@
 
 var sliders = [];
 var returned_data;
-var data = {
-    'order': 'expr',
-    'direction': true
+var global = {
+    'sort': ['expression', -1]
 };
 
-var getSortIcon = function(item, order, direction) {
+var getSortIcon = function(item) {
     console.log('item: ' + item);
-    console.log('order: ' + order);
-    console.log('direction: ' + direction);
-    if (item == order) {
-        if (direction) return 'arrow_drop_down';
+    console.log('sort: ' + global.sort);
+    if (item == global.sort[0]) {
+        if (global.sort[1] == -1) return 'arrow_drop_down';
         else return 'arrow_drop_up';
     } else return 'more_horiz';
 };
@@ -48,24 +46,26 @@ var tableUpdate = function() {
 
     var post_data = {};
 
-    if (data.order) {
-        post_data.order = data.order;
-        post_data.direction = data.direction;
+    if (global.sort) {
+        post_data.sort = global.sort;
     }
 
     post_data['sliders'] = true;
     var history_update = [];
     $.each(sliders, function(index, slider) {
-        value = slider.getValue();
-        if (typeof value != 'number') value = '[' + value + ']';
+        value = slider.getValue()
         post_data[slider.name] = value;
+
+        if (typeof value != 'number') value = '[' + value + ']';
         history_update.push(slider.name + '=' + value);
     });
     console.log(history_update.join('&'));
     history.replaceState(null, null, '/table?' + history_update.join('&'));
+    
+    post_data = JSON.stringify(post_data);
     console.log(post_data);
 
-    $.post('/table', post_data,
+    $.post('/table', {'json': post_data}, 
     function(data, status) {
         console.log('data: ' + data);
         console.log('status: ' + status);
@@ -76,15 +76,15 @@ var tableUpdate = function() {
             var table = $('table#data tbody');
             $.each(data, function(index, item) {
                 var row = [];
+                var columns = global.columns;
+                console.log('columns: ' + columns);
                 row.push('<a href="/gene?id=' +
-                    item.id + '">' +
-                    item.geneName +
+                    item['human_id'] + '">' +
+                    item['_id'] +
                     '</a>');
-                row.push(item.cellType);
-                row.push(item.geneType);
-                row.push(item.expr);
-                row.push(item.expr_next);
-                row.push(item.expr_diff);
+                for (var i = 1; i < columns.length; i++) {
+                    row.push(item[columns[i]]);
+                }
 
                 table.append(['<tr><td>',
                     row.join('</td><td>'),
@@ -93,8 +93,7 @@ var tableUpdate = function() {
 
             $('table#data thead th').each(function(index, item) {
                 $(item).children('i').
-                    text(getSortIcon(item.getAttribute('value'),
-                    post_data.order, post_data.direction));
+                    text(getSortIcon(item.getAttribute('value')));
             });
 
             tableLinks();
@@ -114,10 +113,12 @@ $(document).ready(function() {
         $(item).click({value: key}, function(event) {
             console.log(event);
             console.log('table header clicked: ' + event.data.value);
-            if (data.order == event.data.value) {
-                data.direction = !data.direction;
-            } else data.direction = true;
-            data.order = event.data.value;
+            if (global.sort[0] == event.data.value) {
+                global.sort[1] = -global.sort[1];
+            } else {
+                global.sort = [event.data.value, -1];
+            }
+
             tableUpdate();
         });
     });
@@ -136,4 +137,10 @@ $(document).ready(function() {
         });
         sliders.push(slider);
     });
+
+    var columns = [];
+    $('table#data thead th').each(function(index, item) {
+        columns.push(item.getAttribute('value'));
+    });
+    global['columns'] = columns;
 });

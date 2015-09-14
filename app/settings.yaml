@@ -8,20 +8,20 @@ readable:
 
 table_columns:
     -
-        - Gene Name
-        - geneName
+        - Gene Mouse ID
+        - _id
+    -
+        - Gene Human ID
+        - human_id
     -
         - Cell Type
-        - cellType
-    -
-        - Gene Types
-        - geneType
+        - cell
     -
         - Expression
-        - expr
-    -
+        - expression
+    -  
         - Enrichment
-        - expr_next
+        - enrichment
 
 SELECT:
     gene:
@@ -50,7 +50,7 @@ SELECT:
 table_sliders:
     -
         name: Expression
-        column: expr
+        column: expression
         scale: logarithmic
         min: 0
         max: 70000
@@ -60,7 +60,7 @@ table_sliders:
             - 70000
     -
         name: Fold Enrichment
-        column: expr_next
+        column: enrichment
         scale: logarithmic
         min: 0
         max: 5000

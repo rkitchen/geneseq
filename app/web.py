@@ -9,6 +9,7 @@ import decimal
 import app.mysql_pipe
 import app.mongo_pipe
 import app.settings
+import pprint
 
 logger = logging.getLogger(__name__)
 _settings = app.settings.Settings()
@@ -116,13 +117,14 @@ class Table(Parent):
                   'columnNames': _settings.getColumnNames(),
                   'order': order}
         tmpl = lookup.get_template("table.html")
-        logger.debug('kwargs sent to mako for data table: %s' % kwargs)
+        logger.debug('kwargs sent to mako for data table: %s' %
+            pprint.pformat(kwargs))
         try:
             return tmpl.render(**kwargs)
         except:
             return exceptions.html_error_template().render()
 
-    def POST(self, method='data_table', **kwargs):
+    def POST(self, **kwargs):
         """responds to POST requests, currently has two
         methods. data_table returns
         Args:
@@ -138,27 +140,20 @@ class Table(Parent):
         """
         logger.info('/data POST request')
         logger.debug('POST kwargs: %s' % str(kwargs))
-        if 'sliders' in kwargs and kwargs['sliders'] == 'true':
-            logger.info('found sliers in POST')
-            ranges = dict()
-            for slider in self.fixSliderInit(dict()):
-                if slider['column'] in kwargs:
-                    key = slider['column']
-                    slider_data = json.loads(kwargs.pop(key))
-                    if type(slider_data) is not list:
-                        continue
-                    translated = _settings.translate(key)
-                    ranges[translated] = {'min': slider_data[0],
-                                          'max': slider_data[1]}
+        _json = json.loads(kwargs['json'])
+        logger.debug('json from request\n%s' % _json)
 
-            kwargs['ranges'] = ranges
-        if 'direction' in kwargs:
-            logger.info('found direction in POST')
-            if kwargs['direction'] == 'true':
-                kwargs['direction'] = True
-            elif kwargs['direction'] == 'false':
-                kwargs['direction'] = False
-        new_data = _pipe.getDataTable(**kwargs)
+        if 'sliders' in _json and _json['sliders'] == 'true':
+            logger.info('found sliders in POST')
+            # for slider in _settings.getTableSliders():
+            #     if slider['column'] in _json:
+            #         key = slider['column']
+            #         slider_data = json.loads(_json.pop(key))
+            #         if type(slider_data) is list:
+            #             _json[key] = slider_data
+
+        new_data = _pipe.table.getTable(**_json)
+
         return json.dumps(self.serializeJSON(new_data))
 
 
