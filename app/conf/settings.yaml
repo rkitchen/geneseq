@@ -93,6 +93,7 @@ order:
     mouse:
         - _id
         - human_id
+        - human_name
         - type
         - expression
         - enrichment
