@@ -196,7 +196,8 @@ class Mouse(Parent):
 class Table(Parent):
 
     def getTable(self, sort=('expression', -1), limit=10,
-                 expression=None, enrichment=None, **kwargs):
+                 expression=None, enrichment=None, celltype=None,
+                 **kwargs):
         logger.debug('expression %s' % expression)
         logger.debug('enrichment %s' % enrichment)
         logger.debug('kwargs %s' % kwargs)
@@ -217,13 +218,22 @@ class Table(Parent):
         #     allowDiskUse=True)
         aggregate = dict()
         pipeline = list()
+
         match = {'processed': {'$exists': True}}
+
+        if celltype is not None:
+            if type(celltype) is str:
+                match['processed.type'] = celltype
+            elif type(celltype) is list:
+                match['processed.type'] = {'$nin': celltype}
+
         if expression is not None or enrichment is not None:
             if type(expression) is list:
                 match['processed.expression'] = {'$gt': expression[0], '$lt': expression[1]}
             if type(enrichment) is list:
                 match['processed.enrichment'] = {'$gt': enrichment[0], '$lt': enrichment[1]}
         pipeline.append({'$match': match})
+
         pipeline.append(
             {'$project': {
                 '_id': 1, 'cell': '$processed.type',
