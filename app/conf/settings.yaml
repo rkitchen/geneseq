@@ -81,7 +81,7 @@ table_input:
         init: 100
     -
         name: Cell Type
-        column: type
+        column: celltype
         type: selection
         options:
             - astrocyte

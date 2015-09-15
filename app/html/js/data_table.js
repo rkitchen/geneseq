@@ -64,6 +64,10 @@ var tableUpdate = function() {
         if (typeof value != 'number') value = '[' + value + ']';
         history_update.push(slider.name + '=' + value);
     });
+
+    if (global.celltype != []) {
+        history_update.push('celltype=[' + global.celltype + ']');
+    }
     console.log(history_update.join('&'));
     history.replaceState(null, null, './table?' + history_update.join('&'));
     

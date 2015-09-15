@@ -171,13 +171,26 @@ class Table(Parent):
         filters = app.settings.getTableFilters()
         for item in filters:
             logger.debug(item)
+
             if item['type'] == 'selection':
+                preset = list()
+                if item['column'] in kwargs:
+                    preset += kwargs[item['column']]
+
                 for i, option in enumerate(item['options']):
                     name = ' '.join(option.split('_')).title()
-                    item['options'][i] = (option, name, True)
+
+                    checked = True
+                    if option in preset:
+                        checked = False
+
+                    item['options'][i] = (option, name, checked)
+
                 logger.debug('selection options %s' % item['options'])
-            if item['column'] in kwargs:
-                item['init'] = str(kwargs[item['column']])
+
+            if item['type'] == 'sliders':
+                if item['column'] in kwargs:
+                    item['init'] = str(kwargs[item['column']])
         logger.debug(filters)
         logger.debug(pprint.pformat(app.settings.getTableSliders()))
         return filters
