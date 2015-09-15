@@ -76,3 +76,11 @@ table_sliders:
         max: 200
         step: 10
         init: 100
+
+order:
+    mouse:
+        - _id
+        - human_id
+        - type
+        - expression
+        - enrichment

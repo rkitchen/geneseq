@@ -129,3 +129,6 @@ class Settings(object):
                     init:(int,list) initial value/range of slider
         """
         return copy.deepcopy(self.settings['table_sliders'])
+
+    def getOrder(self, name):
+        return copy.deepcopy(self.settings['order'][name])
