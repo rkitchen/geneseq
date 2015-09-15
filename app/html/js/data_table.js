@@ -20,7 +20,8 @@
 var sliders = [];
 var returned_data;
 var global = {
-    'sort': ['expression', -1]
+    'sort': ['expression', -1],
+    'celltype': []
 };
 
 var getSortIcon = function(item) {
@@ -48,6 +49,10 @@ var tableUpdate = function() {
 
     if (global.sort) {
         post_data.sort = global.sort;
+    }
+
+    if (global.celltype != []) {
+        post_data.celltype = global.celltype;
     }
 
     post_data['sliders'] = true;
@@ -136,6 +141,22 @@ $(document).ready(function() {
             }
         });
         sliders.push(slider);
+    });
+
+    $('input.table-filter.selection').change(function() {
+        console.log($(this).is(':checked'));
+        console.log($(this).attr('value'));
+        value = $(this).attr('value');
+        if ($(this).is(':checked')) {
+            index = global.celltype.indexOf(value);
+            if (index > -1) {
+                global.celltype.splice(index, 1);
+            }
+        } else {
+            global.celltype.push($(this).attr('value'));
+        }
+        console.log(global.celltype);
+        tableUpdate();
     });
 
     var columns = [];

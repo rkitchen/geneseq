@@ -85,8 +85,9 @@ table_input:
         type: selection
         options:
             - astrocyte
-            - asidi_ieieei
-            - ddii_deii_DIIEI
+            - striatalNeuron
+            - oligodendrocyte
+            - microglia
 
 order:
     mouse:

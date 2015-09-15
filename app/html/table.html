@@ -18,12 +18,13 @@
     <ul>
     % for filter in filters:
     % if filter['type'] == 'slider':
-    <li class="table-filter range"><span id="name">${filter['name']}</span><span id="value"></span><input class="table-filter range" name="${filter['column']}" type="range" data-slider-scale="${filter['scale']}" data-slider-min="${filter['min']}" data-slider-max="${filter['max']}" data-slider-step="${filter['step']}" data-slider-value="${filter['init']}"/></li>
+    <li class="table-filter range"><span id="name">${filter['name']}</span><span id="value"></span>
+    <input class="table-filter range" name="${filter['column']}" type="range" data-slider-scale="${filter['scale']}" data-slider-min="${filter['min']}" data-slider-max="${filter['max']}" data-slider-step="${filter['step']}" data-slider-value="${filter['init']}"/></li>
     % else:
     <li class="table-filter selection"><span id="name">${filter['name']}</span>
     % for option in filter['options']:
     <label class="pure-checkbox">
-    <input id="${option[0]}" type="checkbox" value="${option[0]}"
+    <input class="table-filter selection" id="${option[0]}" type="checkbox" value="${option[0]}"
     % if option[2]:
         checked
     % endif
