@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-import app.pipe
 import logging
 import pprint
 
@@ -8,15 +7,13 @@ pp = pprint.PrettyPrinter(indent=4)
 _ROUND_DECIMAL = 2
 
 
-class Pipe(app.pipe.Pipe):
+class Pipe(object):
     """class handling connection and queries to mongo database"""
     cursor = None
 
-    def __init__(self, config):
+    def __init__(self):
         """initializes variables"""
         logger.debug('initializing mongo pipe')
-        super().__init__(config)
-        self.settings = config
         self.mouse = Mouse(self)
         self.table = Table(self)
 
@@ -167,30 +164,16 @@ class Mouse(Parent):
         logger.debug(pprint.pformat(data))
         return data
 
-    def compMouseExpression(self, mouse_id, data=None, fix=True):
-        logger.debug('computing mouse gene expression')
+    def getCellTypes(self):
         pipe = self.pipe
         pipe.connect()
-
-        aggregate = [{'$match': {'_id': mouse_id}},
-                     {'$unwind': '$expression'},
-                     {'$unwind': '$expression.values'},
-                     {'$group': {'_id': '$expression.name',
-                                 'average': {'$avg': '$expression.values'}}},
-                     {'$sort': {'average': -1}},
-                     {'$limit': 2}]
-        cursor = pipe.db.mouse.aggregate(aggregate)
-        pipe.disconnect()
-        data = list()
-        for item in cursor:
-            data.append(item)
-
-        logger.debug('processing data %s' % pprint.pformat(data))
-
-        ret = {'max': data[0]['average'], 'next': data[1]['average']}
-        ret['fold'] = ret['max'] / ret['next']
-        logger.debug('mouse gene expression computed %s' % pprint.pformat(ret))
-        return self.pipe.fixData(ret)
+        pipeline = [{'$match': {'processed': {'$exists': True}}},
+                    {'$group': {'_id': '$processed.type'}}]
+        cursor = pipe.db.mouse.aggregate(pipeline)
+        celltypes = list()
+        for cell in cursor:
+            celltypes.append(cell['_id'])
+        return celltypes
 
 
 class Table(Parent):

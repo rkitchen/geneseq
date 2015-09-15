@@ -12,9 +12,8 @@ class Charts(object):
     _mongo = None
     _settings = None
 
-    def __init__(self, config):
-        self._settings = config
-        self.pipe = mongo_pipe.Pipe(config)
+    def __init__(self):
+        self.pipe = mongo_pipe.Pipe()
 
     # def serializeJSON(self, data):
     #     """changes Decimal() types to str for json

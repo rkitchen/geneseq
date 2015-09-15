@@ -36,6 +36,13 @@ def setCurrentCount(count):
             slider['max'] = count
 
 
+def setCellTypes(celltypes):
+    for filter in config['table_input']:
+        if filter['type'] == 'selection':
+            filter['options'] = celltypes
+            break
+
+
 def loadConfig():
     """Loads config from yaml file"""
     logger.debug('loading config from file')
@@ -43,6 +50,7 @@ def loadConfig():
     raw = f.read()
     f.close()
     return yaml.load(raw)
+
 
 def translate(key):
     """translates python var names to mysql column names
@@ -62,6 +70,7 @@ def translate(key):
         logger.debug('key not found')
         return key
 
+
 def translate_readable(key):
     """translates variables names to their human readable form
 
@@ -80,6 +89,7 @@ def translate_readable(key):
         logger.debug('key not found')
         return key
 
+
 def getColumnNames():
     """Gets the visible and variable names of the columns
     displayed in the html data table
@@ -92,6 +102,7 @@ def getColumnNames():
     """
     return copy.deepcopy(config['table_columns'])
 
+
 def getDefaultLimit():
     """finds default limit set in limit-slider config
 
@@ -101,6 +112,7 @@ def getDefaultLimit():
     for item in config['table_sliders']:
             if item['column'] == 'limit':
                 return copy.deepcopy(item['init'])
+
 
 # returns set of SELECT column names in
 # mysql syntax form
@@ -124,6 +136,7 @@ def parseIDs(ids):
     else:
         return copy.deepcopy(ids)
 
+
 def getTableSliders():
     """gets list of sliders from configuration
     Returns:
@@ -143,8 +156,10 @@ def getTableSliders():
             sliders.append(item)
     return copy.deepcopy(sliders)
 
+
 def getTableFilters():
     return copy.deepcopy(config['table_input'])
+
 
 def getOrder(name):
     return copy.deepcopy(config['order'][name])

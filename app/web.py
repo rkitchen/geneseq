@@ -1,11 +1,9 @@
 import cherrypy
 import os
-import json
 import logging
 from mako import exceptions
 from mako.lookup import TemplateLookup
 from app.data import Charts
-import decimal
 import app.mouse
 import app.mysql_pipe
 import app.mongo_pipe
@@ -13,12 +11,15 @@ import app.settings
 import pprint
 
 logger = logging.getLogger(__name__)
-_settings = app.settings.Settings()
-_pipe = app.mongo_pipe.Pipe(_settings)
+app.settings.init()
+_pipe = app.mongo_pipe.Pipe()
 
 path = os.path.dirname(os.path.realpath(__file__))
 logger.debug('path: %s ' % path)
 lookup = TemplateLookup(directories=['%s/html' % path])
+
+celltypes = _pipe.mouse.getCellTypes()
+app.settings.setCellTypes(celltypes)
 
 
 class Parent(object):
@@ -72,8 +73,8 @@ class Search(Parent):
 # mounts all webapps to cherrypy tree
 cherrypy.config.update({'tools.staticdir.root': path})
 # cherrypy.config.update('%s/conf/global.conf' % path)
-cherrypy.tree.mount(app.mouse.Mouse(_settings, _pipe, lookup), '/mouse', config='%s/conf/gene.conf' % path)
-cherrypy.tree.mount(Charts(_settings), '/data', config='%s/conf/data.conf' % path)
+cherrypy.tree.mount(app.mouse.Mouse(lookup), '/mouse', config='%s/conf/gene.conf' % path)
+cherrypy.tree.mount(Charts(), '/data', config='%s/conf/data.conf' % path)
 cherrypy.tree.mount(Search(), '/search', config='%s/conf/search.conf' % path)
 cherrypy.tree.mount(Root(), '/', config='%s/conf/root.conf' % path)
 # attaches config files to each webapp

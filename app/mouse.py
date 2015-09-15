@@ -3,6 +3,8 @@ import logging
 
 from mako import exceptions
 # from mako.lookup import TemplateLookup
+import app.settings
+from app import mongo_pipe as pipe
 import pprint
 
 logger = logging.getLogger(__name__)
@@ -10,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Mouse(object):
 
-    def __init__(self, settings, pipe, mako):
-        self.settings = settings
-        self.pipe = pipe
+    def __init__(self, mako):
         self.lookup = mako
 
         self.table = Table(self)
@@ -23,9 +23,8 @@ class Mouse(object):
 class Parent(object):
 
     def __init__(self, mouse):
-        self.settings = mouse.settings
-        self.pipe = mouse.pipe
         self.lookup = mouse.lookup
+        self.pipe = pipe.Pipe()
 
     def fixInput(self, kwargs):
         for k, v in kwargs.items():
@@ -58,9 +57,9 @@ class Gene(Parent):
         logger.info('/gene GET request id: %s' % str(id))
         logger.debug('GET kwargs: %s' % kwargs)
 
+        settings = app.settings
         pipe = self.pipe
         lookup = self.lookup
-        settings = self.settings
 
         if id is None:
             return 'No id given'
@@ -91,7 +90,7 @@ class Gene(Parent):
             return exceptions.html_error_template().render()
 
     def sort(self, header):
-        order = self.settings.getOrder('mouse')
+        order = app.settings.getOrder('mouse')
 
         ret = sorted(header, key=lambda i: order.index(i[1]))
         logger.debug('sorted mouse header values %s' % ret)
@@ -113,12 +112,13 @@ class Table(Parent):
         logger.info('/data GET request')
         kwargs = self.fixInput(kwargs)
         logger.debug('GET kwargs: %s' % kwargs)
+        # logger.debug('global test %s' % app.settings.Settings.test)
         data = self.pipe.table.getTable(**kwargs)
 
         kwargs = {'Title': 'Mouse Expression Table',
                   'data': data,
                   'filters': self.fixFilters(kwargs),
-                  'columnNames': self.settings.getColumnNames(),
+                  'columnNames': app.settings.getColumnNames(),
                   'order': order}
 
         tmpl = self.lookup.get_template("table.html")
@@ -168,7 +168,7 @@ class Table(Parent):
         Returns:
             dict: sliders
         """
-        filters = self.settings.getTableFilters()
+        filters = app.settings.getTableFilters()
         for item in filters:
             logger.debug(item)
             if item['type'] == 'selection':
@@ -179,7 +179,7 @@ class Table(Parent):
             if item['column'] in kwargs:
                 item['init'] = str(kwargs[item['column']])
         logger.debug(filters)
-        logger.debug(pprint.pformat(self.settings.getTableSliders()))
+        logger.debug(pprint.pformat(app.settings.getTableSliders()))
         return filters
 
     def getTable(self, **kwargs):
