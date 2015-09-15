@@ -60,12 +60,12 @@ var tableUpdate = function() {
         history_update.push(slider.name + '=' + value);
     });
     console.log(history_update.join('&'));
-    history.replaceState(null, null, '/table?' + history_update.join('&'));
+    history.replaceState(null, null, './table?' + history_update.join('&'));
     
     post_data = JSON.stringify(post_data);
     console.log(post_data);
 
-    $.post('/table', {'json': post_data}, 
+    $.post('./table', {'json': post_data}, 
     function(data, status) {
         console.log('data: ' + data);
         console.log('status: ' + status);
@@ -78,8 +78,8 @@ var tableUpdate = function() {
                 var row = [];
                 var columns = global.columns;
                 console.log('columns: ' + columns);
-                row.push('<a href="/gene?id=' +
-                    item['human_id'] + '">' +
+                row.push('<a href="./gene?id=' +
+                    item['_id'] + '">' +
                     item['_id'] +
                     '</a>');
                 for (var i = 1; i < columns.length; i++) {

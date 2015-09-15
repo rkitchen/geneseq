@@ -84,43 +84,11 @@ class Gene(Parent):
         logger.debug('sorted mouse header values %s' % ret)
         return ret
 
+
 class Table(Parent):
     """displays mysql data in a table
     mounted on /data and /table"""
     exposed = True
-
-    def fixSliderInit(self, kwargs):
-        """changes slider init to string for slider jquery
-
-        Returns:
-            dict: sliders
-        """
-        sliders = self.settings.getTableSliders()
-        for slider in sliders:
-            init = slider['init']
-            logger.debug('init object: %s type %s' % (init, type(init)))
-            # checks if slider initial values were passed
-            # in kwargs
-            column = slider['column']
-            if column in kwargs:
-                value = json.loads(kwargs[column])
-                init = value
-            logger.debug('slider %s init %s' % (column, init))
-
-            slider['init'] = str(init)
-        logger.debug(sliders)
-        logger.debug(self.settings.getTableSliders())
-        return sliders
-
-    def getTable(self, **kwargs):
-        """gets data from database
-
-        Args:
-            kwargs: (dict) same as for builQuery()
-        Returns:
-            dict: data from database
-        """
-        return self.pipe.getDataTable(**kwargs)
 
     def GET(self, order='expression', **kwargs):
         """responds to data GET requests
@@ -175,7 +143,40 @@ class Table(Parent):
 
         new_data = self.pipe.table.getTable(**_json)
 
-        return json.dumps(self.serializeJSON(new_data))
+        return json.dumps(new_data)
+
+    def fixSliderInit(self, kwargs):
+        """changes slider init to string for slider jquery
+
+        Returns:
+            dict: sliders
+        """
+        sliders = self.settings.getTableSliders()
+        for slider in sliders:
+            init = slider['init']
+            logger.debug('init object: %s type %s' % (init, type(init)))
+            # checks if slider initial values were passed
+            # in kwargs
+            column = slider['column']
+            if column in kwargs:
+                value = json.loads(kwargs[column])
+                init = value
+            logger.debug('slider %s init %s' % (column, init))
+
+            slider['init'] = str(init)
+        logger.debug(sliders)
+        logger.debug(self.settings.getTableSliders())
+        return sliders
+
+    def getTable(self, **kwargs):
+        """gets data from database
+
+        Args:
+            kwargs: (dict) same as for builQuery()
+        Returns:
+            dict: data from database
+        """
+        return self.pipe.getDataTable(**kwargs)
 
 
 class Chart(Parent):
