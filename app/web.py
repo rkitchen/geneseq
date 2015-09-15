@@ -5,6 +5,7 @@ from mako import exceptions
 from mako.lookup import TemplateLookup
 from app.data import Charts
 import app.mouse
+import app.human
 import app.mysql_pipe
 import app.mongo_pipe
 import app.settings
@@ -74,6 +75,7 @@ class Search(Parent):
 cherrypy.config.update({'tools.staticdir.root': path})
 # cherrypy.config.update('%s/conf/global.conf' % path)
 cherrypy.tree.mount(app.mouse.Mouse(lookup), '/mouse', config='%s/conf/gene.conf' % path)
+cherrypy.tree.mount(app.human.Human(lookup), '/human', config='%s/conf/gene.conf' % path)
 cherrypy.tree.mount(Charts(), '/data', config='%s/conf/data.conf' % path)
 cherrypy.tree.mount(Search(), '/search', config='%s/conf/search.conf' % path)
 cherrypy.tree.mount(Root(), '/', config='%s/conf/root.conf' % path)
@@ -85,3 +87,4 @@ for item in [v[1] for v in cherrypy.tree.apps.items()]:
 def application(environ, start_response):
     """passes application to wsgi"""
     return cherrypy.tree(environ, start_response)
+

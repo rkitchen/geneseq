@@ -97,3 +97,8 @@ order:
         - type
         - expression
         - enrichment
+    human:
+        - _id
+        - gene_name
+        - chr
+        - source

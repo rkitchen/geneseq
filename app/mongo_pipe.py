@@ -89,6 +89,18 @@ class Parent(object):
 
 class Human(Parent):
 
+    def getGene(self, human_id):
+        pipe = self.pipe
+        pipe.connect()
+        cursor = pipe.db.human.find_one({'_id': human_id})
+
+        document = dict()
+        document['_id'] = cursor['_id']
+        document['gene_name'] = cursor['gene_name']
+        document['chr'] = cursor['gene_chr']
+        document['source'] = cursor['source']
+        return document
+
     def getName(self, human_id):
         pipe = self.pipe
         pipe.connect()
@@ -130,6 +142,23 @@ class Human(Parent):
             data.append(item)
         return data
 
+    def plotBodymap(self, human_id):
+        logger.debug('getting gene expression for humanid %s' % human_id)
+        pipe = self.pipe
+        pipe.connect()
+
+        aggregate = [{'$match': {'_id': human_id}},
+                     {'$unwind': '$bodymap'},
+                     {'$project': {'name': '$bodymap.name',
+                                   'value': '$bodymap.value'}}]
+        cursor = pipe.db.human.aggregate(aggregate)
+        pipe.disconnect()
+        data = list()
+        for item in cursor:
+            data.append(item)
+        logger.debug(pprint.pformat(data))
+        return data
+
 
 class Mouse(Parent):
 
@@ -139,12 +168,7 @@ class Mouse(Parent):
 
         find = dict()
         find['filter'] = {'_id': mouse_id}
-
         find['projection'] = {'processed': 1}
-        """{'expression': '$processed.expression',
-                              'enrichment': '$processed.enrichment',
-                              'human_id': '$processed.human_id',
-                              'type': '$processed.type'}"""
 
         gene = pipe.db.mouse.find_one(**find)
         pipe.disconnect()
@@ -164,7 +188,7 @@ class Mouse(Parent):
 
         return pipe.fixData(ret)
 
-    def plotMouseExpression(self, mouse_id):
+    def plotExpression(self, mouse_id):
         logger.debug('getting gene expression for mouseid %s' % mouse_id)
         pipe = self.pipe
         pipe.connect()

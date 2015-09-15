@@ -1,6 +1,10 @@
 FROM ubuntu:14.04
 MAINTAINER Michael Laraia <micheal.laraia@gmail.com>
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -q -y python3 \
+RUN export DEBIAN_FRONTEND=noninteractive && \
+   apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 \
+   echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | \
+   tee /etc/apt/sources.list.d/mongodb-org-3.0.list \
+   apt-get update && apt-get install -q -y python3 \
    python3-pip \
    uwsgi-plugin-python3 \
    curl \
@@ -10,7 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -
    less \
    screen \
    supervisor \
-   mysql-server \
+   mongodb-org \
    && useradd -d /dev/null -s /bin/bash http \
    && mkdir -p /var/run/uwsgi \
                /var/log/supervisor \

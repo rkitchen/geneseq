@@ -36,6 +36,7 @@ $(document).ready(function() {
         data = jQuery.parseJSON(data);
 
         if (status == 'success') {
+            margin.bottom = 10 + data.axis_length * 5;
             xscale.domain(data.names)
                   .rangePoints([0, w]);
             yscale.domain([data.min, data.max])
