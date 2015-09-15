@@ -17,7 +17,7 @@ class Pipe(app.pipe.Pipe):
         logger.debug('initializing mongo pipe')
         super().__init__(config)
         self.settings = config
-        self.gene = Gene(self)
+        self.mouse = Mouse(self)
         self.table = Table(self)
 
     def fixData(self, data, roundn=_ROUND_DECIMAL):
@@ -82,22 +82,24 @@ class Pipe(app.pipe.Pipe):
 #     pass
 
 
-class Gene(object):
+class Mouse(object):
 
     def __init__(self, pipe):
         self.pipe = pipe
 
-    def getGene(self, human_id, fields={}):
+    def getGene(self, mouse_id):
         pipe = self.pipe
         pipe.connect()
 
-        preset = {'gene_name': 1,
-                  'gene_status': 1,
-                  'source': 1,
-                  'gene_id': 1,
-                  'gene_chr': 1}
-        preset.update(fields)
-        gene = pipe.db.human.find_one({'_id': human_id}, preset)
+        find = dict()
+        find['filter'] = {'_id': mouse_id}
+
+        find['projection'] = {'expression': '$processed.expression',
+                              'enrichment': '$processed.enrichment',
+                              'human_id': '$processed.human_id',
+                              'type': '$processed.type'}
+
+        gene = pipe.db.mouse.find_one(**find)
         pipe.disconnect()
 
         if gene is None:

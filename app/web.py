@@ -6,6 +6,7 @@ from mako import exceptions
 from mako.lookup import TemplateLookup
 from app.data import Charts
 import decimal
+import app.mouse
 import app.mysql_pipe
 import app.mongo_pipe
 import app.settings
@@ -228,15 +229,15 @@ class Search(Parent):
 
 # mounts all webapps to cherrypy tree
 cherrypy.config.update({'tools.staticdir.root': path})
-# cherrypy.config.update('%s/global.conf' % path)
-cherrypy.tree.mount(Gene(), '/gene', config='%s/gene.conf' % path)
-cherrypy.tree.mount(Charts(_settings), '/data', config='%s/data.conf' % path)
-cherrypy.tree.mount(Table(), '/table', config='%s/data.conf' % path)
-cherrypy.tree.mount(Search(), '/search', config='%s/search.conf' % path)
-cherrypy.tree.mount(Root(), '/', config='%s/root.conf' % path)
+# cherrypy.config.update('%s/conf/global.conf' % path)
+cherrypy.tree.mount(app.mouse.Mouse(_settings, _pipe, lookup), '/mouse', config='%s/conf/gene.conf' % path)
+cherrypy.tree.mount(Charts(_settings), '/data', config='%s/conf/data.conf' % path)
+cherrypy.tree.mount(Table(), '/table', config='%s/conf/data.conf' % path)
+cherrypy.tree.mount(Search(), '/search', config='%s/conf/search.conf' % path)
+cherrypy.tree.mount(Root(), '/', config='%s/conf/root.conf' % path)
 # attaches config files to each webapp
 for item in [v[1] for v in cherrypy.tree.apps.items()]:
-    item.merge('%s/apps.conf' % path)
+    item.merge('%s/conf/apps.conf' % path)
 
 
 def application(environ, start_response):

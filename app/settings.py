@@ -31,7 +31,7 @@ class Settings(object):
     def loadConfig(self):
         """Loads config from yaml file"""
         logger.debug('loading config from file')
-        f = open("%s/settings.yaml" % self.path, 'r')
+        f = open("%s/conf/settings.yaml" % self.path, 'r')
         raw = f.read()
         f.close()
         return yaml.load(raw)
