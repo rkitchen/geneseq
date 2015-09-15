@@ -27,7 +27,7 @@ var data;
 $(document).ready(function() {
     id = $('#_id').attr('value');
 
-    $.post('/data', {gene_id: id},
+    $.post('./chart', {gene_id: id},
         function(return_data, status) {
 
         data = return_data;
@@ -36,10 +36,8 @@ $(document).ready(function() {
         data = jQuery.parseJSON(data);
 
         if (status == 'success') {
-            console.log(0);
             xscale.domain(data.names)
                   .rangePoints([0, w]);
-            console.log(1);
             yscale.domain([data.min, data.max])
                   .range([h, 0]);
             console.log(data.names);

@@ -20,7 +20,8 @@
 var sliders = [];
 var returned_data;
 var global = {
-    'sort': ['expression', -1]
+    'sort': ['expression', -1],
+    'celltype': []
 };
 
 var getSortIcon = function(item) {
@@ -50,6 +51,10 @@ var tableUpdate = function() {
         post_data.sort = global.sort;
     }
 
+    if (global.celltype != []) {
+        post_data.celltype = global.celltype;
+    }
+
     post_data['sliders'] = true;
     var history_update = [];
     $.each(sliders, function(index, slider) {
@@ -59,13 +64,17 @@ var tableUpdate = function() {
         if (typeof value != 'number') value = '[' + value + ']';
         history_update.push(slider.name + '=' + value);
     });
+
+    if (global.celltype != []) {
+        history_update.push('celltype=[' + global.celltype + ']');
+    }
     console.log(history_update.join('&'));
-    history.replaceState(null, null, '/table?' + history_update.join('&'));
+    history.replaceState(null, null, './table?' + history_update.join('&'));
     
     post_data = JSON.stringify(post_data);
     console.log(post_data);
 
-    $.post('/table', {'json': post_data}, 
+    $.post('./table', {'json': post_data}, 
     function(data, status) {
         console.log('data: ' + data);
         console.log('status: ' + status);
@@ -78,8 +87,8 @@ var tableUpdate = function() {
                 var row = [];
                 var columns = global.columns;
                 console.log('columns: ' + columns);
-                row.push('<a href="/gene?id=' +
-                    item['human_id'] + '">' +
+                row.push('<a href="./gene?id=' +
+                    item['_id'] + '">' +
                     item['_id'] +
                     '</a>');
                 for (var i = 1; i < columns.length; i++) {
@@ -136,6 +145,22 @@ $(document).ready(function() {
             }
         });
         sliders.push(slider);
+    });
+
+    $('input.table-filter.selection').change(function() {
+        console.log($(this).is(':checked'));
+        console.log($(this).attr('value'));
+        value = $(this).attr('value');
+        if ($(this).is(':checked')) {
+            index = global.celltype.indexOf(value);
+            if (index > -1) {
+                global.celltype.splice(index, 1);
+            }
+        } else {
+            global.celltype.push($(this).attr('value'));
+        }
+        console.log(global.celltype);
+        tableUpdate();
     });
 
     var columns = [];

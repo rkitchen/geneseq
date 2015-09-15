@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-import app.pipe
 import logging
 import pprint
 
@@ -8,16 +7,14 @@ pp = pprint.PrettyPrinter(indent=4)
 _ROUND_DECIMAL = 2
 
 
-class Pipe(app.pipe.Pipe):
+class Pipe(object):
     """class handling connection and queries to mongo database"""
     cursor = None
 
-    def __init__(self, config):
+    def __init__(self):
         """initializes variables"""
         logger.debug('initializing mongo pipe')
-        super().__init__(config)
-        self.settings = config
-        self.gene = Gene(self)
+        self.mouse = Mouse(self)
         self.table = Table(self)
 
     def fixData(self, data, roundn=_ROUND_DECIMAL):
@@ -29,10 +26,9 @@ class Pipe(app.pipe.Pipe):
             dict: adjusted data
         """
         if type(data) is float:
-            logger.debug('rounding float %s' % data)
             return round(data, roundn)
         elif type(data) is str:
-            if data in ['source', 'cell']:
+            if not ('ENSMUSG' in data or 'ENSG' in data):
                 return ' '.join(data.split('_')).title()
         elif type(data) is dict:
             for k, v in data.items():
@@ -78,34 +74,12 @@ class Pipe(app.pipe.Pipe):
         self.client.close()
 
 
-# class Mouse(Pipe):
-#     pass
-
-
-class Gene(object):
+class Parent(object):
 
     def __init__(self, pipe):
         self.pipe = pipe
 
-    def getGene(self, human_id, fields={}):
-        pipe = self.pipe
-        pipe.connect()
-
-        preset = {'gene_name': 1,
-                  'gene_status': 1,
-                  'source': 1,
-                  'gene_id': 1,
-                  'gene_chr': 1}
-        preset.update(fields)
-        gene = pipe.db.human.find_one({'_id': human_id}, preset)
-        pipe.disconnect()
-
-        if gene is None:
-            logger.debug('no gene found with id %s' % id)
-            return gene
-
-        logger.debug('found gene data %s' % gene)
-        return gene
+class Human(Parent):
 
     def getMice(self, human_id):
         pipe = self.pipe
@@ -124,7 +98,55 @@ class Gene(object):
         logger.debug(pprint.pformat(mice))
         return mice
 
-    def getMouseExpression(self, mouse_id):
+    def getAllMouseExpression(self, human_id):
+        logger.debug('id %s' % human_id)
+        mice = self.getMice(human_id)
+        logger.debug('mice %s' % mice)
+        data = list()
+        for mouse in mice:
+            item = dict()
+            mouse_id = mouse['mouse_id']
+            expression = self.getMouseExpression(mouse_id)
+            if expression == []:
+                continue
+            item['mouse_id'] = mouse_id
+            item['expression'] = expression
+            data.append(item)
+        return data
+
+
+class Mouse(Parent):
+
+    def getGene(self, mouse_id):
+        pipe = self.pipe
+        pipe.connect()
+
+        find = dict()
+        find['filter'] = {'_id': mouse_id}
+
+        find['projection'] = {'processed': 1}
+        """{'expression': '$processed.expression',
+                              'enrichment': '$processed.enrichment',
+                              'human_id': '$processed.human_id',
+                              'type': '$processed.type'}"""
+
+        gene = pipe.db.mouse.find_one(**find)
+        pipe.disconnect()
+
+        if gene is None:
+            logger.debug('no gene found with id %s' % id)
+            return gene
+
+        ret = dict()
+        ret['_id'] = gene['_id']
+        ret['expression'] = gene['processed']['expression']
+        ret['enrichment'] = gene['processed']['enrichment']
+        ret['human_id'] = gene['processed']['human_id']
+        ret['type'] = gene['processed']['type']
+        logger.debug('found gene data %s' % gene)
+        return pipe.fixData(ret)
+
+    def plotMouseExpression(self, mouse_id):
         logger.debug('getting gene expression for mouseid %s' % mouse_id)
         pipe = self.pipe
         pipe.connect()
@@ -142,53 +164,23 @@ class Gene(object):
         logger.debug(pprint.pformat(data))
         return data
 
-    def compMouseExpression(self, mouse_id, data=None, fix=True):
-        logger.debug('computing mouse gene expression')
+    def getCellTypes(self):
         pipe = self.pipe
         pipe.connect()
-
-        aggregate = [{'$match': {'_id': mouse_id}},
-                     {'$unwind': '$expression'},
-                     {'$unwind': '$expression.values'},
-                     {'$group': {'_id': '$expression.name',
-                                 'average': {'$avg': '$expression.values'}}},
-                     {'$sort': {'average': -1}},
-                     {'$limit': 2}]
-        cursor = pipe.db.mouse.aggregate(aggregate)
-        pipe.disconnect()
-        data = list()
-        for item in cursor:
-            data.append(item)
-
-        logger.debug('processing data %s' % pprint.pformat(data))
-
-        ret = {'max': data[0]['average'], 'next': data[1]['average']}
-        ret['fold'] = ret['max'] / ret['next']
-        logger.debug('mouse gene expression computed %s' % pprint.pformat(ret))
-        return self.pipe.fixData(ret)
-
-    def getAllMouseExpression(self, human_id):
-        logger.debug('id %s' % human_id)
-        mice = self.getMice(human_id)
-        logger.debug('mice %s' % mice)
-        data = list()
-        for mouse in mice:
-            item = dict()
-            mouse_id = mouse['mouse_id']
-            expression = self.getMouseExpression(mouse_id)
-            item['mouse_id'] = mouse_id
-            item['expression'] = expression
-            data.append(item)
-        return data
+        pipeline = [{'$match': {'processed': {'$exists': True}}},
+                    {'$group': {'_id': '$processed.type'}}]
+        cursor = pipe.db.mouse.aggregate(pipeline)
+        celltypes = list()
+        for cell in cursor:
+            celltypes.append(cell['_id'])
+        return celltypes
 
 
-class Table(object):
-
-    def __init__(self, pipe):
-        self.pipe = pipe
+class Table(Parent):
 
     def getTable(self, sort=('expression', -1), limit=10,
-                 expression=None, enrichment=None, **kwargs):
+                 expression=None, enrichment=None, celltype=None,
+                 **kwargs):
         logger.debug('expression %s' % expression)
         logger.debug('enrichment %s' % enrichment)
         logger.debug('kwargs %s' % kwargs)
@@ -209,13 +201,22 @@ class Table(object):
         #     allowDiskUse=True)
         aggregate = dict()
         pipeline = list()
+
         match = {'processed': {'$exists': True}}
+
+        if celltype is not None:
+            if type(celltype) is str:
+                match['processed.type'] = celltype
+            elif type(celltype) is list:
+                match['processed.type'] = {'$nin': celltype}
+
         if expression is not None or enrichment is not None:
             if type(expression) is list:
                 match['processed.expression'] = {'$gt': expression[0], '$lt': expression[1]}
             if type(enrichment) is list:
                 match['processed.enrichment'] = {'$gt': enrichment[0], '$lt': enrichment[1]}
         pipeline.append({'$match': match})
+
         pipeline.append(
             {'$project': {
                 '_id': 1, 'cell': '$processed.type',
@@ -226,6 +227,7 @@ class Table(object):
         if type(sort) is list or type(sort) is tuple:
             pipeline.append({'$sort': {sort[0]: sort[1]}})
         if limit is not None:
+            limit = int(limit)
             pipeline.append({'$limit': limit})
 
         aggregate['pipeline'] = pipeline
