@@ -27,6 +27,19 @@ class Parent(object):
         self.pipe = mouse.pipe
         self.lookup = mouse.lookup
 
+    def fixInput(self, kwargs):
+        for k, v in kwargs.items():
+            if '[' in v and ']' in v:
+                kwargs[k] = v[1:-1].split(',')
+                for i, number in enumerate(kwargs[k]):
+                    try:
+                        kwargs[k][i] = int(number)
+                    except (ValueError):
+                        pass
+            elif v == 'true' or v == 'false':
+                kwargs[k] = json.loads(v)
+        return kwargs
+
 
 class Gene(Parent):
     """webapp handling requests for specific genes
@@ -98,14 +111,18 @@ class Table(Parent):
             str: table.html
         """
         logger.info('/data GET request')
+        kwargs = self.fixInput(kwargs)
         logger.debug('GET kwargs: %s' % kwargs)
-        data = self.pipe.table.getTable()
+        data = self.pipe.table.getTable(**kwargs)
+
         kwargs = {'Title': 'Mouse Expression Table',
                   'data': data,
-                  'sliders': self.fixSliderInit(kwargs),
+                  'filters': self.fixFilters(kwargs),
                   'columnNames': self.settings.getColumnNames(),
                   'order': order}
+
         tmpl = self.lookup.get_template("table.html")
+
         logger.debug('kwargs sent to mako for data table: %s' %
             pprint.pformat(kwargs))
         try:
@@ -145,28 +162,25 @@ class Table(Parent):
 
         return json.dumps(new_data)
 
-    def fixSliderInit(self, kwargs):
+    def fixFilters(self, kwargs):
         """changes slider init to string for slider jquery
 
         Returns:
             dict: sliders
         """
-        sliders = self.settings.getTableSliders()
-        for slider in sliders:
-            init = slider['init']
-            logger.debug('init object: %s type %s' % (init, type(init)))
-            # checks if slider initial values were passed
-            # in kwargs
-            column = slider['column']
-            if column in kwargs:
-                value = json.loads(kwargs[column])
-                init = value
-            logger.debug('slider %s init %s' % (column, init))
-
-            slider['init'] = str(init)
-        logger.debug(sliders)
-        logger.debug(self.settings.getTableSliders())
-        return sliders
+        filters = self.settings.getTableFilters()
+        for item in filters:
+            logger.debug(item)
+            if item['type'] == 'selection':
+                for i, option in enumerate(item['options']):
+                    name = ' '.join(option.split('_')).title()
+                    item['options'][i] = (option, name, True)
+                logger.debug('selection options %s' % item['options'])
+            if item['column'] in kwargs:
+                item['init'] = str(kwargs[item['column']])
+        logger.debug(filters)
+        logger.debug(pprint.pformat(self.settings.getTableSliders()))
+        return filters
 
     def getTable(self, **kwargs):
         """gets data from database

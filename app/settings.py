@@ -128,7 +128,15 @@ class Settings(object):
                     max:      (int) max value of slider
                     init:(int,list) initial value/range of slider
         """
-        return copy.deepcopy(self.settings['table_sliders'])
+        sliders = list()
+        input = self.settings['table_input']
+        for item in input:
+            if item['type'] == 'slider':
+                sliders.append(item)
+        return copy.deepcopy(sliders)
+
+    def getTableFilters(self):
+        return copy.deepcopy(self.settings['table_input'])
 
     def getOrder(self, name):
         return copy.deepcopy(self.settings['order'][name])

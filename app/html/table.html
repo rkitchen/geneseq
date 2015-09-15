@@ -14,10 +14,23 @@
    <div id="wrapper" class="sidebar">
    
    <form id="table-filter" class="pure-form">
-   % if not sliders is UNDEFINED:
+   % if not filters is UNDEFINED:
     <ul>
-    % for slider in sliders:
-    <li class="table-filter range"><span id="name">${slider['name']}</span><span id="value"></span><input class="table-filter range" name="${slider['column']}" type="range" data-slider-scale="${slider['scale']}" data-slider-min="${slider['min']}" data-slider-max="${slider['max']}" data-slider-step="${slider['step']}" data-slider-value="${slider['init']}"/></li>
+    % for filter in filters:
+    % if filter['type'] == 'slider':
+    <li class="table-filter range"><span id="name">${filter['name']}</span><span id="value"></span><input class="table-filter range" name="${filter['column']}" type="range" data-slider-scale="${filter['scale']}" data-slider-min="${filter['min']}" data-slider-max="${filter['max']}" data-slider-step="${filter['step']}" data-slider-value="${filter['init']}"/></li>
+    % else:
+    <li class="table-filter selection"><span id="name">${filter['name']}</span>
+    % for option in filter['options']:
+    <label class="pure-checkbox">
+    <input id="${option[0]}" type="checkbox" value="${option[0]}"
+    % if option[2]:
+        checked
+    % endif
+    />${option[1]}</label>
+    % endfor
+    </li>
+    % endif
     % endfor
    % endif
    </ul>

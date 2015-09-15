@@ -29,7 +29,6 @@ class Pipe(app.pipe.Pipe):
             dict: adjusted data
         """
         if type(data) is float:
-            logger.debug('rounding float %s' % data)
             return round(data, roundn)
         elif type(data) is str:
             if not ('ENSMUSG' in data or 'ENSG' in data):
@@ -235,6 +234,7 @@ class Table(Parent):
         if type(sort) is list or type(sort) is tuple:
             pipeline.append({'$sort': {sort[0]: sort[1]}})
         if limit is not None:
+            limit = int(limit)
             pipeline.append({'$limit': limit})
 
         aggregate['pipeline'] = pipeline
