@@ -78,14 +78,48 @@ class Pipe(app.pipe.Pipe):
         self.client.close()
 
 
-# class Mouse(Pipe):
-#     pass
-
-
-class Mouse(object):
+class Parent(object):
 
     def __init__(self, pipe):
         self.pipe = pipe
+
+class Human(Parent):
+
+    def getMice(self, human_id):
+        pipe = self.pipe
+        find = dict()
+        find['filter'] = {'_id': human_id}
+        find['projection'] = {'mouse_map': 1}
+        pipe.connect()
+        mice = pipe.db.human.find_one(**find)
+        mice = mice['mouse_map']
+        pipe.disconnect()
+        logger.debug('found mice for human gene %s' % human_id)
+        logger.debug('mice type %s' % type(mice))
+        logger.debug(pprint.pformat(mice))
+        for mouse in mice:
+            del mouse['confidence']
+        logger.debug(pprint.pformat(mice))
+        return mice
+
+    def getAllMouseExpression(self, human_id):
+        logger.debug('id %s' % human_id)
+        mice = self.getMice(human_id)
+        logger.debug('mice %s' % mice)
+        data = list()
+        for mouse in mice:
+            item = dict()
+            mouse_id = mouse['mouse_id']
+            expression = self.getMouseExpression(mouse_id)
+            if expression == []:
+                continue
+            item['mouse_id'] = mouse_id
+            item['expression'] = expression
+            data.append(item)
+        return data
+
+
+class Mouse(Parent):
 
     def getGene(self, mouse_id):
         pipe = self.pipe
@@ -108,23 +142,6 @@ class Mouse(object):
 
         logger.debug('found gene data %s' % gene)
         return gene
-
-    def getMice(self, human_id):
-        pipe = self.pipe
-        find = dict()
-        find['filter'] = {'_id': human_id}
-        find['projection'] = {'mouse_map': 1}
-        pipe.connect()
-        mice = pipe.db.human.find_one(**find)
-        mice = mice['mouse_map']
-        pipe.disconnect()
-        logger.debug('found mice for human gene %s' % human_id)
-        logger.debug('mice type %s' % type(mice))
-        logger.debug(pprint.pformat(mice))
-        for mouse in mice:
-            del mouse['confidence']
-        logger.debug(pprint.pformat(mice))
-        return mice
 
     def getMouseExpression(self, mouse_id):
         logger.debug('getting gene expression for mouseid %s' % mouse_id)
@@ -169,27 +186,8 @@ class Mouse(object):
         logger.debug('mouse gene expression computed %s' % pprint.pformat(ret))
         return self.pipe.fixData(ret)
 
-    def getAllMouseExpression(self, human_id):
-        logger.debug('id %s' % human_id)
-        mice = self.getMice(human_id)
-        logger.debug('mice %s' % mice)
-        data = list()
-        for mouse in mice:
-            item = dict()
-            mouse_id = mouse['mouse_id']
-            expression = self.getMouseExpression(mouse_id)
-            if expression == []:
-                continue
-            item['mouse_id'] = mouse_id
-            item['expression'] = expression
-            data.append(item)
-        return data
 
-
-class Table(object):
-
-    def __init__(self, pipe):
-        self.pipe = pipe
+class Table(Parent):
 
     def getTable(self, sort=('expression', -1), limit=10,
                  expression=None, enrichment=None, **kwargs):

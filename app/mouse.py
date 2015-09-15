@@ -17,6 +17,7 @@ class Mouse(object):
 
         self.table = Table(self)
         self.gene = Gene(self)
+        self.chart = Chart(self)
 
 
 class Parent(object):
@@ -60,7 +61,7 @@ class Gene(Parent):
         #             return 'invalid id given'
         tmpl = lookup.get_template("gene.html")
         kwargs['Title'] = 'test'
-        gene = pipe.gene.getGene(id)
+        gene = pipe.mouse.getGene(id)
         header = list()
         for k, v in gene.items():
             name = settings.translate_readable(k)
@@ -170,3 +171,34 @@ class Table(Parent):
         new_data = self.pipe.table.getTable(**_json)
 
         return json.dumps(self.serializeJSON(new_data))
+
+
+class Chart(Parent):
+    exposed = True
+
+    def GET(self, **kwargs):
+        data = self.getData(kwargs['gene_id'])
+        return json.dumps(data)
+
+    def POST(self, **kwargs):
+        logger.debug('Charts POST')
+        logger.debug(pprint.pformat(kwargs))
+        data = self.getData(kwargs['gene_id'])
+        return json.dumps(data)
+
+    def getData(self, mouse_id):
+        logger.debug('getting charts for %s' % mouse_id)
+
+        # TODO multiple charts
+        mouse = self.pipe.gene.getMouseExpression(mouse_id)
+        values = list()
+        columns = list()
+        for cellType in mouse['expression']:
+            name = ' '.join(cellType['_id'].split('_')).title()
+            values.append((name, cellType['value']))
+            columns.append(name)
+        ret = {'values': values, 'names': columns}
+        ret['min'] = min([x[1] for x in values])
+        ret['max'] = max([x[1] for x in values])
+        logger.debug('data to return: %s' % pprint.pformat(ret))
+        return ret
