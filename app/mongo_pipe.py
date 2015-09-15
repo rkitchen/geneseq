@@ -32,7 +32,7 @@ class Pipe(app.pipe.Pipe):
             logger.debug('rounding float %s' % data)
             return round(data, roundn)
         elif type(data) is str:
-            if data in ['source', 'cell']:
+            if not ('ENSMUSG' in data or 'ENSG' in data):
                 return ' '.join(data.split('_')).title()
         elif type(data) is dict:
             for k, v in data.items():
@@ -128,10 +128,11 @@ class Mouse(Parent):
         find = dict()
         find['filter'] = {'_id': mouse_id}
 
-        find['projection'] = {'expression': '$processed.expression',
+        find['projection'] = {'processed': 1}
+        """{'expression': '$processed.expression',
                               'enrichment': '$processed.enrichment',
                               'human_id': '$processed.human_id',
-                              'type': '$processed.type'}
+                              'type': '$processed.type'}"""
 
         gene = pipe.db.mouse.find_one(**find)
         pipe.disconnect()
@@ -140,10 +141,16 @@ class Mouse(Parent):
             logger.debug('no gene found with id %s' % id)
             return gene
 
+        ret = dict()
+        ret['_id'] = gene['_id']
+        ret['expression'] = gene['processed']['expression']
+        ret['enrichment'] = gene['processed']['enrichment']
+        ret['human_id'] = gene['processed']['human_id']
+        ret['type'] = gene['processed']['type']
         logger.debug('found gene data %s' % gene)
-        return gene
+        return pipe.fixData(ret)
 
-    def getMouseExpression(self, mouse_id):
+    def plotMouseExpression(self, mouse_id):
         logger.debug('getting gene expression for mouseid %s' % mouse_id)
         pipe = self.pipe
         pipe.connect()

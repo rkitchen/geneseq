@@ -27,7 +27,7 @@ var data;
 $(document).ready(function() {
     id = $('#_id').attr('value');
 
-    $.post('/data', {gene_id: id},
+    $.post('./chart', {gene_id: id},
         function(return_data, status) {
 
         data = return_data;

@@ -63,21 +63,26 @@ class Gene(Parent):
         kwargs['Title'] = 'test'
         gene = pipe.mouse.getGene(id)
         header = list()
-        for k, v in gene.items():
-            name = settings.translate_readable(k)
-            if name == k:
-                name = ' '.join(k.split('_')).title()
+        for key, value in gene.items():
+            name = settings.translate_readable(key)
+            if name == key:
+                name = ' '.join(key.split('_')).title()
 
             item = dict()
-            item['name'] = name
-            item['var'] = k
-            item['value'] = v
+            item = (name, key, value)
             header.append(item)
-        kwargs['header'] = header
+        kwargs['header'] = self.sort(header)
         try:
             return tmpl.render(**kwargs)
         except:
             return exceptions.html_error_template().render()
+
+    def sort(self, header):
+        order = self.settings.getOrder('mouse')
+
+        ret = sorted(header, key=lambda i: order.index(i[1]))
+        logger.debug('sorted mouse header values %s' % ret)
+        return ret
 
 class Table(Parent):
     """displays mysql data in a table
@@ -190,10 +195,10 @@ class Chart(Parent):
         logger.debug('getting charts for %s' % mouse_id)
 
         # TODO multiple charts
-        mouse = self.pipe.gene.getMouseExpression(mouse_id)
+        mouse = self.pipe.mouse.plotMouseExpression(mouse_id)
         values = list()
         columns = list()
-        for cellType in mouse['expression']:
+        for cellType in mouse:
             name = ' '.join(cellType['_id'].split('_')).title()
             values.append((name, cellType['value']))
             columns.append(name)

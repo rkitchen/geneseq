@@ -21,7 +21,7 @@
    <div id="wrapper" class="gene_data">
       <ul class="gene_data">
       % for item in header:
-      <li><div>${item['name']}</div><div id="${item['var']}" value="${item['value']}">${item['value']}</div></li>
+      <li><div>${item[0]}</div><div id="${item[1]}" value="${item[2]}">${item[2]}</div></li>
       % endfor
       </ul>
    </div>
