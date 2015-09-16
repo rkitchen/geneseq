@@ -41,6 +41,64 @@ var tableLinks = function() {
     });
 };
 
+//attaches listener to column headers for sorting
+var initTableHeaders = function() {
+    $('table#data th').each(function(index, item) {
+        var key = item.getAttribute('value');
+        console.log('key: ' + key);
+        $(item).click({value: key}, function(event) {
+            console.log(event);
+            console.log('table header clicked: ' + event.data.value);
+            if (global.sort[0] == event.data.value) {
+                global.sort[1] = -global.sort[1];
+            } else {
+                global.sort = [event.data.value, -1];
+            }
+
+            tableUpdate();
+        });
+    });
+}
+
+//creates sidebar sliders
+var initSliders = function() {
+    $('input.table-filter.range').each(function(index, item) {
+        var slider = new Slider(item);
+        slider.name = item.getAttribute('name');
+        slider.init = slider.getValue();
+        slider.on('slideStop', tableUpdate);
+
+        slider.on('slide', function(item) {
+            console.log(item);
+            for (var i = 0; i < sliders.length; i++) {
+                if (sliders[i].getValue() == item) {
+                    $(sliders[i].element).siblings('span#value').text(item);
+                }
+            }
+        });
+        sliders.push(slider);
+    });
+}
+
+//initializes sidebar options list
+var initSelection = function() {
+    $('input.table-filter.selection').change(function() {
+        console.log($(this).is(':checked'));
+        console.log($(this).attr('value'));
+        value = $(this).attr('value');
+        if ($(this).is(':checked')) {
+            index = global.celltype.indexOf(value);
+            if (index > -1) {
+                global.celltype.splice(index, 1);
+            }
+        } else {
+            global.celltype.push($(this).attr('value'));
+        }
+        console.log(global.celltype);
+        tableUpdate();
+    });
+}
+
 var update_url = function() {
     var requests = global.requests;
     console.log('update_url requests: ' + requests);
@@ -110,14 +168,19 @@ var tableUpdate = function() {
 
     var post_data = {};
 
+    //sets sorting to post data
     if (global.sort) {
         post_data.sort = global.sort;
     }
 
+    //sets celltypes to post data and updates url
     if (global.celltype.length > 0) {
         post_data.celltype = global.celltype;
-    }
+        value = '[' + global.celltype + ']';
+        add_request('celltype', value);
+    } else remove_request('celltype');
 
+    //sets slider values to post data and updates url
     post_data['sliders'] = true;
     $.each(sliders, function(index, slider) {
         if (slider.getValue() != slider.init) {
@@ -128,14 +191,10 @@ var tableUpdate = function() {
         }
     });
 
-    if (global.celltype.length > 0) {
-        value = '[' + global.celltype + ']';
-        add_request('celltype', value);
-    } else remove_request('celltype');
-
     console.log(global.requests);
     update_url();
     
+    //convert data to json to prevent nested object data loss
     post_data = JSON.stringify(post_data);
     console.log(post_data);
 
@@ -147,6 +206,7 @@ var tableUpdate = function() {
         returned_data = data;
 
         if (status == 'success') {
+            //propagates data to table
             var table = $('table#data tbody');
             $.each(data, function(index, item) {
                 var row = [];
@@ -165,11 +225,13 @@ var tableUpdate = function() {
                     '</td></tr>'].join(''));
             });
 
+            //sets sort icons
             $('table#data thead th').each(function(index, item) {
                 $(item).children('i').
                     text(getSortIcon(item.getAttribute('value')));
             });
 
+            //adds click listener to each table row
             tableLinks();
         }
     });
@@ -180,56 +242,9 @@ $(document).ready(function() {
     tableLinks();
     init_requests();
 
-    //sorting function
-
-    $('table#data th').each(function(index, item) {
-        var key = item.getAttribute('value');
-        console.log('key: ' + key);
-        $(item).click({value: key}, function(event) {
-            console.log(event);
-            console.log('table header clicked: ' + event.data.value);
-            if (global.sort[0] == event.data.value) {
-                global.sort[1] = -global.sort[1];
-            } else {
-                global.sort = [event.data.value, -1];
-            }
-
-            tableUpdate();
-        });
-    });
-
-    $('input.table-filter.range').each(function(index, item) {
-        var slider = new Slider(item);
-        slider.name = item.getAttribute('name');
-        slider.init = slider.getValue();
-        slider.on('slideStop', tableUpdate);
-
-        slider.on('slide', function(item) {
-            console.log(item);
-            for (var i = 0; i < sliders.length; i++) {
-                if (sliders[i].getValue() == item) {
-                    $(sliders[i].element).siblings('span#value').text(item);
-                }
-            }
-        });
-        sliders.push(slider);
-    });
-
-    $('input.table-filter.selection').change(function() {
-        console.log($(this).is(':checked'));
-        console.log($(this).attr('value'));
-        value = $(this).attr('value');
-        if ($(this).is(':checked')) {
-            index = global.celltype.indexOf(value);
-            if (index > -1) {
-                global.celltype.splice(index, 1);
-            }
-        } else {
-            global.celltype.push($(this).attr('value'));
-        }
-        console.log(global.celltype);
-        tableUpdate();
-    });
+    initTableHeaders();
+    initSliders();
+    initSelection();
 
     var columns = [];
     $('table#data thead th').each(function(index, item) {
