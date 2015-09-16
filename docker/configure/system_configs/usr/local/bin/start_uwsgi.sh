@@ -1,13 +1,4 @@
 #!/bin/bash
-LOOP_LIMIT=60
-for (( i=0 ; ; i++ )); do
-    if [ ${i} -eq ${LOOP_LIMIT} ]; then
-        echo "Time out. Error log is shown as below:"
-        exit 1
-    fi
-    echo "=> Waiting for confirmation of MySQL service startup, trying ${i}/${LOOP_LIMIT} ..."
-    sleep 1
-    mysql -uroot -e "status" && break
-done
+/usr/local/bin/start_mongod.sh
 /usr/bin/uwsgi --ini /etc/uwsgi/uwsgi.ini
 exit 0

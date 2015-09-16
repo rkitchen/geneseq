@@ -16,8 +16,9 @@ class Pipe(object):
         logger.debug('initializing mongo pipe')
         self.mouse = Mouse(self)
         self.table = Table(self)
+        self.human = Human(self)
 
-    def fixData(self, data, roundn=_ROUND_DECIMAL):
+    def fixData(self, data, style='title', roundn=_ROUND_DECIMAL):
         """parses data to sync variable names and datatypes.
         Converts expression to from float to Decimal()
         Args:
@@ -28,11 +29,17 @@ class Pipe(object):
         if type(data) is float:
             return round(data, roundn)
         elif type(data) is str:
-            if not ('ENSMUSG' in data or 'ENSG' in data):
+            if style == 'title':
                 return ' '.join(data.split('_')).title()
+            elif style == 'caps':
+                return ' '.join(data.split('_')).upper()
         elif type(data) is dict:
             for k, v in data.items():
-                    data[k] = self.fixData(v)
+                if 'id' in k or k in ['source', 'human_name']:
+                    style = 'caps'
+                else:
+                    style = 'title'
+                data[k] = self.fixData(v, style)
             return data
         elif type(data) is list:
             for i, v in enumerate(data):
@@ -79,7 +86,28 @@ class Parent(object):
     def __init__(self, pipe):
         self.pipe = pipe
 
+
 class Human(Parent):
+
+    def getGene(self, human_id):
+        pipe = self.pipe
+        pipe.connect()
+        cursor = pipe.db.human.find_one({'_id': human_id})
+
+        document = dict()
+        document['_id'] = cursor['_id']
+        document['gene_name'] = cursor['gene_name']
+        document['chr'] = cursor['gene_chr']
+        document['source'] = cursor['source']
+        return document
+
+    def getName(self, human_id):
+        pipe = self.pipe
+        pipe.connect()
+        document = pipe.db.human.find_one({'_id': human_id})
+        pipe.disconnect()
+        logger.debug('found entry for id %s \n%s' % (human_id, document['gene_name']))
+        return document['gene_name']
 
     def getMice(self, human_id):
         pipe = self.pipe
@@ -114,6 +142,23 @@ class Human(Parent):
             data.append(item)
         return data
 
+    def plotBodymap(self, human_id):
+        logger.debug('getting gene expression for humanid %s' % human_id)
+        pipe = self.pipe
+        pipe.connect()
+
+        aggregate = [{'$match': {'_id': human_id}},
+                     {'$unwind': '$bodymap'},
+                     {'$project': {'name': '$bodymap.name',
+                                   'value': '$bodymap.value'}}]
+        cursor = pipe.db.human.aggregate(aggregate)
+        pipe.disconnect()
+        data = list()
+        for item in cursor:
+            data.append(item)
+        logger.debug(pprint.pformat(data))
+        return data
+
 
 class Mouse(Parent):
 
@@ -123,12 +168,7 @@ class Mouse(Parent):
 
         find = dict()
         find['filter'] = {'_id': mouse_id}
-
         find['projection'] = {'processed': 1}
-        """{'expression': '$processed.expression',
-                              'enrichment': '$processed.enrichment',
-                              'human_id': '$processed.human_id',
-                              'type': '$processed.type'}"""
 
         gene = pipe.db.mouse.find_one(**find)
         pipe.disconnect()
@@ -142,11 +182,13 @@ class Mouse(Parent):
         ret['expression'] = gene['processed']['expression']
         ret['enrichment'] = gene['processed']['enrichment']
         ret['human_id'] = gene['processed']['human_id']
+        ret['human_name'] = pipe.human.getName(ret['human_id'])
         ret['type'] = gene['processed']['type']
         logger.debug('found gene data %s' % gene)
+
         return pipe.fixData(ret)
 
-    def plotMouseExpression(self, mouse_id):
+    def plotExpression(self, mouse_id):
         logger.debug('getting gene expression for mouseid %s' % mouse_id)
         pipe = self.pipe
         pipe.connect()

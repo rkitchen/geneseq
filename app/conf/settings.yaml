@@ -76,7 +76,7 @@ table_input:
         type: slider
         scale: linear
         min: 0
-        max: 200
+        max: 1000
         step: 10
         init: 100
     -
@@ -93,6 +93,12 @@ order:
     mouse:
         - _id
         - human_id
+        - human_name
         - type
         - expression
         - enrichment
+    human:
+        - _id
+        - gene_name
+        - chr
+        - source

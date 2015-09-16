@@ -188,7 +188,7 @@ class Table(Parent):
 
                 logger.debug('selection options %s' % item['options'])
 
-            if item['type'] == 'sliders':
+            if item['type'] == 'slider':
                 if item['column'] in kwargs:
                     item['init'] = str(kwargs[item['column']])
         logger.debug(filters)
@@ -223,7 +223,7 @@ class Chart(Parent):
         logger.debug('getting charts for %s' % mouse_id)
 
         # TODO multiple charts
-        mouse = self.pipe.mouse.plotMouseExpression(mouse_id)
+        mouse = self.pipe.mouse.plotExpression(mouse_id)
         values = list()
         columns = list()
         for cellType in mouse:
@@ -233,5 +233,6 @@ class Chart(Parent):
         ret = {'values': values, 'names': columns}
         ret['min'] = min([x[1] for x in values])
         ret['max'] = max([x[1] for x in values])
+        ret['axis_length'] = max(len(x) for x in columns)
         logger.debug('data to return: %s' % pprint.pformat(ret))
         return ret
