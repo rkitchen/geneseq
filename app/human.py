@@ -1,10 +1,8 @@
 import json
 import logging
-
 from mako import exceptions
-# from mako.lookup import TemplateLookup
 import app.settings
-from app import mongo_pipe as pipe
+from app.parent import Parent
 import pprint
 
 logger = logging.getLogger(__name__)
@@ -14,23 +12,14 @@ class Human(object):
 
     def __init__(self, mako):
         self.lookup = mako
-
         self.gene = Gene(self)
         self.chart = Chart(self)
-
-
-class Parent(object):
-
-    def __init__(self, human):
-        self.lookup = human.lookup
-        self.pipe = pipe.Pipe()
 
 
 class Gene(Parent):
     """webapp handling requests for specific genes
     mounted on /gene
     """
-    exposed = True
 
     def GET(self, id=None, **kwargs):
         """responds to GET requests
@@ -83,8 +72,70 @@ class Gene(Parent):
         return ret
 
 
+class Table(Parent):
+
+    def GET(self, **kwargs):
+        """responds to data GET requests
+        Args:
+            None yet
+        Returns:
+            str: table.html
+        """
+        logger.info('/data GET request')
+        kwargs = self.fixInput(kwargs)
+        logger.debug('GET kwargs: %s' % kwargs)
+        # logger.debug('global test %s' % app.settings.Settings.test)
+        data = self.pipe.table.getTable(**kwargs)
+
+        kwargs = {'Title': 'Mouse Expression Table',
+                  'data': data,
+                  'filters': self.fixFilters(kwargs),
+                  'columnNames': app.settings.getColumnNames(),
+                  'order': order}
+
+        tmpl = self.lookup.get_template("table.html")
+
+        logger.debug('kwargs sent to mako for data table: %s' %
+            pprint.pformat(kwargs))
+        try:
+            return tmpl.render(**kwargs)
+        except:
+            return exceptions.html_error_template().render()
+
+    def POST(self, **kwargs):
+        """responds to POST requests, currently has two
+        methods. data_table returns
+        Args:
+            direction: (bool,str)
+                bool: True = ASC, False = DESC
+                str: ASC/DESC
+            sliders: (bool) true if sliders present in kwargs
+            <SLIDER_NAME>[]: {'min', 'max'} dictionary containing
+                             min/max from range sliders
+            limit: (int) limits number of rows returned in table
+        Returns:
+            JSON: table rows serialized in json
+        """
+        logger.info('/data POST request')
+        logger.debug('POST kwargs: %s' % str(kwargs))
+        _json = json.loads(kwargs['json'])
+        logger.debug('json from request\n%s' % _json)
+
+        if 'sliders' in _json and _json['sliders'] == 'true':
+            logger.info('found sliders in POST')
+            # for slider in _settings.getTableSliders():
+            #     if slider['column'] in _json:
+            #         key = slider['column']
+            #         slider_data = json.loads(_json.pop(key))
+            #         if type(slider_data) is list:
+            #             _json[key] = slider_data
+
+        new_data = self.pipe.table.getTable(**_json)
+
+        return json.dumps(new_data)
+
+
 class Chart(Parent):
-    exposed = True
 
     def GET(self, **kwargs):
         data = self.getData(kwargs['gene_id'])

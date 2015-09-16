@@ -20,7 +20,7 @@ logger.debug('path: %s ' % path)
 lookup = TemplateLookup(directories=['%s/html' % path])
 
 celltypes = _pipe.mouse.getCellTypes()
-app.settings.setCellTypes(celltypes)
+app.settings.setCellTypes('mouse', celltypes)
 
 
 class Parent(object):

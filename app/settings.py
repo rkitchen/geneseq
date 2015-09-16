@@ -27,8 +27,8 @@ def getConfig():
     return copy.deepcopy(config)
 
 
-def setCurrentCount(count):
-    sliders = config['table_sliders']
+def setCurrentCount(name, count):
+    sliders = config['table_input'][name]
     config['count'] = count
     for slider in sliders:
         if slider['column'] == 'limit':
@@ -36,9 +36,9 @@ def setCurrentCount(count):
             slider['max'] = count
 
 
-def setCellTypes(celltypes):
-    for filter in config['table_input']:
-        if filter['type'] == 'selection':
+def setCellTypes(name, celltypes):
+    for filter in config['table_input'][name]:
+        if filter['type'] == 'selection' and filter['column'] == 'celltype':
             filter['options'] = celltypes
             break
 
@@ -103,13 +103,13 @@ def getColumnNames():
     return copy.deepcopy(config['table_columns'])
 
 
-def getDefaultLimit():
+def getDefaultLimit(name):
     """finds default limit set in limit-slider config
 
     Returns:
         int: default query limit
     """
-    for item in config['table_sliders']:
+    for item in config['table_input'][name]:
             if item['column'] == 'limit':
                 return copy.deepcopy(item['init'])
 
@@ -137,7 +137,7 @@ def parseIDs(ids):
         return copy.deepcopy(ids)
 
 
-def getTableSliders():
+def getTableSliders(name):
     """gets list of sliders from configuration
     Returns:
         list: list of sliders and their config data
@@ -150,15 +150,15 @@ def getTableSliders():
                 init:(int,list) initial value/range of slider
     """
     sliders = list()
-    input = config['table_input']
+    input = config['table_input'][name]
     for item in input:
         if item['type'] == 'slider':
             sliders.append(item)
     return copy.deepcopy(sliders)
 
 
-def getTableFilters():
-    return copy.deepcopy(config['table_input'])
+def getTableFilters(name):
+    return copy.deepcopy(config['table_input'][name])
 
 
 def getOrder(name):

@@ -4,7 +4,7 @@ import logging
 from mako import exceptions
 # from mako.lookup import TemplateLookup
 import app.settings
-from app import mongo_pipe as pipe
+from app.parent import Parent
 import pprint
 
 logger = logging.getLogger(__name__)
@@ -18,26 +18,6 @@ class Mouse(object):
         self.table = Table(self)
         self.gene = Gene(self)
         self.chart = Chart(self)
-
-
-class Parent(object):
-
-    def __init__(self, mouse):
-        self.lookup = mouse.lookup
-        self.pipe = pipe.Pipe()
-
-    def fixInput(self, kwargs):
-        for k, v in kwargs.items():
-            if '[' in v and ']' in v:
-                kwargs[k] = v[1:-1].split(',')
-                for i, number in enumerate(kwargs[k]):
-                    try:
-                        kwargs[k][i] = int(number)
-                    except (ValueError):
-                        pass
-            elif v == 'true' or v == 'false':
-                kwargs[k] = json.loads(v)
-        return kwargs
 
 
 class Gene(Parent):
@@ -102,7 +82,7 @@ class Table(Parent):
     mounted on /data and /table"""
     exposed = True
 
-    def GET(self, order='expression', **kwargs):
+    def GET(self, **kwargs):
         """responds to data GET requests
         Args:
             None yet
@@ -118,8 +98,7 @@ class Table(Parent):
         kwargs = {'Title': 'Mouse Expression Table',
                   'data': data,
                   'filters': self.fixFilters(kwargs),
-                  'columnNames': app.settings.getColumnNames(),
-                  'order': order}
+                  'columnNames': app.settings.getColumnNames()}
 
         tmpl = self.lookup.get_template("table.html")
 
@@ -168,7 +147,7 @@ class Table(Parent):
         Returns:
             dict: sliders
         """
-        filters = app.settings.getTableFilters()
+        filters = app.settings.getTableFilters('mouse')
         for item in filters:
             logger.debug(item)
 
@@ -193,7 +172,7 @@ class Table(Parent):
                 if item['column'] in kwargs:
                     item['init'] = str(kwargs[item['column']])
         logger.debug(filters)
-        logger.debug(pprint.pformat(app.settings.getTableSliders()))
+        logger.debug(pprint.pformat(app.settings.getTableSliders('mouse')))
         return filters
 
     def getTable(self, **kwargs):
