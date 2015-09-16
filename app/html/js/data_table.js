@@ -41,6 +41,69 @@ var tableLinks = function() {
     });
 };
 
+var update_url = function() {
+    var requests = global.requests;
+    console.log('update_url requests: ' + requests);
+    var url = [];
+    if (requests.length > 0) {
+        for (var i = 0; i < requests.length; i++) {
+            url.push(requests[i].join('='))
+        }
+        url = url.join('&');
+        history.replaceState(null, null, './table?' + url);
+    } else history.replaceState(null, null, './table');
+}
+
+var add_request = function(key, value) {
+    var requests = global.requests
+    var exists = false;
+    for (var i = 0; i < requests.length; i++) {
+        if (key == requests[i][0]) {
+            requests[i][1] = value;
+            exists = true;
+            break;
+        }
+    }
+
+    if (!exists) {
+        console.log('pushing');
+        requests.push([key, value]);
+        console.log('requets: ' + requests);
+    }
+    global.requests = requests;
+    console.log('global.requests after add: ' + global.requests);
+};
+
+var remove_request = function(key) {
+    console.log('removing key ' + key);
+    requests = global.requests;
+    if (requests.length > 0) {
+        for (var i = 0; i < requests.length; i++) {
+            if (requests[i][0] == key) {
+                console.log('found');
+                requests.splice(i, 1);
+                global.requests = requests;
+                break;
+            }
+        }
+
+        console.log('after remove: ' + global.requests);
+    }
+}
+
+var init_requests = function() {
+    console.log('initializing requests');
+    var current = window.location.search.substring(1);
+    if (current.length <= 0) global.requests = [];
+    else {
+        var requests = []
+        $.each(current.split('&'), function(index, item) {
+            requests.push(item.split('='));
+        });
+        global.requests = requests;
+    }
+}
+
 
 var tableUpdate = function() {
     $('#data tbody').empty();
@@ -56,57 +119,22 @@ var tableUpdate = function() {
     }
 
     post_data['sliders'] = true;
-    var history_update = window.location.search.substring(1).split('&');
     $.each(sliders, function(index, slider) {
-        if (slider.getValue() != slider.state) {
+        if (slider.getValue() != slider.init) {
             value = slider.getValue();
-
-            var exists = false;
-            for (var i = 0; i < history_update.length; i++) {
-                var pair = history_update[i].split('=');
-                if (pair[0] == slider.name) {
-                    exists = true;
-                    if (pair[1] != value) {
-                        if (typeof value != 'number') value = '[' + value + ']';
-                        history_update[i] = slider.name + '=' + value;
-                    }
-                }
-            }
-
-            if (!exists) {
-                post_data[slider.name] = value;
-                if (typeof value != 'number') value = '[' + value + ']';
-                history_update.push(slider.name + '=' + value);
-            }
+            post_data[slider.name] = value;
+            if (typeof value != 'number') value = '[' + value + ']';
+            add_request(slider.name, value);
         }
-
     });
-    if (global.celltype.length > 0) {
-        exists = false;
-        for (var i = 0; i < history_update.length; i++) {
-            var pair = history_update[i].split('=');
-            if (pair[0] = 'celltype') {
-                history_update[i] = 'celltype=[' + global.celltype + ']';
-                exists = true;
-                break;
-            }
-        }
-        if (!exists) {
-            history_update.push('celltype=[' + global.celltype + ']');
-        }
-    } else {
-        for (var i = 0; i < history_update.length; i++) {
-            var pair = history_update[i].split('=');
-            if (pair[0] = 'celltype') {
-                history_update.splice(i, 1);
-            }
-        }
-    }
 
-    console.log(history_update.join('&'));
-    if (history_update.length > 0) {
-        history.replaceState(null, null, './table?' + history_update.join('&'));
-    } else history.replaceState(null, null, './table');
+    if (global.celltype.length > 0) {
+        value = '[' + global.celltype + ']';
+        add_request('celltype', value);
+    } else remove_request('celltype');
+
+    console.log(global.requests);
+    update_url();
     
     post_data = JSON.stringify(post_data);
     console.log(post_data);
@@ -150,6 +178,7 @@ var tableUpdate = function() {
 
 $(document).ready(function() {
     tableLinks();
+    init_requests();
 
     //sorting function
 
@@ -172,7 +201,7 @@ $(document).ready(function() {
     $('input.table-filter.range').each(function(index, item) {
         var slider = new Slider(item);
         slider.name = item.getAttribute('name');
-        slider.state = slider.getValue();
+        slider.init = slider.getValue();
         slider.on('slideStop', tableUpdate);
 
         slider.on('slide', function(item) {
