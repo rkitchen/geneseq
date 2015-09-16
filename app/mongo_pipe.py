@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import app.settings
 import logging
 import pprint
 
@@ -85,8 +86,45 @@ class Parent(object):
     def __init__(self, pipe):
         self.pipe = pipe
 
+    def getTable(self, **kwargs):
+        logger.debug('kwargs %s' % kwargs)
+        pipe = self.pipe
+        pipe.connect()
+        logger.debug('starting aggregation')
+
+        aggregate = dict()
+        pipeline = list()
+        if 'match' in kwargs:
+            pipeline.append({'$match': kwargs['match']})
+        if 'pipeline' in kwargs:
+            pipeline += kwargs['pipeline']
+        if 'sort' in kwargs:
+            sort = kwargs['sort']
+            if type(sort) is list or type(sort) is tuple:
+                pipeline.append({'$sort': {sort[0]: sort[1]}})
+        if 'limit' in kwargs:
+            pipeline.append({'$limit': int(kwargs['limit'])})
+        else:
+            limit = app.settings.getDefaultLimit(self.name)
+            pipeline.append({'$limit': int(limit)})
+
+        aggregate = {'pipeline': pipeline, 'allowDiskUse': True}
+
+        logger.debug('mongo aggregation:\n%s' % pprint.pformat(aggregate))
+        cursor = pipe.db[self.name].aggregate(**aggregate)
+
+        logger.debug('finish aggregation')
+        data = list()
+        for item in cursor:
+            data.append(item)
+
+        pipe.disconnect()
+        logger.debug(pprint.pformat(data))
+        return pipe.fixData(data)
+
 
 class Human(Parent):
+    name = 'human'
 
     def getGene(self, human_id):
         pipe = self.pipe
@@ -158,46 +196,34 @@ class Human(Parent):
         logger.debug(pprint.pformat(data))
         return data
 
-    def getTable(self, sort=('gene_name', -1), limit=10,
-                 **kwargs):
+    def getTable(self, sort=('gene_name', -1), **kwargs):
         logger.debug('kwargs %s' % kwargs)
         pipe = self.pipe
         pipe.connect()
         logger.debug('starting aggregation')
 
-        aggregate = dict()
-        pipeline = list()
-        match = {'bodymap': {'$exists': True}}
-        pipeline.append({'$match': match})
-        pipeline.append(
+        pipeline = [
             {'$project': {
                 '_id': 1,
                 'gene_name': 1,
                 'source': 1,
-                'gene_chr': 1}})
+                'gene_chr': 1}}]
 
-        if type(sort) is list or type(sort) is tuple:
-            pipeline.append({'$sort': {sort[0]: sort[1]}})
-        if limit is not None:
-            limit = int(limit)
-            pipeline.append({'$limit': limit})
+        kwargs['match'] = {'bodymap': {'$exists': True}}
+        kwargs['pipeline'] = pipeline
+        kwargs['sort'] = sort
 
-        aggregate['pipeline'] = pipeline
-        aggregate['allowDiskUse'] = True
-        logger.debug('mongo aggregation:\n%s' % pprint.pformat(aggregate))
-        cursor = pipe.db.human.aggregate(**aggregate)
-        logger.debug('finish aggregation')
-        data = list()
-        for item in cursor:
+        data = super().getTable(**kwargs)
+
+        for item in data:
             item['bodymap'] = 1
-            data.append(item)
 
-        pipe.disconnect()
         logger.debug(pprint.pformat(data))
-        return pipe.fixData(data)
+        return data
 
 
 class Mouse(Parent):
+    name = 'mouse'
 
     def getGene(self, mouse_id):
         pipe = self.pipe
@@ -254,12 +280,8 @@ class Mouse(Parent):
             celltypes.append(cell['_id'])
         return celltypes
 
-    def getTable(self, sort=('expression', -1), limit=10,
-                 expression=None, enrichment=None, celltype=None,
-                 **kwargs):
-        logger.debug('expression %s' % expression)
-        logger.debug('enrichment %s' % enrichment)
-        logger.debug('kwargs %s' % kwargs)
+    def getTable(self, sort=('expression', -1), **kwargs):
+        logger.debug('kwargs %s' % pprint.pformat(kwargs))
         pipe = self.pipe
         pipe.connect()
         logger.debug('starting aggregation')
@@ -280,42 +302,32 @@ class Mouse(Parent):
 
         match = {'processed': {'$exists': True}}
 
-        if celltype is not None:
+        if 'celltype' in kwargs:
+            celltype = kwargs['celltype']
             if type(celltype) is str:
                 match['processed.type'] = celltype
             elif type(celltype) is list:
                 match['processed.type'] = {'$nin': celltype}
 
-        if expression is not None or enrichment is not None:
-            if type(expression) is list:
-                match['processed.expression'] = {'$gt': expression[0], '$lt': expression[1]}
-            if type(enrichment) is list:
-                match['processed.enrichment'] = {'$gt': enrichment[0], '$lt': enrichment[1]}
-        pipeline.append({'$match': match})
+        if 'expression' in kwargs and type(kwargs['expression']) is list:
+            if type(kwargs['expression']) is list:
+                value = kwargs['expression']
+                match['processed.expression'] = {'$gt': value[0], '$lt': value[1]}
 
-        pipeline.append(
+        if 'enrichment' in kwargs and type(kwargs['enrichment']) is list:
+            value = kwargs['enrichment']
+            match['processed.enrichment'] = {'$gt': value[0], '$lt': value[1]}
+
+        pipeline = [
             {'$project': {
                 '_id': 1, 'cell': '$processed.type',
                 'expression': '$processed.expression',
                 'enrichment': '$processed.enrichment',
-                'human_id': '$processed.human_id'}})
+                'human_id': '$processed.human_id'}}]
 
-        if type(sort) is list or type(sort) is tuple:
-            pipeline.append({'$sort': {sort[0]: sort[1]}})
-        if limit is not None:
-            limit = int(limit)
-            pipeline.append({'$limit': limit})
+        kwargs['match'] = match
+        kwargs['pipeline'] = pipeline
+        kwargs['sort'] = sort
 
-        aggregate['pipeline'] = pipeline
-        aggregate['allowDiskUse'] = True
-        logger.debug('mongo aggregation:\n%s' % pprint.pformat(aggregate))
-        cursor = pipe.db.mouse.aggregate(**aggregate)
-        logger.debug('finish aggregation')
-        data = list()
-        for item in cursor:
-            data.append(item)
-        pipe.disconnect()
-        logger.debug(pprint.pformat(data))
-        return pipe.fixData(data)
-
-    
+        data = super().getTable(**kwargs)
+        return data
