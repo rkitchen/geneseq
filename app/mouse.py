@@ -176,15 +176,16 @@ class Table(Parent):
                 preset = list()
                 if item['column'] in kwargs:
                     preset += kwargs[item['column']]
-
-                for i, option in enumerate(item['options']):
+                options = item['options']
+                for i, option in enumerate(options):
                     name = ' '.join(option.split('_')).title()
 
                     checked = True
                     if option in preset:
                         checked = False
 
-                    item['options'][i] = (option, name, checked)
+                    options[i] = (option, name, checked)
+                item['options'] = sorted(options, key=lambda item: item[1])
 
                 logger.debug('selection options %s' % item['options'])
 
