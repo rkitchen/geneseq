@@ -51,25 +51,62 @@ var tableUpdate = function() {
         post_data.sort = global.sort;
     }
 
-    if (global.celltype != []) {
+    if (global.celltype.length > 0) {
         post_data.celltype = global.celltype;
     }
 
     post_data['sliders'] = true;
-    var history_update = [];
+    var history_update = window.location.search.substring(1).split('&');
     $.each(sliders, function(index, slider) {
-        value = slider.getValue()
-        post_data[slider.name] = value;
+        if (slider.getValue() != slider.state) {
+            value = slider.getValue();
 
-        if (typeof value != 'number') value = '[' + value + ']';
-        history_update.push(slider.name + '=' + value);
+            var exists = false;
+            for (var i = 0; i < history_update.length; i++) {
+                var pair = history_update[i].split('=');
+                if (pair[0] == slider.name) {
+                    exists = true;
+                    if (pair[1] != value) {
+                        if (typeof value != 'number') value = '[' + value + ']';
+                        history_update[i] = slider.name + '=' + value;
+                    }
+                }
+            }
+
+            if (!exists) {
+                post_data[slider.name] = value;
+                if (typeof value != 'number') value = '[' + value + ']';
+                history_update.push(slider.name + '=' + value);
+            }
+        }
+
     });
-
-    if (global.celltype != []) {
-        history_update.push('celltype=[' + global.celltype + ']');
+    if (global.celltype.length > 0) {
+        exists = false;
+        for (var i = 0; i < history_update.length; i++) {
+            var pair = history_update[i].split('=');
+            if (pair[0] = 'celltype') {
+                history_update[i] = 'celltype=[' + global.celltype + ']';
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+            history_update.push('celltype=[' + global.celltype + ']');
+        }
+    } else {
+        for (var i = 0; i < history_update.length; i++) {
+            var pair = history_update[i].split('=');
+            if (pair[0] = 'celltype') {
+                history_update.splice(i, 1);
+            }
+        }
     }
+
     console.log(history_update.join('&'));
-    history.replaceState(null, null, './table?' + history_update.join('&'));
+    if (history_update.length > 0) {
+        history.replaceState(null, null, './table?' + history_update.join('&'));
+    } else history.replaceState(null, null, './table');
     
     post_data = JSON.stringify(post_data);
     console.log(post_data);
@@ -135,7 +172,9 @@ $(document).ready(function() {
     $('input.table-filter.range').each(function(index, item) {
         var slider = new Slider(item);
         slider.name = item.getAttribute('name');
+        slider.state = slider.getValue();
         slider.on('slideStop', tableUpdate);
+
         slider.on('slide', function(item) {
             console.log(item);
             for (var i = 0; i < sliders.length; i++) {

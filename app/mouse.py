@@ -188,7 +188,7 @@ class Table(Parent):
 
                 logger.debug('selection options %s' % item['options'])
 
-            if item['type'] == 'sliders':
+            if item['type'] == 'slider':
                 if item['column'] in kwargs:
                     item['init'] = str(kwargs[item['column']])
         logger.debug(filters)
