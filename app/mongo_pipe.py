@@ -15,7 +15,6 @@ class Pipe(object):
         """initializes variables"""
         logger.debug('initializing mongo pipe')
         self.mouse = Mouse(self)
-        self.table = Table(self)
         self.human = Human(self)
 
     def fixData(self, data, style='title', roundn=_ROUND_DECIMAL):
@@ -159,6 +158,44 @@ class Human(Parent):
         logger.debug(pprint.pformat(data))
         return data
 
+    def getTable(self, sort=('gene_name', -1), limit=10,
+                 **kwargs):
+        logger.debug('kwargs %s' % kwargs)
+        pipe = self.pipe
+        pipe.connect()
+        logger.debug('starting aggregation')
+
+        aggregate = dict()
+        pipeline = list()
+        match = {'bodymap': {'$exists': True}}
+        pipeline.append({'$match': match})
+        pipeline.append(
+            {'$project': {
+                '_id': 1,
+                'gene_name': 1,
+                'source': 1,
+                'gene_chr': 1}})
+
+        if type(sort) is list or type(sort) is tuple:
+            pipeline.append({'$sort': {sort[0]: sort[1]}})
+        if limit is not None:
+            limit = int(limit)
+            pipeline.append({'$limit': limit})
+
+        aggregate['pipeline'] = pipeline
+        aggregate['allowDiskUse'] = True
+        logger.debug('mongo aggregation:\n%s' % pprint.pformat(aggregate))
+        cursor = pipe.db.human.aggregate(**aggregate)
+        logger.debug('finish aggregation')
+        data = list()
+        for item in cursor:
+            item['bodymap'] = 1
+            data.append(item)
+
+        pipe.disconnect()
+        logger.debug(pprint.pformat(data))
+        return pipe.fixData(data)
+
 
 class Mouse(Parent):
 
@@ -216,9 +253,6 @@ class Mouse(Parent):
         for cell in cursor:
             celltypes.append(cell['_id'])
         return celltypes
-
-
-class Table(Parent):
 
     def getTable(self, sort=('expression', -1), limit=10,
                  expression=None, enrichment=None, celltype=None,
@@ -283,3 +317,5 @@ class Table(Parent):
         pipe.disconnect()
         logger.debug(pprint.pformat(data))
         return pipe.fixData(data)
+
+    

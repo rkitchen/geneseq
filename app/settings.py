@@ -90,7 +90,7 @@ def translate_readable(key):
         return key
 
 
-def getColumnNames():
+def getColumnNames(name):
     """Gets the visible and variable names of the columns
     displayed in the html data table
 
@@ -100,7 +100,7 @@ def getColumnNames():
                 [0] Human readable name
                 [1] Variable name in condensed
     """
-    return copy.deepcopy(config['table_columns'])
+    return copy.deepcopy(config['table_columns'][name])
 
 
 def getDefaultLimit(name):

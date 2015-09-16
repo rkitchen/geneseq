@@ -7,46 +7,38 @@ readable:
     gene_chr: Chromosome
 
 table_columns:
-    -
-        - Gene Mouse ID
-        - _id
-    -
-        - Gene Human ID
-        - human_id
-    -
-        - Cell Type
-        - cell
-    -
-        - Expression
-        - expression
-    -  
-        - Enrichment
-        - enrichment
-
-SELECT:
-    gene:
-        - id
-        - celltype
-        - expression
-        - expression_next
-        - geneName
-        - geneID
-        - geneID_human
-        - geneID_mouse
-        - geneType
-    table:
-        - id
-        - celltype
-        - geneType
-        - expression
-        - expression_next
-        - geneName
-    table_ajax:
-        - geneName
-        - cellType
-        - geneType
-        - expr
-        - expr_next
+    mouse:
+        -
+            - Gene Mouse ID
+            - _id
+        -
+            - Gene Human ID
+            - human_id
+        -
+            - Cell Type
+            - cell
+        -
+            - Expression
+            - expression
+        -  
+            - Enrichment
+            - enrichment
+    human:
+        -
+            - Gene ID
+            - _id
+        -
+            - Gene Name
+            - gene_name
+        -
+            - Source
+            - source
+        -
+            - Chromosome
+            - gene_chr
+        -
+            - Bodymap
+            - bodymap
 table_input:
     mouse:
         -
@@ -90,6 +82,15 @@ table_input:
                 - oligodendrocyte
                 - microglia
     human:
+        -
+            name: Result Limit
+            column: limit
+            type: slider
+            scale: linear
+            min: 0
+            max: 1000
+            step: 10
+            init: 100
         -
             name: Test
             column: test

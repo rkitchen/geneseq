@@ -93,12 +93,12 @@ class Table(Parent):
         kwargs = self.fixInput(kwargs)
         logger.debug('GET kwargs: %s' % kwargs)
         # logger.debug('global test %s' % app.settings.Settings.test)
-        data = self.pipe.table.getTable(**kwargs)
+        data = self.pipe.mouse.getTable(**kwargs)
 
         kwargs = {'Title': 'Mouse Expression Table',
                   'data': data,
                   'filters': self.fixFilters(kwargs),
-                  'columnNames': app.settings.getColumnNames()}
+                  'columnNames': app.settings.getColumnNames('mouse')}
 
         tmpl = self.lookup.get_template("table.html")
 
@@ -137,7 +137,7 @@ class Table(Parent):
             #         if type(slider_data) is list:
             #             _json[key] = slider_data
 
-        new_data = self.pipe.table.getTable(**_json)
+        new_data = self.pipe.mouse.getTable(**_json)
 
         return json.dumps(new_data)
 

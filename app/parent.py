@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class Parent(object):
+    exposed = True
 
     def __init__(self, mouse):
         self.lookup = mouse.lookup

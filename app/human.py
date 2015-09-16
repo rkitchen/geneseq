@@ -13,6 +13,7 @@ class Human(object):
     def __init__(self, mako):
         self.lookup = mako
         self.gene = Gene(self)
+        self.table = Table(self)
         self.chart = Chart(self)
 
 
@@ -68,7 +69,7 @@ class Gene(Parent):
         order = app.settings.getOrder('human')
 
         ret = sorted(header, key=lambda i: order.index(i[1]))
-        logger.debug('sorted mouse header values %s' % ret)
+        logger.debug('sorted human header values %s' % ret)
         return ret
 
 
@@ -84,14 +85,12 @@ class Table(Parent):
         logger.info('/data GET request')
         kwargs = self.fixInput(kwargs)
         logger.debug('GET kwargs: %s' % kwargs)
-        # logger.debug('global test %s' % app.settings.Settings.test)
-        data = self.pipe.table.getTable(**kwargs)
+        data = self.pipe.human.getTable(**kwargs)
 
-        kwargs = {'Title': 'Mouse Expression Table',
+        kwargs = {'Title': 'Human Expression Table',
                   'data': data,
                   'filters': self.fixFilters(kwargs),
-                  'columnNames': app.settings.getColumnNames(),
-                  'order': order}
+                  'columnNames': app.settings.getColumnNames('human')}
 
         tmpl = self.lookup.get_template("table.html")
 
@@ -130,9 +129,43 @@ class Table(Parent):
             #         if type(slider_data) is list:
             #             _json[key] = slider_data
 
-        new_data = self.pipe.table.getTable(**_json)
+        new_data = self.pipe.human.getTable(**_json)
 
         return json.dumps(new_data)
+
+    def fixFilters(self, kwargs):
+        """changes slider init to string for slider jquery
+
+        Returns:
+            dict: sliders
+        """
+        filters = app.settings.getTableFilters('human')
+        for item in filters:
+            logger.debug(item)
+
+            if item['type'] == 'selection':
+                preset = list()
+                if item['column'] in kwargs:
+                    preset += kwargs[item['column']]
+                options = item['options']
+                for i, option in enumerate(options):
+                    name = ' '.join(option.split('_')).title()
+
+                    checked = True
+                    if option in preset:
+                        checked = False
+
+                    options[i] = (option, name, checked)
+                item['options'] = sorted(options, key=lambda item: item[1])
+
+                logger.debug('selection options %s' % item['options'])
+
+            if item['type'] == 'slider':
+                if item['column'] in kwargs:
+                    item['init'] = str(kwargs[item['column']])
+        logger.debug(filters)
+        logger.debug(pprint.pformat(app.settings.getTableSliders('human')))
+        return filters
 
 
 class Chart(Parent):
