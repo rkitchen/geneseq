@@ -4,4 +4,4 @@ MAINTAINER Michael Laraia <micheal.laraia@gmail.com>
 COPY system_configs /
 ADD mongodump.tar.gz /mongodump
 
-RUN /usr/local/bin/mongo_configure.sh && rm -R /data
+RUN /usr/local/bin/mongo_configure.sh && rm -R /mongodump
