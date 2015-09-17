@@ -80,9 +80,21 @@ var initSliders = function() {
     });
 }
 
+var selection_setAll = function(inputGroup, state) {
+    options = [];
+    $(inputGroup).find('input').each(function(index, item) {
+        $(item).prop('checked', state);
+        options.push($(item).attr('value'));
+    });
+    if (!state) global.celltype = options;
+    else global.celltype = [];
+    tableUpdate();
+};
+
 //initializes sidebar options list
 var initSelection = function() {
-    $('input.table-filter.selection').change(function() {
+    var selections = $('li.table-filter.selection');
+    selections.find('input.selection').change(function() {
         console.log($(this).is(':checked'));
         console.log($(this).attr('value'));
         value = $(this).attr('value');
@@ -96,6 +108,20 @@ var initSelection = function() {
         }
         console.log(global.celltype);
         tableUpdate();
+    });
+
+    selections.each(function(index, item) {
+        console.log(item);
+        $(item).find('#select-all').click(function(event) {
+            event.preventDefault();
+            inputGroup = $(this).parent().parent()
+            selection_setAll(inputGroup, true);
+        });
+        $(item).find('#deselect-all').click(function(event) {
+            event.preventDefault();
+            inputGroup = $(this).parent().parent()
+            selection_setAll(inputGroup, false);
+        });
     });
 }
 
