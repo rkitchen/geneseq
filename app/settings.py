@@ -18,6 +18,9 @@ def init():
     pipe = app.mongo_pipe.Pipe()
     logger.debug(getConfig())
 
+    setCurrentCount('human', pipe.human.count())
+    setCurrentCount('mouse', pipe.mouse.count())
+
 
 def getConfig():
     """gets config dictionary
@@ -34,6 +37,7 @@ def setCurrentCount(name, count):
         if slider['column'] == 'limit':
             logger.debug('found limit slider, changing max to %s' % count)
             slider['max'] = count
+            slider['init'] = count
 
 
 def setCellTypes(name, celltypes):

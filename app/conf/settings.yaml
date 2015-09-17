@@ -9,16 +9,13 @@ readable:
 table_columns:
     mouse:
         -
-            - Gene Mouse ID
-            - _id
-        -
-            - Gene Human ID
-            - human_id
+            - Gene Name
+            - human_name
         -
             - Cell Type
             - cell
         -
-            - Expression
+            - Expression (TPM)
             - expression
         -  
             - Enrichment

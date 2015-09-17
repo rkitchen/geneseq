@@ -62,12 +62,6 @@ class Pipe(object):
         self.connect()
         self.cursor = self.db[db].find(**kwargs)
 
-    def count(self):
-        if self.cursor is not None:
-            return self.cursor.count()
-        else:
-            return -1
-
     def connect(self):
         """opens connection to mongo database"""
         logger.debug('connecting')
@@ -121,6 +115,17 @@ class Parent(object):
         pipe.disconnect()
         logger.debug(pprint.pformat(data))
         return pipe.fixData(data)
+
+    def count(self, field_exists=None):
+        pipe = self.pipe
+        pipe.connect()
+        if field_exists is not None:
+            count = pipe.db[self.name].count({field_exists: {'$exists': True}})
+        else:
+            count = pipe.db[self.name].count({})
+        pipe.disconnect()
+        logger.debug('current %s count %s type %s' % (self.name, count, type(count)))
+        return count
 
 
 class Human(Parent):
@@ -195,6 +200,9 @@ class Human(Parent):
             data.append(item)
         logger.debug(pprint.pformat(data))
         return data
+
+    def count(self):
+        return super().count('bodymap')
 
     def getTable(self, sort=('gene_name', -1), **kwargs):
         logger.debug('kwargs %s' % kwargs)
@@ -280,6 +288,9 @@ class Mouse(Parent):
             celltypes.append(cell['_id'])
         return celltypes
 
+    def count(self):
+        return super().count('processed')
+
     def getTable(self, sort=('expression', -1), **kwargs):
         logger.debug('kwargs %s' % pprint.pformat(kwargs))
         pipe = self.pipe
@@ -323,7 +334,8 @@ class Mouse(Parent):
                 '_id': 1, 'cell': '$processed.type',
                 'expression': '$processed.expression',
                 'enrichment': '$processed.enrichment',
-                'human_id': '$processed.human_id'}}]
+                'human_id': '$processed.human_id',
+                'human_name': '$processed.human_name'}}]
 
         kwargs['match'] = match
         kwargs['pipeline'] = pipeline
