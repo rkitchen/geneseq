@@ -39,7 +39,7 @@ table_columns:
 table_input:
     mouse:
         -
-            name: Expression
+            name: Expression (TPM)
             column: expression
             type: slider
             scale: logarithmic
@@ -54,11 +54,11 @@ table_input:
             column: enrichment
             type: slider
             scale: logarithmic
-            min: 0
+            min: 5
             max: 5000
             step: 10
             init:
-                - 0
+                - 5
                 - 5000
         -
             name: Result Limit

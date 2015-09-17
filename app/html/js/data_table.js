@@ -240,7 +240,7 @@ var tableUpdate = function() {
                 console.log('columns: ' + columns);
                 row.push('<a href="./gene?id=' +
                     item['_id'] + '">' +
-                    item['_id'] +
+                    item[columns[0]] +
                     '</a>');
                 for (var i = 1; i < columns.length; i++) {
                     row.push(item[columns[i]]);

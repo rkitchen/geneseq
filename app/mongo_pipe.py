@@ -113,7 +113,6 @@ class Parent(object):
             data.append(item)
 
         pipe.disconnect()
-        logger.debug(pprint.pformat(data))
         return pipe.fixData(data)
 
     def count(self, field_exists=None):
@@ -334,7 +333,6 @@ class Mouse(Parent):
                 '_id': 1, 'cell': '$processed.type',
                 'expression': '$processed.expression',
                 'enrichment': '$processed.enrichment',
-                'human_id': '$processed.human_id',
                 'human_name': '$processed.human_name'}}]
 
         kwargs['match'] = match
