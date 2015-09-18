@@ -125,8 +125,8 @@ var brainspan = new function(){
                 self.data = data;
 
                 width = get_width(data.names.length);
-                yaxis.innerTickSize(-width.normal)
-                .tickValues(get_ticks(data.max));
+                yaxis.innerTickSize(-width.normal);
+                //.tickValues(get_ticks(data.max));
 
                 xscale.domain([10, data.duration])
                       .range([0, width.inner]);

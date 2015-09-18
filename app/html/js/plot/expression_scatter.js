@@ -69,6 +69,8 @@ var scatter = new function() {
                     colorscale = d3.scale.category20();
                 }
 
+                colorscale.domain(data.names);
+
                 var svg;
                 if (params.node != null) svg = d3.select(params.node);
                 else svg = d3.select('div#content-wrapper');

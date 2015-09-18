@@ -217,6 +217,7 @@ class Bodymap(Parent):
             name = ' '.join(tissue['name'].split('_')).title()
             values.append((name, tissue['value']))
             columns.append(name)
+        columns.sort()
         ret = {'values': values, 'names': columns}
         ret['title'] = 'Human Bodymap Expression'
         ret['min'] = min([x[1] for x in values])
@@ -241,13 +242,14 @@ class Brainspan(Parent):
     def getData(self, human_id):
         logger.debug('getting brainspan chart  for %s' % human_id)
 
+        main_regions = app.settings.getBrainspanRegions()
         data = self.pipe.human.plot_brainspan(human_id)
         columns = list()
         ret = dict()
 
         for item in data:
             region = item['region']
-            if region not in ['HIP', 'AMY', 'STR', 'MD', 'CBC']:
+            if region not in main_regions:
                 region = 'NCX'
             if region not in columns:
                 columns.append(region)
