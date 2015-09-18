@@ -112,3 +112,10 @@ order:
         - gene_name
         - chr
         - source
+brainspan:
+    regions:
+        - HIP
+        - AMY
+        - STR
+        - MD
+        - CBC

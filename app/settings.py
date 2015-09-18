@@ -167,3 +167,6 @@ def getTableFilters(name):
 
 def getOrder(name):
     return copy.deepcopy(config['order'][name])
+
+def getBrainspanRegions():
+    return copy.deepcopy(config['brainspan']['regions'])
