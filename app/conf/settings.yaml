@@ -112,6 +112,12 @@ order:
         - gene_name
         - chr
         - source
+    celltypes:
+        - neuron
+        - astrocyte
+        - microglia
+        - endothelial
+        - oligodendrocyte
 brainspan:
     regions:
         - HIP

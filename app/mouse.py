@@ -203,17 +203,24 @@ class Chart(Parent):
         logger.debug('getting charts for %s' % mouse_id)
 
         # TODO multiple charts
+        annotations = self.pipe.mouse.celltypeMap()
         mouse = self.pipe.mouse.plotExpression(mouse_id)
         values = list()
         columns = list()
+
         for cellType in mouse:
             name = ' '.join(cellType['_id'].split('_')).title()
             values.append((name, cellType['value']))
-            columns.append(name)
-        ret = {'values': values, 'names': columns}
+            columns.append((cellType['_id'], name))
+
+        order = app.settings.getOrder('celltypes')
+        columns = sorted(columns, key=lambda i: order.index(annotations[i[0]]))
+        names = [x[1] for x in columns]
+
+        ret = {'values': values, 'names': names}
         ret['title'] = 'Celltype Expression in Mice'
         ret['min'] = min([x[1] for x in values])
         ret['max'] = max([x[1] for x in values])
-        ret['axis_length'] = max(len(x) for x in columns)
+        ret['axis_length'] = max(len(x) for x in names)
         logger.debug('data to return: %s' % pprint.pformat(ret))
         return ret
