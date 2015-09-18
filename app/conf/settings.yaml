@@ -18,7 +18,7 @@ table_columns:
             - Expression (TPM)
             - expression
         -  
-            - Enrichment
+            - Fold Enrichment
             - enrichment
     human:
         -

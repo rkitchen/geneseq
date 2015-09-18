@@ -2,27 +2,40 @@
 
 /*################### Globals ##################*/
 
-svg .axis .tick line {
-    fill: none;
-    stroke: @color-background;
-    stroke-width: 2px;
-    shape-rendering: crispEdges;
+div.chart {
+    margin: 10px;
+    display: inline-block;
+    vertical-align: top;
+        
+    svg {
+        .axis {
+            path, line {
+                fill: none;
+                stroke: none;
+            }
+
+            text {
+                font-family: sans-serif;
+                font-size: 11px;
+                fill: @color-grey-dark;
+                text-anchor: end !important;
+            }
+
+            .tick line {
+                fill: none;
+                stroke: @color-background;
+                stroke-width: 2px;
+                shape-rendering: crispEdges;
+            }
+        }
+
+        .title {
+            font-size: 18px;
+        }
+    }
 }
 
-svg {
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-}
-
-svg .axis path, svg .axis line {
-    fill: none;
-    stroke: none;
-}
-
-svg .axis text {
-    font-family: sans-serif;
-    font-size: 11px;
-    fill: @color-grey-dark;
-    text-anchor: end !important;
+div#content-wrapper {
+    padding: 0 60px;
+    text-align: center;
 }

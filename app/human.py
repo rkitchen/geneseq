@@ -192,6 +192,7 @@ class Chart(Parent):
             values.append((name, tissue['value']))
             columns.append(name)
         ret = {'values': values, 'names': columns}
+        ret['title'] = 'Human Bodymap Expression'
         ret['min'] = min([x[1] for x in values])
         ret['max'] = max([x[1] for x in values])
         ret['axis_length'] = max(len(x) for x in columns)

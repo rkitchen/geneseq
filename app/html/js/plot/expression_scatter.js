@@ -2,7 +2,7 @@ var debug_data;
 var margin = {};
 margin.left = 60;
 margin.right = 20;
-margin.top = 15;
+margin.top = 45;
 margin.bottom = 200;
 
 var max_width = 500;
@@ -46,6 +46,7 @@ var draw_plot = function(id, source, params) {
         .innerTickSize(-height)
         .outerTickSize(0);
 
+    var done = false;
     $.post(source, {'gene_id': id}, function(data, status) {
         if (status == 'success' && data != null) {
             console.log('data: ' + data);
@@ -67,8 +68,11 @@ var draw_plot = function(id, source, params) {
                 colorscale = d3.scale.category20();
             }
 
-            var svg = d3.select('div#content-wrapper')
-                .append('svg')
+            var svg;
+            if (params.node != null) svg = d3.select(params.node);
+            else svg = d3.select('div#content-wrapper');
+
+            svg = svg.append('svg')
                 .attr('width', width + margin.left + margin.right)
                 .attr('height', height + margin.top + margin.bottom)
             svg.append('rect')
@@ -106,14 +110,22 @@ var draw_plot = function(id, source, params) {
                     return colorscale(d[0]);
                 })
                 .attr("r", radius);
+
+            canvas.append("text")
+                .attr("class", "title")
+                .attr("x", (width / 2))             
+                .attr("y", - (margin.top / 2))
+                .attr("text-anchor", "middle") 
+                .text(data.title);
         }
+        done = true;
     });
-    
 
     
 };
 
 var scatter_plot = function(id, source, params) {
+    console.log(params);
     if (params.width == null) params.width = get_width();
     if (params.height == null) params.height = get_height(params.width);
     if (params.radius == null) params.radius = default_radius;
