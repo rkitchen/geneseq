@@ -311,6 +311,20 @@ class Mouse(Parent):
         logger.debug(pprint.pformat(data))
         return data
 
+    def celltypeMap(self):
+        logger.debug('getting mouse celltype annotation map')
+        pipe = self.pipe
+        pipe.connect()
+
+        c = pipe.db.mouse_annotations
+        cursor = c.find(projection={'_id': 0, 'level2': 0})
+
+        annotations = dict()
+        for item in cursor:
+            annotations[item['level1']] = item['level3']
+
+        return annotations
+
     def getCellTypes(self):
         pipe = self.pipe
         pipe.connect()
