@@ -202,13 +202,14 @@ class Human(Parent):
 
     def brainspan_annotations(self):
         logger.debug('getting brainspan annotations')
-        pipe = self.pipe()
+        pipe = self.pipe
         pipe.connect()
 
         aggregate = [{'$project': {'days': 1}}]
-        cursor = pipe.db.brainspan_annotations.aggregate(aggregate)
+        cursor = pipe.db.brainspan_annotation.aggregate(aggregate)
         annotations = dict()
         for item in cursor:
+            logger.debug('test %s' % pprint.pformat(item))
             annotations[item['_id']] = item['days']
         pipe.disconnect()
 
@@ -216,11 +217,11 @@ class Human(Parent):
         return annotations
 
     def plot_brainspan(self, human_id):
-        pipe = self.pipe()
+        pipe = self.pipe
         annotations = self.brainspan_annotations()
 
         aggregate = [{'$match': {'_id': human_id}},
-                     {'$unwind': 'expression'},
+                     {'$unwind': '$expression'},
                      {'$project': {'_id': 0,
                                    'brain': '$expression.brain',
                                    'region': '$expression.region',

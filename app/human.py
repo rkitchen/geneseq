@@ -173,7 +173,7 @@ class Chart(Parent):
     def __init__(self, pipe):
         super().__init__(pipe)
         self.bodymap = Bodymap(pipe)
-        self.brainspan = None
+        self.brainspan = Brainspan(pipe)
 
     def GET(self, gene_id, chart, **kwargs):
         data = None
@@ -244,15 +244,23 @@ class Brainspan(Parent):
         data = self.pipe.human.plot_brainspan(human_id)
         columns = list()
         ret = dict()
+
         for item in data:
             region = item['region']
+            if region not in ['HIP', 'AMY', 'STR', 'MD', 'CBC']:
+                region = 'NCX'
             if region not in columns:
                 columns.append(region)
                 ret[region] = list()
-            ret[region].append((item['age'], item['value']))
+
+            age = item['age']
+            value = item['value']
+            ret[region].append((age, value))
+
         ret['names'] = columns
         ret['title'] = 'Human Brainspan Expression'
-        ret['min'] = [min(x['value']) for x in data]
-        ret['max'] = [max(x['value']) for x in data]
+        ret['min'] = min([x['value'] for x in data])
+        ret['max'] = max([x['value'] for x in data])
+        ret['duration'] = max([x['age'] for x in data])
         logger.debug('data to return \n%s' % pprint.pformat(ret))
         return ret
