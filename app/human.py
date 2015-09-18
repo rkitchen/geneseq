@@ -170,14 +170,40 @@ class Table(Parent):
 
 class Chart(Parent):
 
-    def GET(self, **kwargs):
-        data = self.getData(kwargs['gene_id'])
+    def __init__(self, pipe):
+        super().__init__(pipe)
+        self.bodymap = Bodymap(pipe)
+        self.brainspan = None
+
+    def GET(self, gene_id, chart, **kwargs):
+        data = None
+        if (chart == 'bodymap'):
+            data = self.bodymap.getData(gene_id)
+        elif (chart == 'brainspan'):
+            data = self.brianspan.getData(gene_id)
         return json.dumps(data)
 
-    def POST(self, **kwargs):
+    def POST(self, gene_id, chart, **kwargs):
         logger.debug('Charts POST')
         logger.debug(pprint.pformat(kwargs))
-        data = self.getData(kwargs['gene_id'])
+        data = None
+        if (chart == 'bodymap'):
+            data = self.bodymap.getData(gene_id)
+        elif (chart == 'brainspan'):
+            data = self.brianspan.getData(gene_id)
+        return json.dumps(data)
+
+
+class Bodymap(Parent):
+
+    def GET(self, gene_id, **kwargs):
+        data = self.getData(gene_id)
+        return json.dumps(data)
+
+    def POST(self, gene_id, **kwargs):
+        logger.debug('Charts POST id %s' % gene_id)
+        logger.debug(pprint.pformat(kwargs))
+        data = self.getData(gene_id)
         return json.dumps(data)
 
     def getData(self, human_id):
@@ -197,4 +223,36 @@ class Chart(Parent):
         ret['max'] = max([x[1] for x in values])
         ret['axis_length'] = max(len(x) for x in columns)
         logger.debug('data to return: %s' % pprint.pformat(ret))
+        return ret
+
+
+class Brainspan(Parent):
+
+    def GET(self, gene_id, **kwargs):
+        data = self.getData(gene_id)
+        return json.dumps(data)
+
+    def POST(self, gene_id, **kwargs):
+        logger.debug('Charts POST id %s' % gene_id)
+        logger.debug(pprint.pformat(kwargs))
+        data = self.getData(gene_id)
+        return json.dumps(data)
+
+    def getData(self, human_id):
+        logger.debug('getting brainspan chart  for %s' % human_id)
+
+        data = self.pipe.human.plot_brainspan(human_id)
+        columns = list()
+        ret = dict()
+        for item in data:
+            region = item['region']
+            if region not in columns:
+                columns.append(region)
+                ret[region] = list()
+            ret[region].append((item['age'], item['value']))
+        ret['names'] = columns
+        ret['title'] = 'Human Brainspan Expression'
+        ret['min'] = [min(x['value']) for x in data]
+        ret['max'] = [max(x['value']) for x in data]
+        logger.debug('data to return \n%s' % pprint.pformat(ret))
         return ret
