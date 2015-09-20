@@ -19,11 +19,11 @@ var scatter = new function() {
         var width = $(window).width();
         if (width > max_width) return max_width;
         else return width;
-    }
+    };
 
     var get_height = function(width) {
         return width / 1.6;
-    }
+    };
 
     var draw_plot = function(id, source, params) {
         var width = params.width;
@@ -77,7 +77,7 @@ var scatter = new function() {
 
                 svg = svg.append('svg')
                     .attr('width', width + margin.left + margin.right)
-                    .attr('height', height + margin.top + margin.bottom)
+                    .attr('height', height + margin.top + margin.bottom);
                 svg.append('rect')
                     .attr('width', width + margin.left + margin.right)
                     .attr('height', height + margin.top + margin.bottom)
@@ -86,45 +86,45 @@ var scatter = new function() {
                     .append('g')
                     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-                canvas.append("g")
-                    .attr("class", "axis")
-                    .attr("transform", "translate(0," + height + ")")
+                canvas.append('g')
+                    .attr('class', 'axis')
+                    .attr('transform', 'translate(0,' + height + ')')
                     .call(xaxis)
                     .selectAll('text')
                     .attr('x', '-.3em')
                     .attr('y', '-.3em')
                     .attr('transform', 'rotate(-65)');
 
-                canvas.append("g")
-                    .attr("class", "axis")
+                canvas.append('g')
+                    .attr('class', 'axis')
                     .call(yaxis);
 
                 canvas.selectAll('circle')
                     .data(data.values)
                     .enter()
-                    .append("circle")
-                    .attr("cx", function(d) {
+                    .append('circle')
+                    .attr('cx', function(d) {
                         return xscale(d[0]);
                     })
-                    .attr("cy", function(d) {
+                    .attr('cy', function(d) {
                         return yscale(d[1]);
                     })
                     .attr('fill', function(d) {
                         return colorscale(d[0]);
                     })
-                    .attr("r", radius);
+                    .attr('r', radius);
 
-                canvas.append("text")
-                    .attr("class", "title")
-                    .attr("x", (width / 2))             
-                    .attr("y", - (margin.top / 2))
-                    .attr("text-anchor", "middle") 
+                canvas.append('text')
+                    .attr('class', 'title')
+                    .attr('x', (width / 2))
+                    .attr('y', - (margin.top / 2))
+                    .attr('text-anchor', 'middle')
                     .text(data.title);
             }
             done = true;
         });
 
-        
+
     };
 
     this.plot = function(id, source, params) {

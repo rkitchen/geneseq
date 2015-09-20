@@ -1,4 +1,4 @@
-var brainspan = new function(){
+var brainspan = new function() {
     var self = this;
     var margin = {};
     margin.left = 60;
@@ -14,20 +14,20 @@ var brainspan = new function(){
     var x_tick_values = [10, 100, 1000];
 
     var get_width = function(count) {
-        var width = $(window).width() - 200
+        var width = $(window).width() - 200;
         var ret = {'normal': width,
             'inner': (width - margin.inner * (count - 1)) / count,
             'outer': width + margin.left + margin.right};
         return ret;
 
-    }
+    };
 
     var get_height = function() {
         var height = default_height;
         var ret = {'normal': height,
             'outer': height + margin.top + margin.bottom};
         return ret;
-    }
+    };
 
     var get_ticks = function(max) {
         for (var p = 4; p > -3; p--) {
@@ -39,7 +39,7 @@ var brainspan = new function(){
             console.log('y tick values', ytick);
             return ytick;
         }
-    }
+    };
 
     var draw_plot = function(canvas, data, dimen, axis, scales) {
         var width = dimen.width;
@@ -56,9 +56,9 @@ var brainspan = new function(){
         .attr('transform', 'translate(0,' + -margin.top + ')')
         .attr('fill', '#DDD');
 
-        canvas.append("g")
-            .attr("class", "axis")
-            .attr("transform", "translate(0," + height + ")")
+        canvas.append('g')
+            .attr('class', 'axis')
+            .attr('transform', 'translate(0,' + height + ')')
             .call(axis.x)
             .selectAll('text')
             .attr('x', '-.3em')
@@ -68,21 +68,21 @@ var brainspan = new function(){
         canvas.selectAll('circle')
             .data(data.points)
             .enter()
-            .append("circle")
-            .attr("cx", function(d) {
+            .append('circle')
+            .attr('cx', function(d) {
                 return scales.x(d[0]);
             })
-            .attr("cy", function(d) {
+            .attr('cy', function(d) {
                 return scales.y(d[1]);
             })
             .attr('fill', 'red')
-            .attr("r", dimen.radius);
+            .attr('r', dimen.radius);
 
-        canvas.append("text")
-            .attr("class", "title-2")
-            .attr("x", (width / 2))             
-            .attr("y", - (margin.top / 4))
-            .attr("text-anchor", "middle") 
+        canvas.append('text')
+            .attr('class', 'title-2')
+            .attr('x', (width / 2))
+            .attr('y', - (margin.top / 4))
+            .attr('text-anchor', 'middle')
             .text(data.title);
     };
 
@@ -142,7 +142,7 @@ var brainspan = new function(){
 
                 svg = svg.append('svg')
                     .attr('width', width.outer)
-                    .attr('height', height.outer)
+                    .attr('height', height.outer);
                 svg.append('rect')
                     .attr('width', width.outer)
                     .attr('height', height.outer)
@@ -159,34 +159,34 @@ var brainspan = new function(){
                     console.log(translate);
 
                     var chart = canvas.append('g')
-                    .attr('transform', 'translate(' + translate + ',' + margin.top + ')')
+                    .attr('transform', 'translate(' + translate + ',' + margin.top + ')');
 
                     var plot_data = {'title': item,
                         'points': data[item]};
                     var scales = {'x': xscale, 'y': yscale};
                     var axis = {'x': xaxis, 'y': yaxis};
-                    console.log('height',height);
+                    console.log('height', height);
                     var dimen = {'width': width.inner,
                         'height': height.normal,
                         'radius': default_radius};
                     draw_plot(chart, plot_data, dimen, axis, scales);
                 });
 
-                canvas.append("g")
-                .attr("class", "axis")
+                canvas.append('g')
+                .attr('class', 'axis')
                 .attr('transform', 'translate(0,' + margin.top + ')')
                 .call(yaxis);
 
-                svg.append("text")
-                .attr("class", "title")
-                .attr("x", (width.outer / 2))
+                svg.append('text')
+                .attr('class', 'title')
+                .attr('x', (width.outer / 2))
                 .attr('y', margin.top / 2)
-                .attr("text-anchor", "middle") 
+                .attr('text-anchor', 'middle')
                 .text('Brainspan Expression');
             }
         });
 
-        
+
     };
 
     this.plot = function(id, source, params) {

@@ -23,6 +23,7 @@ $(document).ready(function() {
             class: 'chart'
         }).appendTo('div#content-wrapper');
 
-        brainspan.plot(human_id, '/human/chart/brainspan', {'node': 'div#brainspan-chart', 'width': 100});
+        brainspan.plot(human_id, '/human/chart/brainspan', {'node': 'div#brainspan-chart',
+                                                            'width': 100});
     }
 });

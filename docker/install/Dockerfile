@@ -19,8 +19,19 @@ RUN apt-get update && apt-get install -q -y python3 \
                /var/log/supervisor \
                /var/log/uwsgi \
                /data/db \
+               /data/dump \
    && chown -R http:http /var/log/uwsgi
 
 
 COPY pip_requirements.txt /tmp/
+COPY system_configs /
 RUN pip3 install -r /tmp/pip_requirements.txt
+
+RUN  git clone https://github.com/miclaraia/geneseq.git \
+    /usr/local/lib/geneseq && \
+    chown -R http:http /usr/local/lib/geneseq
+
+VOLUME ['/data/db']
+
+EXPOSE 8080
+ENTRYPOINT /bin/bash -c "/usr/local/bin/startup.sh; /bin/bash"
