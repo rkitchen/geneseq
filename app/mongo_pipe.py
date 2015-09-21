@@ -356,7 +356,6 @@ class Mouse(Parent):
         #                 'value': {'$first': '$avg'}}},
         #     {'$sort': {'_id': 1}}, {'$limit': 100}],
         #     allowDiskUse=True)
-        aggregate = dict()
         pipeline = list()
 
         match = {'processed': {'$exists': True}}
