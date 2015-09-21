@@ -259,6 +259,9 @@ class Brainspan(Parent):
             value = item['value']
             ret[region].append((age, value))
 
+        for region in columns:
+            ret[region] = sorted(ret[region], key=lambda i: i[0])
+
         ret['names'] = columns
         ret['title'] = 'Human Brainspan Expression'
         ret['min'] = min([x['value'] for x in data])
