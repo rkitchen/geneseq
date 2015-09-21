@@ -10,7 +10,7 @@ var brainspan = new function() {
     var max_width = 500;
     var default_radius = 1.25;
     var default_height = 400;
-    var fit_windows = 5;
+    var fit_windows = 10;
 
     var x_tick_values = [10, 100, 1000];
 
@@ -216,8 +216,10 @@ var brainspan = new function() {
     var fit_line = function(data) {
         var min = data[0][0];
         var max = data[data.length - 1][0];
-        var range = max - min;
-        var width = range / fit_windows;
+        var range = max / min;
+        var width = Math.log10(max) / fit_windows;
+
+        console.log('width: ', width);
 
         var getWindow = function(data, left, right) {
             var x = [];
@@ -233,6 +235,9 @@ var brainspan = new function() {
             console.log('left: ', left, 'right: ', right);
             console.log('y: ', y);
             console.log('x: ', x);
+
+            if (x.length == 0 || y.length == 0) return null;
+
             var xavg = avg(x);
             var yavg = avg(y);
 
@@ -241,11 +246,16 @@ var brainspan = new function() {
 
         var out = [data[0]];
         for (var i = 0; i < fit_windows; i++) {
-            var left = min + i * width;
-            var right = min + (i + 1) * width;
+            var left = min + Math.pow(10, i * width);
+            var right = min + Math.pow(10, (i + 1) * width);
+
             (right > max) ? max : right;
-            out.push(getWindow(data, left, right));
+
+            var average = getWindow(data, left, right);
+            console.log('pushing: ', average);
+            if (average != null) out.push(average);
         }
+
         console.log('out: ', out);
         return out;
     };
