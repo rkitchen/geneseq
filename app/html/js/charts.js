@@ -8,7 +8,7 @@ $(document).ready(function() {
             class: 'chart'
         }).appendTo('div#content-wrapper');
 
-        mouse.plot(id, '/mouse/chart', {'node': 'div#mouse-chart'});
+        //mouse.plot(id, '/mouse/chart', {'node': 'div#mouse-chart'});
     }
     if (bodymap != null) {
         var bodymap_node = $('<div />', {
@@ -16,7 +16,7 @@ $(document).ready(function() {
             class: 'chart'
         }).appendTo('div#content-wrapper');
 
-        bodymap.plot(human_id, '/human/chart/bodymap', {'node': 'div#bodymap-chart'});
+        //bodymap.plot(human_id, '/human/chart/bodymap', {'node': 'div#bodymap-chart'});
     }
 
     if (brainspan != null) {
