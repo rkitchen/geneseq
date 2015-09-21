@@ -10,6 +10,7 @@ var brainspan = new function() {
     var max_width = 500;
     var default_radius = 1.25;
     var default_height = 400;
+    var fit_windows = 5;
 
     var x_tick_values = [10, 100, 1000];
 
@@ -45,6 +46,13 @@ var brainspan = new function() {
         var width = dimen.width;
         var height = dimen.height;
 
+        var line = d3.svg.line()
+        .x(function(d) {return scales.x(d[0])})
+        .y(function(d) {
+            return scales.y(d[1]);
+        })
+        .interpolate('bundle');
+
         console.log('dimen', dimen);
 
         console.log(canvas);
@@ -77,6 +85,22 @@ var brainspan = new function() {
             })
             .attr('fill', 'red')
             .attr('r', dimen.radius);
+
+        canvas.append('path')
+        .datum(fit_line(data.points))
+        .attr('d', line)
+        .attr('fill', 'none')
+        .attr('stroke', 'red')
+        .attr('stroke-width', 2)
+        .attr('opacity', .7);
+
+        canvas.append('path')
+        .datum(data.points)
+        .attr('d', line)
+        .attr('fill', 'none')
+        .attr('stroke', 'blue')
+        .attr('stroke-width', 2)
+        .attr('opacity', .5);
 
         canvas.append('text')
             .attr('class', 'title-2')
@@ -187,6 +211,55 @@ var brainspan = new function() {
         });
 
 
+    };
+
+    var fit_line = function(data) {
+        var min = data[0][0];
+        var max = data[data.length - 1][0];
+        var range = max - min;
+        var width = range / fit_windows;
+
+        var getWindow = function(data, left, right) {
+            var x = [];
+            var y = [];
+
+            var count = data.length;
+            for (var i = 0; i < data.length; i++) {
+                if (data[i][0] > left && data[i][0] < right) {
+                    x.push(data[i][0]);
+                    y.push(data[i][1]);
+                }
+            }
+            console.log('left: ', left, 'right: ', right);
+            console.log('y: ', y);
+            console.log('x: ', x);
+            var xavg = avg(x);
+            var yavg = avg(y);
+
+            return [xavg, yavg];
+        };
+
+        var out = [data[0]];
+        for (var i = 0; i < fit_windows; i++) {
+            var left = min + i * width;
+            var right = min + (i + 1) * width;
+            (right > max) ? max : right;
+            out.push(getWindow(data, left, right));
+        }
+        console.log('out: ', out);
+        return out;
+    };
+
+    self.fit = fit_line;
+
+    var avg = function(list) {
+        var sum = 0;
+        for (var i = 0; i < list.length; i++) {
+            sum += list[i];
+        }
+        var out = sum / list.length;
+        console.log('average:', out);
+        return out;
     };
 
     this.plot = function(id, source, params) {
