@@ -14,6 +14,7 @@ var brainspan = new function() {
     var fit_width = 5;
 
     var x_tick_values = [10, 100, 1000];
+    self.canvases = {};
 
     var get_width = function(count) {
         var width = $(window).width() - 200;
@@ -54,6 +55,19 @@ var brainspan = new function() {
         })
         .interpolate('bundle');
 
+        var draw_line = function(e) {
+            var params = e.data;
+            var name = params.name;
+            var values = JSON.parse(params.values);
+            self.canvases[params.name].append('path')
+            .datum(fit_line(values))
+            .attr('d', line)
+            .attr('fill', 'none')
+            .attr('stroke', 'red')
+            .attr('stroke-width', 2)
+            .attr('opacity', .7);
+        };
+
         console.log('dimen', dimen);
 
         console.log(canvas);
@@ -79,14 +93,6 @@ var brainspan = new function() {
             .attr('r', dimen.radius);
 
         canvas.append('path')
-        .datum(fit_line(data.points))
-        .attr('d', line)
-        .attr('fill', 'none')
-        .attr('stroke', 'red')
-        .attr('stroke-width', 2)
-        .attr('opacity', .7);
-
-        canvas.append('path')
         .datum(data.points)
         .attr('d', line)
         .attr('fill', 'none')
@@ -109,6 +115,11 @@ var brainspan = new function() {
             .attr('y', - (margin.top / 4))
             .attr('text-anchor', 'middle')
             .text(data.title);
+
+        self.canvases[data.title] = canvas;
+        var worker = new Worker('/js/plot/fit_worker.js');
+        worker.addEventListener('message', draw_line);
+        worker.postMessage({'name': data.title, 'values': JSON.stringify(data.points)});
     };
 
     var draw_svg = function(id, source, params) {
