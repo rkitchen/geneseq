@@ -64,15 +64,6 @@ var brainspan = new function() {
         .attr('transform', 'translate(0,' + -margin.top + ')')
         .attr('fill', '#DDD');
 
-        canvas.append('g')
-            .attr('class', 'axis')
-            .attr('transform', 'translate(0,' + height + ')')
-            .call(axis.x)
-            .selectAll('text')
-            .attr('x', '-.3em')
-            .attr('y', '-.3em')
-            .attr('transform', 'rotate(-90)');
-
         canvas.selectAll('circle')
             .data(data.points)
             .enter()
@@ -100,7 +91,16 @@ var brainspan = new function() {
         .attr('fill', 'none')
         .attr('stroke', 'blue')
         .attr('stroke-width', 2)
-        .attr('opacity', .5);
+        .attr('opacity', .2);
+
+        canvas.append('g')
+            .attr('class', 'axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(axis.x)
+            .selectAll('text')
+            .attr('x', '-.3em')
+            .attr('y', '-.3em')
+            .attr('transform', 'rotate(-90)');
 
         canvas.append('text')
             .attr('class', 'title-2')
