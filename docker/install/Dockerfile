@@ -24,8 +24,9 @@ RUN apt-get update && apt-get install -q -y python3 \
 
 
 COPY pip_requirements.txt /tmp/
-COPY system_configs /
 RUN pip3 install -r /tmp/pip_requirements.txt
+
+COPY system_configs /
 
 RUN  git clone https://github.com/miclaraia/geneseq.git \
     /usr/local/lib/geneseq && \
@@ -34,4 +35,4 @@ RUN  git clone https://github.com/miclaraia/geneseq.git \
 VOLUME ['/data/db']
 
 EXPOSE 8080
-ENTRYPOINT /bin/bash -c "/usr/local/bin/startup.sh; /bin/bash"
+#ENTRYPOINT /bin/bash -c "/usr/local/bin/startup.sh; /bin/bash"
