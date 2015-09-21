@@ -10,7 +10,7 @@ var brainspan = new function() {
     var max_width = 500;
     var default_radius = 1.25;
     var default_height = 400;
-    var fit_windows = 5;
+    var fit_windows = 10;
 
     var x_tick_values = [10, 100, 1000];
 

@@ -13,8 +13,8 @@ $(document).ready(function() {
             class: 'chart'
         }).appendTo('div#content-wrapper');
 
-        //scatter.plot(id, '/mouse/chart', {'node': 'div#cns-chart'});
-        //scatter.plot(human_id, '/human/chart/bodymap', {'node': 'div#bodymap-chart'});
+        scatter.plot(id, '/mouse/chart', {'node': 'div#cns-chart'});
+        scatter.plot(human_id, '/human/chart/bodymap', {'node': 'div#bodymap-chart'});
     }
 
     if (brainspan != null) {
