@@ -96,7 +96,7 @@ class Parent(object):
             sort = kwargs['sort']
             if type(sort) is list or type(sort) is tuple:
                 pipeline.append({'$sort': {sort[0]: sort[1]}})
-        if 'limit' in kwargs:
+        if 'limit' in kwargs and kwargs['limit'] > 0:
             pipeline.append({'$limit': int(kwargs['limit'])})
         else:
             limit = app.settings.getDefaultLimit(self.name)

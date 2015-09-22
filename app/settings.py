@@ -18,8 +18,7 @@ def init():
     pipe = app.mongo_pipe.Pipe()
     logger.debug(getConfig())
 
-    setCurrentCount('human', pipe.human.count())
-    setCurrentCount('mouse', pipe.mouse.count())
+    setCount()
 
 
 def getConfig():
@@ -28,6 +27,11 @@ def getConfig():
         dict: config dictionary
     """
     return copy.deepcopy(config)
+
+
+def setCount():
+    setCurrentCount('human', pipe.human.count())
+    setCurrentCount('mouse', pipe.mouse.count())
 
 
 def setCurrentCount(name, count):
@@ -115,6 +119,9 @@ def getDefaultLimit(name):
     """
     for item in config['table_input'][name]:
             if item['column'] == 'limit':
+                if item['init'] == 0:
+                    setCount()
+                    return getDefaultLimit(name)
                 return copy.deepcopy(item['init'])
 
 
