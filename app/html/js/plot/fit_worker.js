@@ -1,5 +1,5 @@
 var fit_windows = 100;
-var fit_width = 10;
+var fit_width = 5;
 
 self.addEventListener('message', function(e) {
     params = e.data;
@@ -60,7 +60,7 @@ var fit_line = function(data) {
     };
 
     var out = [data[0]];
-    for (var i = 0; i < fit_windows; i++) {
+    for (var i = 0; i <= fit_windows + 100; i++) {
         var mid = i * windows;
         var left = Math.pow(10, mid - width / 2);
         var right = Math.pow(10, mid + width / 2);

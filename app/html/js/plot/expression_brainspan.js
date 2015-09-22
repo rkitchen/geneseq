@@ -13,7 +13,7 @@ var brainspan = new function() {
     var fit_windows = 20;
     var fit_width = 5;
 
-    var x_tick_values = [10, 100, 1000];
+    var x_tick_values = [10, 100, 273, 1000];
     self.canvases = {};
 
     var get_width = function(count) {
@@ -98,7 +98,7 @@ var brainspan = new function() {
         .attr('fill', 'none')
         .attr('stroke', 'blue')
         .attr('stroke-width', 2)
-        .attr('opacity', .2);
+        .attr('opacity', .1);
 
         canvas.append('g')
             .attr('class', 'axis')
@@ -257,7 +257,8 @@ var brainspan = new function() {
             return [xavg, yavg];
         };
 
-        var out = [data[0]];
+        //var out = [data[0]];
+        var out = [];
         for (var i = 0; i < fit_windows; i++) {
             var mid = i * windows
             var left = Math.pow(10, mid - width / 2);
