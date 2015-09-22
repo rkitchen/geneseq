@@ -251,7 +251,8 @@ class Search(Parent):
             kwargs = {'Title': 'Mouse Expression Table',
                       'data': data,
                       'columnNames': app.settings.getColumnNames('mouse'),
-                      'sidebar': False}
+                      'sidebar': False,
+                      'query': query}
 
         tmpl = self.lookup.get_template("table.html")
 
