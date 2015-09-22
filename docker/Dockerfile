@@ -31,7 +31,7 @@ RUN pip3 install -r /tmp/pip_requirements.txt
 
 COPY system_configs /
 
-RUN echo 3
+RUN echo 4
 
 RUN  git clone https://github.com/miclaraia/geneseq.git \
     /usr/local/lib/geneseq && \
@@ -40,4 +40,4 @@ RUN  git clone https://github.com/miclaraia/geneseq.git \
 VOLUME ['/data/db']
 
 EXPOSE 8080
-#ENTRYPOINT /bin/bash -c "/usr/local/bin/startup.sh; /bin/bash"
+ENTRYPOINT /bin/bash -c "supervisord; /bin/bash"
