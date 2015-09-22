@@ -1,11 +1,11 @@
-var fit_windows = 100;
-var fit_width = 5;
+var fit_windows = 20;
+var fit_width = .4;
 
 self.addEventListener('message', function(e) {
     params = e.data;
     values = JSON.parse(params.values);
     console.log('received data: ', params);
-    done(params.name, fit_line(values));
+    done(params.name, fit_line(values, params.domain));
 });
 
 var done = function(name, values) {
@@ -27,13 +27,11 @@ var avg = function(list) {
     return out;
 };
 
-var fit_line = function(data) {
-    var min = data[0][0];
-    var max = data[data.length - 1][0];
-    var range = max / min;
-    var width = Math.log10(max) / fit_width;
-    var windows = Math.log10(max) / fit_windows;
+var fit_line = function(data, domain) {
+    var width = Math.log10(domain) * fit_width;
+    var windows = Math.log10(domain) / fit_windows;
 
+    console.log('domain', domain);
     console.log('width: ', width);
 
     var getWindow = function(data, left, right) {
@@ -53,25 +51,20 @@ var fit_line = function(data) {
 
         if (x.length == 0 || y.length == 0) return null;
 
-        var xavg = avg(x);
         var yavg = avg(y);
-
-        return [xavg, yavg];
+        return yavg;
     };
 
-    var out = [data[0]];
-    for (var i = 0; i <= fit_windows + 100; i++) {
+    var out = [];
+    var init = Math.floor(Math.log10(data[0][0]) / Math.log10(domain) * fit_windows);
+    console.log('init: ', init);
+    for (var i = init; i <= fit_windows; i++) {
         var mid = i * windows;
         var left = Math.pow(10, mid - width / 2);
         var right = Math.pow(10, mid + width / 2);
-        //var left = min + Math.pow(10, i * width);
-        //var right = min + Math.pow(10, (i + 1) * width);
-
-        (right > max) ? max : right;
 
         var average = getWindow(data, left, right);
-        //console.log('pushing: ', average);
-        if (average != null) out.push(average);
+        if (average != null) out.push([Math.pow(10, mid), average]);
     }
 
     console.log('out: ');
