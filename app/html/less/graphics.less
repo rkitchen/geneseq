@@ -24,7 +24,7 @@ div.chart {
             .tick line {
                 fill: none;
                 stroke: @color-background + #111;
-                opacity: .60;
+                opacity: .6;
                 stroke-width: 2px;
                 shape-rendering: crispEdges;
             }
@@ -32,6 +32,15 @@ div.chart {
 
         .title {
             font-size: 18px;
+        }
+
+        .birth line {
+            fill: none;
+            stroke: @color-background - #666;
+            opacity: .6;
+            stroke-dasharray: 10, 10;
+            stroke-width: 2px;
+            shape-rendering: crispEdges;
         }
     }
 }

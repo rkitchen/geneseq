@@ -10,10 +10,8 @@ var brainspan = new function() {
     var max_width = 500;
     var default_radius = 1.25;
     var default_height = 400;
-    var fit_windows = 20;
-    var fit_width = 5;
 
-    var x_tick_values = [10, 100, 273, 1000];
+    var x_tick_values = [10, 100, 1000];
     self.canvases = {};
 
     var get_width = function(count) {
@@ -108,6 +106,14 @@ var brainspan = new function() {
             .attr('x', '-.3em')
             .attr('y', '-.3em')
             .attr('transform', 'rotate(-90)');
+
+        canvas.append('g')
+            .attr('class', 'birth')
+            .attr('transform', 'translate(' + scales.x(273) + ',' + height + ')')
+            .attr('style', 'opacity: 1;')
+            .append('line')
+            .attr('x2', 0)
+            .attr('y2', -height);
 
         canvas.append('text')
             .attr('class', 'title-2')
