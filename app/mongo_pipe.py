@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import app.settings
 import logging
 import pprint
+import re
 
 logger = logging.getLogger(__name__)
 pp = pprint.PrettyPrinter(indent=4)
@@ -389,4 +390,27 @@ class Mouse(Parent):
         kwargs['sort'] = sort
 
         data = super().getTable(**kwargs)
+        return data
+
+    def textSearch(self, query):
+        logger.debug('searching db for key %s' % query)
+        query = '.*%s.*' % query
+        logger.debug('regex query: %s' % query)
+        regx = re.compile(query, re.IGNORECASE)
+
+        projection = {'_id': 1, 'cell': '$processed.type',
+                      'expression': '$processed.expression',
+                      'enrichment': '$processed.enrichment',
+                      'human_name': '$processed.human_name'}
+
+        find = [{'$match': {'processed.human_name': regx}}, {'$project': projection}]
+
+        pipe = self.pipe
+        pipe.connect()
+        cursor = pipe.db.mouse.aggregate(find)
+        data = list()
+        for item in cursor:
+            data.append(item)
+        pipe.disconnect()
+        logger.debug('returning data %s' % pprint.pformat(data))
         return data

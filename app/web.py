@@ -6,6 +6,7 @@ from mako.lookup import TemplateLookup
 from app.data import Charts
 import app.mouse
 import app.human
+from app.parent import Parent
 import app.mysql_pipe
 import app.mongo_pipe
 import app.settings
@@ -23,16 +24,9 @@ celltypes = _pipe.mouse.getCellTypes()
 app.settings.setCellTypes('mouse', celltypes)
 
 
-class Parent(object):
-    """parent class for the webapp classes. attaches pipe
-    to each object"""
-    def __init__(self):
-        pass
-
-
 # service mounted on /
 # currently renders nothing, eventually some kind of landing page
-class Root(Parent):
+class Root(object):
     """service mounted on /
     currently renders nothing, will be landing page
     """
@@ -49,35 +43,13 @@ class Root(Parent):
             return exceptions.html_error_template().render()
 
 
-class Search(Parent):
-    """handles search functionality
-    mounted on /search
-    """
-    exposed = True
-
-    def GET(self, query=None, **kwargs):
-        """responds to GET requests
-        Args:
-            query: (str) search query
-        Returns
-            html: search.html
-        """
-        logger.info('/search GET request')
-        logger.debug('GET query: %s\n\t\tkwargs: %s' % (query, kwargs))
-        tmpl = lookup.get_template("search.html")
-        kwargs['Title'] = 'Search'
-        # TODO create proper search functionality
-        if query is not None:
-            kwargs['geneID'] = _pipe.search_like(query)[0]
-        return tmpl.render(**kwargs)
-
 # mounts all webapps to cherrypy tree
 cherrypy.config.update({'tools.staticdir.root': path})
 # cherrypy.config.update('%s/conf/global.conf' % path)
 cherrypy.tree.mount(app.mouse.Mouse(lookup), '/mouse', config='%s/conf/gene.conf' % path)
 cherrypy.tree.mount(app.human.Human(lookup), '/human', config='%s/conf/gene.conf' % path)
 cherrypy.tree.mount(Charts(), '/data', config='%s/conf/data.conf' % path)
-cherrypy.tree.mount(Search(), '/search', config='%s/conf/search.conf' % path)
+# cherrypy.tree.mount(Search(lookup), '/search', config='%s/conf/search.conf' % path)
 cherrypy.tree.mount(Root(), '/', config='%s/conf/root.conf' % path)
 # attaches config files to each webapp
 for item in [v[1] for v in cherrypy.tree.apps.items()]:

@@ -4,7 +4,7 @@ import logging
 from mako import exceptions
 # from mako.lookup import TemplateLookup
 import app.settings
-from app.parent import Parent
+from app.parent import MouseParent as Parent
 import pprint
 
 logger = logging.getLogger(__name__)
@@ -18,6 +18,7 @@ class Mouse(object):
         self.table = Table(self)
         self.gene = Gene(self)
         self.chart = Chart(self)
+        self.search = Search(self)
 
 
 class Gene(Parent):
@@ -98,7 +99,8 @@ class Table(Parent):
         kwargs = {'Title': 'Mouse Expression Table',
                   'data': data,
                   'filters': self.fixFilters(kwargs),
-                  'columnNames': app.settings.getColumnNames('mouse')}
+                  'columnNames': app.settings.getColumnNames('mouse'),
+                  'sidebar': True}
 
         tmpl = self.lookup.get_template("table.html")
 
@@ -224,3 +226,38 @@ class Chart(Parent):
         ret['axis_length'] = max(len(x) for x in names)
         logger.debug('data to return: %s' % pprint.pformat(ret))
         return ret
+
+
+class Search(Parent):
+    """handles search functionality
+    mounted on /search
+    """
+
+    def GET(self, **kwargs):
+        """responds to data GET requests
+        Args:
+            query (str): query string for database
+        Returns:
+            str: table.html
+        """
+        logger.info('/data GET request')
+        logger.debug('GET kwargs: %s' % kwargs)
+        # logger.debug('global test %s' % app.settings.Settings.test)
+
+        if 'query' in kwargs:
+            query = kwargs['query']
+            data = self.pipe.mouse.textSearch(query)
+
+            kwargs = {'Title': 'Mouse Expression Table',
+                      'data': data,
+                      'columnNames': app.settings.getColumnNames('mouse'),
+                      'sidebar': False}
+
+        tmpl = self.lookup.get_template("table.html")
+
+        logger.debug('kwargs sent to mako for data table: %s' %
+            pprint.pformat(kwargs))
+        try:
+            return tmpl.render(**kwargs)
+        except:
+            return exceptions.html_error_template().render()
