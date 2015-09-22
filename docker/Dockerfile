@@ -14,13 +14,16 @@ RUN apt-get update && apt-get install -q -y python3 \
    screen \
    supervisor \
    mongodb-org \
+   nodejs \
+   npm \
    && useradd -d /dev/null -s /bin/bash http \
    && mkdir -p /var/run/uwsgi \
                /var/log/supervisor \
                /var/log/uwsgi \
                /data/db \
                /data/dump \
-   && chown -R http:http /var/log/uwsgi
+   && chown -R http:http /var/log/uwsgi \
+   && npm install mongo-express
 
 
 COPY pip_requirements.txt /tmp/
