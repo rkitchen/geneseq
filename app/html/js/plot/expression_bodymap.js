@@ -1,4 +1,4 @@
-var scatter = new function() {
+var bodymap = new function() {
     var debug_data;
     var margin = {};
     margin.left = 60;

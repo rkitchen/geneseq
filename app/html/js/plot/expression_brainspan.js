@@ -10,9 +10,11 @@ var brainspan = new function() {
     var max_width = 500;
     var default_radius = 1.25;
     var default_height = 400;
-    var fit_windows = 10;
+    var fit_windows = 20;
+    var fit_width = 5;
 
-    var x_tick_values = [10, 100, 1000];
+    var x_tick_values = [10, 100, 273, 1000];
+    self.canvases = {};
 
     var get_width = function(count) {
         var width = $(window).width() - 200;
@@ -53,6 +55,19 @@ var brainspan = new function() {
         })
         .interpolate('bundle');
 
+        var draw_line = function(e) {
+            var params = e.data;
+            var name = params.name;
+            var values = JSON.parse(params.values);
+            self.canvases[params.name].append('path')
+            .datum(values)
+            .attr('d', line)
+            .attr('fill', 'none')
+            .attr('stroke', 'red')
+            .attr('stroke-width', 2)
+            .attr('opacity', .7);
+        };
+
         console.log('dimen', dimen);
 
         console.log(canvas);
@@ -63,15 +78,6 @@ var brainspan = new function() {
         .attr('height', height + margin.top + margin.bottom)
         .attr('transform', 'translate(0,' + -margin.top + ')')
         .attr('fill', '#DDD');
-
-        canvas.append('g')
-            .attr('class', 'axis')
-            .attr('transform', 'translate(0,' + height + ')')
-            .call(axis.x)
-            .selectAll('text')
-            .attr('x', '-.3em')
-            .attr('y', '-.3em')
-            .attr('transform', 'rotate(-90)');
 
         canvas.selectAll('circle')
             .data(data.points)
@@ -87,20 +93,21 @@ var brainspan = new function() {
             .attr('r', dimen.radius);
 
         canvas.append('path')
-        .datum(fit_line(data.points))
-        .attr('d', line)
-        .attr('fill', 'none')
-        .attr('stroke', 'red')
-        .attr('stroke-width', 2)
-        .attr('opacity', .7);
-
-        canvas.append('path')
         .datum(data.points)
         .attr('d', line)
         .attr('fill', 'none')
         .attr('stroke', 'blue')
         .attr('stroke-width', 2)
-        .attr('opacity', .5);
+        .attr('opacity', .1);
+
+        canvas.append('g')
+            .attr('class', 'axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(axis.x)
+            .selectAll('text')
+            .attr('x', '-.3em')
+            .attr('y', '-.3em')
+            .attr('transform', 'rotate(-90)');
 
         canvas.append('text')
             .attr('class', 'title-2')
@@ -108,6 +115,11 @@ var brainspan = new function() {
             .attr('y', - (margin.top / 4))
             .attr('text-anchor', 'middle')
             .text(data.title);
+
+        self.canvases[data.title] = canvas;
+        var worker = new Worker('/js/plot/fit_worker.js');
+        worker.addEventListener('message', draw_line);
+        worker.postMessage({'name': data.title, 'domain': dimen.duration, 'values': JSON.stringify(data.points)});
     };
 
     var draw_svg = function(id, source, params) {
@@ -192,7 +204,8 @@ var brainspan = new function() {
                     console.log('height', height);
                     var dimen = {'width': width.inner,
                         'height': height.normal,
-                        'radius': default_radius};
+                        'radius': default_radius,
+                        'duration': data.duration};
                     draw_plot(chart, plot_data, dimen, axis, scales);
                 });
 
@@ -212,55 +225,6 @@ var brainspan = new function() {
 
 
     };
-
-    var fit_line = function(data) {
-        var min = data[0][0];
-        var max = data[data.length - 1][0];
-        var range = max / min;
-        var width = Math.log10(max) / fit_windows;
-
-        console.log('width: ', width);
-
-        var getWindow = function(data, left, right) {
-            var x = [];
-            var y = [];
-
-            var count = data.length;
-            for (var i = 0; i < data.length; i++) {
-                if (data[i][0] > left && data[i][0] < right) {
-                    x.push(data[i][0]);
-                    y.push(data[i][1]);
-                }
-            }
-            console.log('left: ', left, 'right: ', right);
-            console.log('y: ', y);
-            console.log('x: ', x);
-
-            if (x.length == 0 || y.length == 0) return null;
-
-            var xavg = avg(x);
-            var yavg = avg(y);
-
-            return [xavg, yavg];
-        };
-
-        var out = [data[0]];
-        for (var i = 0; i < fit_windows; i++) {
-            var left = min + Math.pow(10, i * width);
-            var right = min + Math.pow(10, (i + 1) * width);
-
-            (right > max) ? max : right;
-
-            var average = getWindow(data, left, right);
-            console.log('pushing: ', average);
-            if (average != null) out.push(average);
-        }
-
-        console.log('out: ', out);
-        return out;
-    };
-
-    self.fit = fit_line;
 
     var avg = function(list) {
         var sum = 0;
