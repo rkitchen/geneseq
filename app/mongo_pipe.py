@@ -233,6 +233,7 @@ class Human(Parent):
             item['age'] = annotations[item['brain']]
             data.append(item)
         pipe.disconnect()
+        logger.debug('brainspan data\n%s' % data)
         return data
 
     def count(self):
