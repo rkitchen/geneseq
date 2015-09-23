@@ -1,12 +1,13 @@
 <%inherit file="base.html"/>
 
 <%block name="resources">
+<script type="text/javascript" src="/js/login.js"></script>
    <link rel="stylesheet" type="text/css" href="/css/login.css">
 </%block>
 
 <%block name="content">
 <div id="login-wrapper">
-    <form class="form-signin" action="/login" method="post">
+    <form id="login" value="${url}" class="form-signin" method="post">
         <h2 class="form-signin-heading">Please sign in</h2>
         <label for="inputEmail" class="sr-only">Email address</label>
         <input name="user" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>

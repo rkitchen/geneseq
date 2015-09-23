@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
     <script type="text/javascript" src="/js/jquery.js"></script>
     <script type="text/javascript" src="/js/underscore-min.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
 ##
     <%block name="resources" />
 ## load local css
@@ -48,10 +49,10 @@
             <li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
             <li class="pure-menu-item"><a href="/mouse/table" class="pure-menu-link">Mouse Table</a></li>
             <li class="pure-menu-item"><a href="/human/table" class="pure-menu-link">Human Table</a></li>
-            % if not login is UNDEFINED and login:
-            <li class="pure-menu-item"><a href="/logou" class="pure-menu-link">Logout</a></li>
+            % if not login is UNDEFINED and login is not None and login:
+            <li class="pure-menu-item"><a href="/logout" class="url pure-menu-link">Logout</a></li>
             % else:
-            <li class="pure-menu-item"><a href="/login" class="pure-menu-link">Login</a></li>
+            <li class="pure-menu-item"><a href="/login" class="url pure-menu-link">Login</a></li>
             % endif
             </ul>
           </div>

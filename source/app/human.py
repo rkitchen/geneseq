@@ -48,7 +48,9 @@ class Gene(Parent):
         #             # TODO return proper error message
         #             return 'invalid id given'
         tmpl = lookup.get_template("gene.html")
-        kwargs['Title'] = 'test'
+        kwargs['Title'] = id
+        kwargs = self.mako_args(kwargs)
+
         gene = pipe.human.getGene(id)
         header = list()
         for key, value in gene.items():
@@ -91,6 +93,7 @@ class Table(Parent):
                   'data': data,
                   'filters': self.fixFilters(kwargs),
                   'columnNames': app.settings.getColumnNames('human')}
+        kwargs = self.mako_args(kwargs)
 
         tmpl = self.lookup.get_template("table.html")
 
@@ -223,7 +226,7 @@ class Bodymap(Parent):
         ret['min'] = min([x[1] for x in values])
         ret['max'] = max([x[1] for x in values])
         ret['axis_length'] = max(len(x) for x in columns)
-        # logger.debug('data to return: %s' % pprint.pformat(ret))
+        logger.debug('data to return: %s' % pprint.pformat(ret))
         return ret
 
 
@@ -267,5 +270,5 @@ class Brainspan(Parent):
         ret['min'] = min([x['value'] for x in data])
         ret['max'] = max([x['value'] for x in data])
         ret['duration'] = max([x['age'] for x in data])
-        # logger.debug('data to return \n%s' % pprint.pformat(ret))
+        logger.debug('data to return \n%s' % pprint.pformat(ret))
         return ret

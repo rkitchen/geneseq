@@ -87,7 +87,7 @@ class Auth(object):
     def auth(self, username, password):
         pipe = self.pipe
         pipe.connect()
-        record = pipe.db.auth.find_one({'_id': username})
+        record = pipe.db.users.find_one({'_id': username})
         pipe.disconnect()
 
         if record is not None:
@@ -106,13 +106,13 @@ class Auth(object):
         pipe = self.pipe
         pipe.connect()
 
-        exists = pipe.db.auth.find_one({'_id': username})
+        exists = pipe.db.users.find_one({'_id': username})
 
         if exists is None:
             digest = self.getDigest(password)
-            pipe.db.auth.insert_one({'_id': username,
-                                     'password': digest,
-                                     'super': False})
+            pipe.db.users.insert_one({'_id': username,
+                                      'password': digest,
+                                      'super': False})
 
         pipe.disconnect()
 
@@ -122,7 +122,7 @@ class Auth(object):
 
             pipe = self.pipe
             pipe.connect()
-            pipe.db.auth.update_one({'_id': username}, {'$set': {'password': digest}})
+            pipe.db.users.update_one({'_id': username}, {'$set': {'password': digest}})
             pipe.disconnect()
 
             return True
@@ -133,17 +133,20 @@ class Auth(object):
         pipe = self.pipe
         pipe.connect()
 
-        pipe.db.auth.remove({'_id': username})
+        pipe.db.users.remove({'_id': username})
         pipe.disconnect()
 
     def isSuper(self, username):
+        logger.debug('username: %s' % username)
+        if username is None:
+            return False
         pipe = self.pipe
         pipe.connect()
 
-        record = pipe.db.auth.find_one({'_id': username})
+        record = pipe.db.users.find_one({'_id': username})
         pipe.disconnect()
 
-        if record != dict() and record['super']:
+        if record is not None and record['super']:
             return True
         else:
             return False
@@ -364,15 +367,20 @@ class Mouse(Parent):
 
         return pipe.fixData(ret)
 
-    def plotExpression(self, mouse_id):
+    def plotExpression(self, mouse_id, super=False):
         logger.debug('getting gene expression for mouseid %s' % mouse_id)
+
         pipe = self.pipe
         pipe.connect()
+
+        celltypes = self.celltypeAnnotations(super)
+        celltypes = list(celltypes.keys())
 
         aggregate = [{'$match': {'_id': mouse_id}},
                      {'$unwind': '$expression'},
                      {'$unwind': '$expression.regions'},
                      {'$unwind': '$expression.regions.values'},
+                     {'$match': {'expression.name': {'$in': celltypes}}},
                      {'$project': {'_id': '$expression.name',
                                    'region': '$expression.regions.region',
                                    'value': '$expression.regions.values'}}]
@@ -383,13 +391,16 @@ class Mouse(Parent):
             data.append(item)
         return data
 
-    def celltypeMap(self):
+    def celltypeAnnotations(self, super=False):
         logger.debug('getting mouse celltype annotation map')
         pipe = self.pipe
         pipe.connect()
 
         c = pipe.db.mouse_annotations
-        cursor = c.find(projection={'_id': 0, 'level2': 0})
+        find = {'projection': {'_id': 0, 'level2': 0, 'level4': 0}}
+        if not super:
+            find['filter'] = {'protected': False}
+        cursor = c.find(**find)
 
         annotations = dict()
         for item in cursor:

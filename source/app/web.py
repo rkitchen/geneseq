@@ -25,21 +25,23 @@ app.settings.setCellTypes('mouse', celltypes)
 
 # service mounted on /
 # currently renders nothing, eventually some kind of landing page
-class Root(object):
+class Root(Parent):
     """service mounted on /
     currently renders nothing, will be landing page
     """
     exposed = True
 
     def __init__(self):
-        self.login = Login()
-        self.logout = Logout()
+        self.login = Login(lookup)
+        self.logout = Logout(lookup)
+        self.session = app.settings.SESSION_KEY
 
     def GET(self, **kwargs):
         logger.info('/ GET request')
         logger.debug('GET kwargs: %s' % str(kwargs))
         logger.debug('session %s' % cherrypy.session.get(app.settings.SESSION_KEY))
         kwargs['Title'] = 'Home'
+        kwargs = self.mako_args(kwargs)
         tmpl = lookup.get_template("index.html")
         try:
             return tmpl.render(**kwargs)
@@ -47,13 +49,14 @@ class Root(object):
             return exceptions.html_error_template().render()
 
 
-class Login(object):
+class Login(Parent):
     exposed = True
 
     def GET(self, **kwargs):
         logger.info('/ GET request')
         logger.debug('GET kwargs: %s' % str(kwargs))
         kwargs['Title'] = 'Login'
+        kwargs = self.mako_args(kwargs)
         tmpl = lookup.get_template("login.html")
         try:
             return tmpl.render(**kwargs)
@@ -63,7 +66,7 @@ class Login(object):
     def POST(self, **kwargs):
         if 'user' in kwargs and 'pass' in kwargs:
             self.login(kwargs['user'], kwargs['pass'])
-        return 'success'
+        raise cherrypy.HTTPRedirect(kwargs['return'])
 
     def login(self, user, password):
         if _pipe.auth.auth(user, password):
@@ -73,12 +76,15 @@ class Login(object):
             # self.login(user, password)
 
 
-class Logout(object):
+class Logout(Parent):
     exposed = True
 
     def GET(self, **kwargs):
         cherrypy.session[app.settings.SESSION_KEY] = None
         logger.debug('logged out, session now %s' % cherrypy.session.get(app.settings.SESSION_KEY))
+        if 'return' not in kwargs:
+            kwargs['return'] = '/'
+        raise cherrypy.HTTPRedirect(kwargs['return'])
 
 
 # mounts all webapps to cherrypy tree

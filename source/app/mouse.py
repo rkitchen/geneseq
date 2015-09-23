@@ -38,7 +38,7 @@ class Gene(Parent):
         """
         logger.info('/gene GET request id: %s' % str(id))
         logger.info('GET kwargs: %s' % kwargs)
-        logger.info('cherrypy session %s' % app.settings.cherrypy.session.get(self.session))
+        logger.info('cherrypy session %s' % super().getSession())
 
         settings = app.settings
         pipe = self.pipe
@@ -55,7 +55,9 @@ class Gene(Parent):
         #             # TODO return proper error message
         #             return 'invalid id given'
         tmpl = lookup.get_template("gene.html")
-        kwargs['Title'] = 'test'
+        kwargs['Title'] = id
+        kwargs = self.mako_args(kwargs)
+
         gene = pipe.mouse.getGene(id)
         header = list()
         for key, value in gene.items():
@@ -103,6 +105,7 @@ class Table(Parent):
                   'filters': self.fixFilters(kwargs),
                   'columnNames': app.settings.getColumnNames('mouse'),
                   'sidebar': True}
+        kwargs = self.mako_args(kwargs)
 
         tmpl = self.lookup.get_template("table.html")
 
@@ -207,8 +210,8 @@ class Chart(Parent):
         logger.debug('getting charts for %s' % mouse_id)
 
         # TODO multiple charts
-        annotations = self.pipe.mouse.celltypeMap()
-        mouse = self.pipe.mouse.plotExpression(mouse_id)
+        annotations = self.pipe.mouse.celltypeAnnotations(self.isSuper())
+        mouse = self.pipe.mouse.plotExpression(mouse_id, self.isSuper())
         values = list()
         columns = list()
 
@@ -256,6 +259,7 @@ class Search(Parent):
                       'columnNames': app.settings.getColumnNames('mouse'),
                       'sidebar': False,
                       'query': query}
+            kwargs = self.mako_args(kwargs)
 
         tmpl = self.lookup.get_template("table.html")
 
