@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import pymongo
 import app.settings
 import logging
 import pprint
@@ -74,6 +75,63 @@ class Pipe(object):
         logger.debug('disconnecting')
         self.db = None
         self.client.close()
+
+
+class Auth(object):
+    def __init__(self, pipe):
+        self.pipe = pipe
+
+    def auth(self, username, hash):
+        pipe = self.pipe
+        pipe.connect()
+        record = pipe.db.auth.find_one({'_id': username})
+        pipe.disconnect()
+
+        if record != dict() and record['hash'] == hash:
+            return True
+        else:
+            return False
+
+    def add(self, username, hash):
+        pipe = self.pipe
+        pipe.connect()
+
+        try:
+            pipe.db.auth.insert_one({'_id': username, 'hash': hash})
+            pipe.disconnect()
+        except pymongo.errors.DuplicateKeyError as e:
+            pipe.disconnect()
+            raise e
+
+    def updateHash(self, username, old_hash, new_hash):
+        if self.auth(username, old_hash):
+            pipe = self.pipe
+            pipe.connect()
+            pipe.db.auth.update_one({'_id': username}, {'$set': {'hash': new_hash}})
+            pipe.disconnect()
+
+            return True
+
+        return False
+
+    def remove(self, username):
+        pipe = self.pipe
+        pipe.connect()
+
+        pipe.db.auth.remove({'_id': username})
+        pipe.disconnect()
+
+    def privilige(self, username):
+        pipe = self.pipe
+        pipe.connect()
+
+        record = pipe.db.auth.find_one({'_id': username})
+        pipe.disconnect()
+
+        if record != dict() and record['privilige']:
+            return True
+        else:
+            return False
 
 
 class Parent(object):

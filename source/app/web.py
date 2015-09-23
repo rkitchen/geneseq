@@ -61,6 +61,9 @@ class Login(object):
     def POST(self, **kwargs):
         return 'success'
 
+    def login(self, user, password):
+        pass
+
 
 # mounts all webapps to cherrypy tree
 cherrypy.config.update({'tools.staticdir.root': path})
