@@ -45,8 +45,13 @@
           <div id="top-bar-menu" class="top-bar-item pure-menu pure-menu-horizontal">
             <ul class="pure-menu-list">
             <li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
-              <li class="pure-menu-item"><a href="/mouse/table" class="pure-menu-link">Mouse Table</a></li>
-              <li class="pure-menu-item"><a href="/human/table" class="pure-menu-link">Human Table</a></li>
+            <li class="pure-menu-item"><a href="/mouse/table" class="pure-menu-link">Mouse Table</a></li>
+            <li class="pure-menu-item"><a href="/human/table" class="pure-menu-link">Human Table</a></li>
+            % if not login is UNDEFINED and login:
+            <li class="pure-menu-item"><a href="/logou" class="pure-menu-link">Logout</a></li>
+            % else:
+            <li class="pure-menu-item"><a href="/login" class="pure-menu-link">Login</a></li>
+            % endif
             </ul>
           </div>
         </div>
