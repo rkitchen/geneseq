@@ -7,7 +7,7 @@ import time
 path = os.path.dirname(os.path.realpath(__file__))
 _LOG_LEVELS = ['debug', 'info', 'error', 'cherry_access', 'cherry_error']
 _Log_MAX_FILES = 5
-_LOG_MAX_SIZE = 1000000
+_LOG_MAX_SIZE = 20000000
 
 # check if debug folder structure exists
 if not os.path.exists('%s/debug' % path):

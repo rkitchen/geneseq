@@ -10,13 +10,17 @@ path = os.path.dirname(os.path.realpath(__file__))
 config = None
 
 
-def init():
+def init(_cherrypy):
     global config
     global pipe
+    global SESSION_KEY
+    global cherrypy
 
     config = loadConfig()
     pipe = app.mongo_pipe.Pipe()
     logger.debug(getConfig())
+    SESSION_KEY = '_session_u'
+    cherrypy = _cherrypy
 
     setCount()
 
@@ -69,7 +73,7 @@ def translate(key):
         str: translated key
         None: returns key if no match found
     """
-    logger.info('translating, key: %s' % key)
+    logger.debug('translating, key: %s' % key)
     if key in config['translate']:
         colName = config['translate'][key]
         logger.debug('key found, translated to: %s' % colName)
@@ -88,7 +92,7 @@ def translate_readable(key):
         str: translated key
         None: returns key if no match found
     """
-    logger.info('translating key %s' % key)
+    logger.debug('translating key %s' % key)
     if key in config['readable']:
         name = config['readable'][key]
         logger.debug('key found, translated to %s' % name)

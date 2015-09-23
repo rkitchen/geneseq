@@ -1,12 +1,11 @@
 from pymongo import MongoClient
+from bcrypt import hashpw
+from bcrypt import gensalt
 import pymongo
 import app.settings
 import logging
 import pprint
 import re
-import os
-import hashlib
-import base64
 
 logger = logging.getLogger(__name__)
 pp = pprint.PrettyPrinter(indent=4)
@@ -22,6 +21,7 @@ class Pipe(object):
         logger.debug('initializing mongo pipe')
         self.mouse = Mouse(self)
         self.human = Human(self)
+        self.auth = Auth(self)
 
     def fixData(self, data, style='title', roundn=_ROUND_DECIMAL):
         """parses data to sync variable names and datatypes.
@@ -91,28 +91,27 @@ class Auth(object):
         pipe.disconnect()
 
         if record is not None:
-            pass_hash = self.getDigest(password, record['salt'])
-            if pass_hash == record['password']:
+            digest = record['password']
+            if digest == self.getDigest(password, digest):
                 return True
         return False
 
     def getDigest(self, password, salt=None):
         if not salt:
-            salt = base64.b64encode(os.urandom(32))
-        digest = hashlib.sha256(salt + password).hexdigest()
-        return digest, salt
+            salt = gensalt(rounds=13)
+        digest = hashpw(password.encode('utf8'), salt)
+        return digest
 
-    def addUser(self, username, password):
+    def register(self, username, password):
         pipe = self.pipe
         pipe.connect()
 
         exists = pipe.db.auth.find_one({'_id': username})
 
-        if exists is not None:
+        if exists is None:
             digest = self.getDigest(password)
             pipe.db.auth.insert_one({'_id': username,
-                                     'password': digest[0],
-                                     'salt': digest[1],
+                                     'password': digest,
                                      'super': False})
 
         pipe.disconnect()
@@ -123,8 +122,7 @@ class Auth(object):
 
             pipe = self.pipe
             pipe.connect()
-            pipe.db.auth.update_one({'_id': username}, {'$set': {'password': digest[0],
-                                                                 'salt': digest[1]}})
+            pipe.db.auth.update_one({'_id': username}, {'$set': {'password': digest}})
             pipe.disconnect()
 
             return True
@@ -157,7 +155,7 @@ class Parent(object):
         self.pipe = pipe
 
     def getTable(self, **kwargs):
-        logger.debug('kwargs %s' % kwargs)
+        logger.info('kwargs %s' % kwargs)
         pipe = self.pipe
         pipe.connect()
         logger.debug('starting aggregation')
@@ -180,10 +178,10 @@ class Parent(object):
 
         aggregate = {'pipeline': pipeline, 'allowDiskUse': True}
 
-        logger.debug('mongo aggregation:\n%s' % pprint.pformat(aggregate))
+        logger.info('mongo aggregation:\n%s' % pprint.pformat(aggregate))
         cursor = pipe.db[self.name].aggregate(**aggregate)
 
-        logger.debug('finish aggregation')
+        logger.info('finish aggregation')
         data = list()
         for item in cursor:
             data.append(item)
@@ -273,7 +271,6 @@ class Human(Parent):
         data = list()
         for item in cursor:
             data.append(item)
-        logger.debug(pprint.pformat(data))
         return data
 
     def brainspan_annotations(self):
@@ -285,7 +282,6 @@ class Human(Parent):
         cursor = pipe.db.brainspan_annotation.aggregate(aggregate)
         annotations = dict()
         for item in cursor:
-            logger.debug('test %s' % pprint.pformat(item))
             annotations[item['_id']] = item['days']
         pipe.disconnect()
 
@@ -309,7 +305,6 @@ class Human(Parent):
             item['age'] = annotations[item['brain']]
             data.append(item)
         pipe.disconnect()
-        logger.debug('brainspan data\n%s' % data)
         return data
 
     def count(self):
@@ -337,7 +332,6 @@ class Human(Parent):
         for item in data:
             item['bodymap'] = 1
 
-        logger.debug(pprint.pformat(data))
         return data
 
 
@@ -387,7 +381,6 @@ class Mouse(Parent):
         data = list()
         for item in cursor:
             data.append(item)
-        logger.debug(pprint.pformat(data))
         return data
 
     def celltypeMap(self):

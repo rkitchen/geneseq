@@ -14,6 +14,7 @@ class Mouse(object):
 
     def __init__(self, mako):
         self.lookup = mako
+        self.session = app.settings.SESSION_KEY
 
         self.table = Table(self)
         self.gene = Gene(self)
@@ -36,7 +37,8 @@ class Gene(Parent):
                 rendered
         """
         logger.info('/gene GET request id: %s' % str(id))
-        logger.debug('GET kwargs: %s' % kwargs)
+        logger.info('GET kwargs: %s' % kwargs)
+        logger.info('cherrypy session %s' % app.settings.cherrypy.session.get(self.session))
 
         settings = app.settings
         pipe = self.pipe
@@ -225,7 +227,7 @@ class Chart(Parent):
         ret['min'] = min([x[-1] for x in values])
         ret['max'] = max([x[-1] for x in values])
         ret['axis_length'] = max(len(x) for x in names)
-        logger.debug('data to return: %s' % pprint.pformat(ret))
+        # logger.debug('data to return: %s' % pprint.pformat(ret))
         return ret
 
 

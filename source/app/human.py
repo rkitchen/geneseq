@@ -223,7 +223,7 @@ class Bodymap(Parent):
         ret['min'] = min([x[1] for x in values])
         ret['max'] = max([x[1] for x in values])
         ret['axis_length'] = max(len(x) for x in columns)
-        logger.debug('data to return: %s' % pprint.pformat(ret))
+        # logger.debug('data to return: %s' % pprint.pformat(ret))
         return ret
 
 
@@ -267,5 +267,5 @@ class Brainspan(Parent):
         ret['min'] = min([x['value'] for x in data])
         ret['max'] = max([x['value'] for x in data])
         ret['duration'] = max([x['age'] for x in data])
-        logger.debug('data to return \n%s' % pprint.pformat(ret))
+        # logger.debug('data to return \n%s' % pprint.pformat(ret))
         return ret

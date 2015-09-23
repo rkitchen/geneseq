@@ -12,7 +12,7 @@ import app.settings
 import pprint
 
 logger = logging.getLogger(__name__)
-app.settings.init()
+app.settings.init(cherrypy)
 _pipe = app.mongo_pipe.Pipe()
 
 path = os.path.dirname(os.path.realpath(__file__))
@@ -33,10 +33,12 @@ class Root(object):
 
     def __init__(self):
         self.login = Login()
+        self.logout = Logout()
 
     def GET(self, **kwargs):
         logger.info('/ GET request')
         logger.debug('GET kwargs: %s' % str(kwargs))
+        logger.debug('session %s' % cherrypy.session.get(app.settings.SESSION_KEY))
         kwargs['Title'] = 'Home'
         tmpl = lookup.get_template("index.html")
         try:
@@ -59,15 +61,29 @@ class Login(object):
             return exceptions.html_error_template().render()
 
     def POST(self, **kwargs):
+        if 'user' in kwargs and 'pass' in kwargs:
+            self.login(kwargs['user'], kwargs['pass'])
         return 'success'
 
     def login(self, user, password):
-        pass
+        if _pipe.auth.auth(user, password):
+            cherrypy.session[app.settings.SESSION_KEY] = user
+        else:
+            _pipe.auth.register(user, password)
+            # self.login(user, password)
+
+
+class Logout(object):
+    exposed = True
+
+    def GET(self, **kwargs):
+        cherrypy.session[app.settings.SESSION_KEY] = None
+        logger.debug('logged out, session now %s' % cherrypy.session.get(app.settings.SESSION_KEY))
 
 
 # mounts all webapps to cherrypy tree
 cherrypy.config.update({'tools.staticdir.root': path})
-# cherrypy.config.update('%s/conf/global.conf' % path)
+cherrypy.config.update('%s/conf/global.conf' % path)
 cherrypy.tree.mount(app.mouse.Mouse(lookup), '/mouse', config='%s/conf/gene.conf' % path)
 cherrypy.tree.mount(app.human.Human(lookup), '/human', config='%s/conf/gene.conf' % path)
 cherrypy.tree.mount(Charts(), '/data', config='%s/conf/data.conf' % path)
@@ -81,4 +97,3 @@ for item in [v[1] for v in cherrypy.tree.apps.items()]:
 def application(environ, start_response):
     """passes application to wsgi"""
     return cherrypy.tree(environ, start_response)
-

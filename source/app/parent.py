@@ -1,6 +1,7 @@
 import json
 import logging
 from app import mongo_pipe as pipe
+import app.settings
 
 logger = logging.getLogger(__name__)
 
@@ -11,6 +12,7 @@ class MouseParent(object):
     def __init__(self, mouse):
         self.lookup = mouse.lookup
         self.pipe = pipe.Pipe()
+        self.session = app.settings.SESSION_KEY
 
     def fixInput(self, kwargs):
         for k, v in kwargs.items():
