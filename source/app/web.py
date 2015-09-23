@@ -31,6 +31,9 @@ class Root(object):
     """
     exposed = True
 
+    def __init__(self):
+        self.login = Login()
+
     def GET(self, **kwargs):
         logger.info('/ GET request')
         logger.debug('GET kwargs: %s' % str(kwargs))
@@ -40,6 +43,23 @@ class Root(object):
             return tmpl.render(**kwargs)
         except:
             return exceptions.html_error_template().render()
+
+
+class Login(object):
+    exposed = True
+
+    def GET(self, **kwargs):
+        logger.info('/ GET request')
+        logger.debug('GET kwargs: %s' % str(kwargs))
+        kwargs['Title'] = 'Login'
+        tmpl = lookup.get_template("login.html")
+        try:
+            return tmpl.render(**kwargs)
+        except:
+            return exceptions.html_error_template().render()
+
+    def POST(self, **kwargs):
+        return 'success'
 
 
 # mounts all webapps to cherrypy tree
