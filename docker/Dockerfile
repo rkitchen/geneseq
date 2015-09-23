@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -q -y python3 \
    mongodb-org \
    nodejs \
    npm \
+   libffi-dev \
    && useradd -d /dev/null -s /bin/bash http \
    && mkdir -p /var/run/uwsgi \
                /var/log/supervisor \
