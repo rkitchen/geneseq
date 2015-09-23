@@ -114,10 +114,14 @@ order:
         - source
     celltypes:
         - neuron
+        - pyramidal neuron
+        - interneuron
         - astrocyte
         - microglia
         - endothelial
         - oligodendrocyte
+        - medium spiny neuron
+        - ependymal
 brainspan:
     regions:
         - HIP

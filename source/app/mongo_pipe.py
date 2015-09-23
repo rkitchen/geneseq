@@ -281,7 +281,7 @@ class Mouse(Parent):
         pipe.disconnect()
 
         if gene is None:
-            logger.debug('no gene found with id %s' % id)
+            logger.debug('no gene found with id %s' % mouse_id)
             return gene
 
         ret = dict()
@@ -305,7 +305,7 @@ class Mouse(Parent):
                      {'$unwind': '$expression.regions'},
                      {'$unwind': '$expression.regions.values'},
                      {'$project': {'_id': '$expression.name',
-                                   'region': '$expression.regions.name',
+                                   'region': '$expression.regions.region',
                                    'value': '$expression.regions.values'}}]
         cursor = pipe.db.mouse.aggregate(aggregate)
         pipe.disconnect()
