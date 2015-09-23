@@ -4,6 +4,9 @@ import app.settings
 import logging
 import pprint
 import re
+import os
+import hashlib
+import base64
 
 logger = logging.getLogger(__name__)
 pp = pprint.PrettyPrinter(indent=4)
@@ -81,33 +84,47 @@ class Auth(object):
     def __init__(self, pipe):
         self.pipe = pipe
 
-    def auth(self, username, hash):
+    def auth(self, username, password):
         pipe = self.pipe
         pipe.connect()
         record = pipe.db.auth.find_one({'_id': username})
         pipe.disconnect()
 
-        if record != dict() and record['hash'] == hash:
-            return True
-        else:
-            return False
+        if record is not None:
+            pass_hash = self.getDigest(password, record['salt'])
+            if pass_hash == record['password']:
+                return True
+        return False
 
-    def add(self, username, hash):
+    def getDigest(self, password, salt=None):
+        if not salt:
+            salt = base64.b64encode(os.urandom(32))
+        digest = hashlib.sha256(salt + password).hexdigest()
+        return digest, salt
+
+    def addUser(self, username, password):
         pipe = self.pipe
         pipe.connect()
 
-        try:
-            pipe.db.auth.insert_one({'_id': username, 'hash': hash})
-            pipe.disconnect()
-        except pymongo.errors.DuplicateKeyError as e:
-            pipe.disconnect()
-            raise e
+        exists = pipe.db.auth.find_one({'_id': username})
 
-    def updateHash(self, username, old_hash, new_hash):
-        if self.auth(username, old_hash):
+        if exists is not None:
+            digest = self.getDigest(password)
+            pipe.db.auth.insert_one({'_id': username,
+                                     'password': digest[0],
+                                     'salt': digest[1],
+                                     'super': False})
+
+        pipe.disconnect()
+
+    def newPassword(self, username, old_password, new_password):
+        if self.auth(username, old_password):
+            digest = self.getDigest(new_password)
+
             pipe = self.pipe
             pipe.connect()
-            pipe.db.auth.update_one({'_id': username}, {'$set': {'hash': new_hash}})
+            pipe.db.auth.update_one({'_id': username}, {'$set': {'password': digest[0],
+                                                                 'salt': digest[1]}})
             pipe.disconnect()
 
             return True
@@ -121,14 +138,14 @@ class Auth(object):
         pipe.db.auth.remove({'_id': username})
         pipe.disconnect()
 
-    def privilige(self, username):
+    def isSuper(self, username):
         pipe = self.pipe
         pipe.connect()
 
         record = pipe.db.auth.find_one({'_id': username})
         pipe.disconnect()
 
-        if record != dict() and record['privilige']:
+        if record != dict() and record['super']:
             return True
         else:
             return False
