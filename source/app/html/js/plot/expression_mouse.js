@@ -107,7 +107,7 @@ var mouse = new function() {
                         return xscale(d[0]);
                     })
                     .attr('cy', function(d) {
-                        return yscale(d[1]);
+                        return yscale(d[2]);
                     })
                     .attr('fill', function(d) {
                         return colorscale(d[0]);

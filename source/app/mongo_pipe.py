@@ -302,9 +302,11 @@ class Mouse(Parent):
 
         aggregate = [{'$match': {'_id': mouse_id}},
                      {'$unwind': '$expression'},
-                     {'$unwind': '$expression.values'},
+                     {'$unwind': '$expression.regions'},
+                     {'$unwind': '$expression.regions.values'},
                      {'$project': {'_id': '$expression.name',
-                                   'value': '$expression.values'}}]
+                                   'region': '$expression.regions.name',
+                                   'value': '$expression.regions.values'}}]
         cursor = pipe.db.mouse.aggregate(aggregate)
         pipe.disconnect()
         data = list()

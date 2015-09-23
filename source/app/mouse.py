@@ -212,7 +212,7 @@ class Chart(Parent):
 
         for cellType in mouse:
             name = ' '.join(cellType['_id'].split('_')).title()
-            values.append((name, cellType['value']))
+            values.append((name, cellType['region'], cellType['value']))
             columns.append((cellType['_id'], name))
 
         order = app.settings.getOrder('celltypes')
