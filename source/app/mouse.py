@@ -211,18 +211,19 @@ class Chart(Parent):
         columns = list()
 
         for cellType in mouse:
-            name = ' '.join(cellType['_id'].split('_')).title()
-            values.append((name, cellType['region'], cellType['value']))
+            _id = cellType['_id']
+            name = ' '.join(_id.split('_')).title()
+            values.append((name, cellType['region'], annotations[_id], cellType['value']))
             columns.append((cellType['_id'], name))
 
         order = app.settings.getOrder('celltypes')
         columns = sorted(columns, key=lambda i: order.index(annotations[i[0]]))
         names = [x[1] for x in columns]
 
-        ret = {'values': values, 'names': names}
+        ret = {'values': values, 'names': names, 'colors': order}
         ret['title'] = 'Celltype Expression in Mice'
-        ret['min'] = min([x[1] for x in values])
-        ret['max'] = max([x[1] for x in values])
+        ret['min'] = min([x[-1] for x in values])
+        ret['max'] = max([x[-1] for x in values])
         ret['axis_length'] = max(len(x) for x in names)
         logger.debug('data to return: %s' % pprint.pformat(ret))
         return ret

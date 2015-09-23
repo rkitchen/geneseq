@@ -1,5 +1,5 @@
 var mouse = new function() {
-    var debug_data;
+    var self = this;
     var margin = {};
     margin.left = 60;
     margin.right = 20;
@@ -54,7 +54,7 @@ var mouse = new function() {
                 console.log('status: ' + status);
 
                 data = jQuery.parseJSON(data);
-                debug_data = data;
+                self.data = data;
 
                 margin.bottom = 10 + data.axis_length * 5;
                 xscale.domain(data.names)
@@ -63,13 +63,13 @@ var mouse = new function() {
                       .range([height, 0]);
                 console.log(data.names);
 
-                if (data.names.length <= 10) {
+                if (data.colors.length <= 10) {
                     colorscale = d3.scale.category10();
                 } else {
                     colorscale = d3.scale.category20();
                 }
 
-                colorscale.domain(data.names);
+                colorscale.domain(data.colors);
 
                 var svg;
                 if (params.node != null) svg = d3.select(params.node);
@@ -107,10 +107,10 @@ var mouse = new function() {
                         return xscale(d[0]);
                     })
                     .attr('cy', function(d) {
-                        return yscale(d[2]);
+                        return yscale(d[3]);
                     })
                     .attr('fill', function(d) {
-                        return colorscale(d[0]);
+                        return colorscale(d[2]);
                     })
                     .attr('r', radius);
 
