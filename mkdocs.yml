@@ -1,4 +1,7 @@
 site_name: Geneseq Documentation
+site_url: http://brain.gersteinlab.org
+repo_url: https://github.com/miclaraia/geneseq
+site_author: Michael Laraia <micheal.laraia@gmail.com>
 pages:
     - Home: index.md
     - About: about.md
