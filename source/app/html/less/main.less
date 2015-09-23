@@ -55,10 +55,49 @@ div#footer {
    height:auto;
    position:relative;
    padding-top: 10px;
-}
 
-#top-bar a {
-   text-decoration: none !important;
+   a {
+      text-decoration: none !important;
+   }
+
+   form {
+      margin-bottom:10px;
+   }
+
+   #top-bar-menu {
+      text-align: left;
+
+      a {
+         padding: 5px 10px;
+         color: inherit !important;
+      }
+
+      li {
+         height: auto;
+
+         &:hover {
+            color: @color-grey-dark;
+         }
+      }
+   }
+
+   span {
+      font-family:aller;
+      font-size:1.5em;
+      position:absolute;
+      margin:auto;
+      //height:40px;
+      top:0;
+      bottom:0;
+   }
+
+   input[type=text] {
+      height:30px;
+      border-style:none;
+      padding: 0 15px;
+      width:100%;
+      color: #282828;
+   }
 }
 
 #top-bar-wrapper {
@@ -69,42 +108,9 @@ div#footer {
    margin: auto;
 }
 
-#top-bar form {
-   margin-bottom:10px;
-}
-
-#top-bar #top-bar-menu {
-   text-align: left;
-}
-
-#top-bar #top-bar-menu a {
-   padding: 5px 10px;
-   color: inherit !important;
-}
-
-#top-bar #top-bar-menu li {
-   height: auto;
-}
-
 .top-bar-item {
    position: relative;
    display: block;
-}
-#top-bar input[type=text] {
-   height:30px;
-   border-style:none;
-   padding: 0 15px;
-   width:100%;
-   color: #282828;
-}
-#top-bar span {
-   font-family:aller;
-   font-size:1.5em;
-   position:absolute;
-   margin:auto;
-   //height:40px;
-   top:0;
-   bottom:0;
 }
 
 /*###################  Sidebar ##################*/
