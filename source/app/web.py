@@ -7,7 +7,6 @@ from app.data import Charts
 import app.mouse
 import app.human
 from app.parent import Parent
-import app.mysql_pipe
 import app.mongo_pipe
 import app.settings
 import pprint
