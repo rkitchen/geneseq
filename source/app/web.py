@@ -98,6 +98,7 @@ cherrypy.tree.mount(Root(), '/', config='%s/conf/root.conf' % path)
 # attaches config files to each webapp
 for item in [v[1] for v in cherrypy.tree.apps.items()]:
     item.merge('%s/conf/apps.conf' % path)
+    item.merge({'/': {'tools.sessions.storage_path': '%s/session' % path}})
 
 
 def application(environ, start_response):
