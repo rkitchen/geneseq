@@ -14,3 +14,7 @@ d3
 node_modules
 site/
 session/
+bootstrap-3.3.5-dist/
+bootstrap-validator/
+*.zip
+jquery-validation/

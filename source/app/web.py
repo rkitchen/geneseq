@@ -67,18 +67,39 @@ class Login(Parent):
             return exceptions.html_error_template().render()
 
     def POST(self, **kwargs):
-        if 'user' in kwargs and 'pass' in kwargs:
-            ret = self.login(kwargs['user'], kwargs['pass'])
-            return json.dumps(ret)
+        logger.info('/login POST request')
+        logger.debug('POST kwargs: %s' % str(kwargs))
 
+        if 'method' in kwargs:
+            if kwargs['method'] == 'login':
+                if set(['user', '_pass']).issubset(kwargs):
+                    ret = self.login(**kwargs)
+                    return json.dumps(ret)
 
-    def login(self, user, password):
-        if _pipe.auth.auth(user, password):
+            elif kwargs['method'] == 'register':
+                if set(['user', '_pass', '_pass2', 'email']).issubset(kwargs):
+                    ret = self.register(**kwargs)
+                    return json.dumps(ret)
+        return json.dumps({'success': False})
+
+    def login(self, user, _pass, **kwargs):
+        if _pipe.auth.auth(user, _pass):
             cherrypy.session[app.settings.SESSION_KEY] = user
             return {'success': True}
         else:
             # _pipe.auth.register(user, password)
-            return {'success': False}
+            return {'success': False, 'invalid': 'Invalid Username or Password'}
+
+    def register(self, user, _pass, _pass2, email, **kwargs):
+        if _pass != _pass2:
+            return {'success': False, 'invalid': 'Passwords must match'}
+
+        logger.debug('username %s email %s' % (user, email))
+        if _pipe.auth.register(user, _pass, email):
+            cherrypy.session[app.settings.SESSION_KEY] = user
+            return {'success': True}
+        else:
+            return {'success': False, 'invalid': 'Username already exists'}
 
 
 class Logout(Parent):

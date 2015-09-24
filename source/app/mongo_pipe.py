@@ -102,19 +102,23 @@ class Auth(object):
         digest = hashpw(password.encode('utf8'), salt)
         return digest
 
-    def register(self, username, password):
+    def register(self, username, password, email):
         pipe = self.pipe
         pipe.connect()
 
         exists = pipe.db.users.find_one({'username': username})
-
+        logger.debug('username %s exists %s' % (username, exists))
+        success = False
         if exists is None:
+            success = True
             digest = self.getDigest(password)
             pipe.db.users.insert_one({'username': username,
                                       'password': digest,
-                                      'super': False})
+                                      'super': False,
+                                      'email': email})
 
         pipe.disconnect()
+        return success
 
     def newPassword(self, username, old_password, new_password):
         if self.auth(username, old_password):

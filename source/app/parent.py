@@ -25,6 +25,12 @@ class Parent(object):
                         pass
             elif v == 'true' or v == 'false':
                 kwargs[k] = json.loads(v)
+            else:
+                try:
+                    tmp = int(v)
+                    kwargs[k] = tmp
+                except ValueError:
+                    pass
         return kwargs
 
     def getSession(self):
@@ -58,15 +64,15 @@ class MouseParent(Parent):
         self.pipe = pipe.Pipe()
         self.session = app.settings.SESSION_KEY
 
-    def fixInput(self, kwargs):
-        for k, v in kwargs.items():
-            if '[' in v and ']' in v:
-                kwargs[k] = v[1:-1].split(',')
-                for i, number in enumerate(kwargs[k]):
-                    try:
-                        kwargs[k][i] = int(number)
-                    except (ValueError):
-                        pass
-            elif v == 'true' or v == 'false':
-                kwargs[k] = json.loads(v)
-        return kwargs
+    # def fixInput(self, kwargs):
+    #     for k, v in kwargs.items():
+    #         if '[' in v and ']' in v:
+    #             kwargs[k] = v[1:-1].split(',')
+    #             for i, number in enumerate(kwargs[k]):
+    #                 try:
+    #                     kwargs[k][i] = int(number)
+    #                 except (ValueError):
+    #                     pass
+    #         elif v == 'true' or v == 'false':
+    #             kwargs[k] = json.loads(v)
+    #     return kwargs

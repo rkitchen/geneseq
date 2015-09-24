@@ -136,6 +136,7 @@ var update_url = function() {
         url = url.join('&');
         history.replaceState(null, null, './table?' + url);
     } else history.replaceState(null, null, './table');
+    _menu.update_urls();
 }
 
 var add_request = function(key, value) {
