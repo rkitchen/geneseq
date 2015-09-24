@@ -32,11 +32,11 @@ RUN pip3 install -r /tmp/pip_requirements.txt
 
 COPY system_configs /
 
-RUN echo 5
+RUN echo 6
 
 RUN  git clone https://github.com/miclaraia/geneseq.git \
     /opt/geneseq && \
-    chown -R http:http /usr/local/lib/geneseq && \
+    chown -R http:http /opt/geneseq && \
     ln -s /opt/geneseq/source /usr/local/lib/geneseq
 
 VOLUME ['/data/db']
