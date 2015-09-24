@@ -71,6 +71,8 @@
             
                 <li class="toctree-l3"><a href="#users">Users</a></li>
                 
+                    <li><a class="toctree-l4" href="#registering">Registering</a></li>
+                
             
             </ul>
         
@@ -114,7 +116,26 @@
             <div class="section">
               
                 <h1 id="users">Users</h1>
-<p>Registering</p>
+<h2 id="registering">Registering</h2>
+<p>When a user registers from the provided login page, their credentials
+are added to the database, but they don't get privileges to the private data.
+That has to be added manually through the mongo shell or
+the mongo-express interface.</p>
+<p>To give a user privileges, either</p>
+<ul>
+<li>run the commands inside the mongo shell  </li>
+</ul>
+<pre><code>&gt; use gene_locale  
+&gt; db.users.update({username: {USERNAME}}, {$set: {super: true}})
+</code></pre>
+
+<ul>
+<li>
+<p>Manually edit the user's entry from mongo-express
+    <img alt="Screenshot" src="../img/user-1-1.png" />    </p>
+<p><img alt="Screenshot" src="../img/user-2-2.png" /></p>
+</li>
+</ul>
               
             </div>
           </div>

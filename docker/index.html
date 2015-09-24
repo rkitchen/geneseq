@@ -197,9 +197,12 @@ also has the useful capability of editing single documents
 inside a databse. Start the service with supervisorctl and
 make sure port 8081 is exposed in your docker instance.</p>
 <h3 id="configuration">Configuration</h3>
-<p>Configuration file lives at /node_modules/mongo-express/config.js.
+<p>Configuration file lives at <code>/node_modules/mongo-express/config.js</code>.
 You can set the <code>username</code> and <code>password</code> fields here required to
 access the service from a browser</p>
+<h3 id="viewing">Viewing</h3>
+<p>Simply point your browser to <code>localhost:8081</code> and authenticate with
+the credentials specified in <code>config.js</code> (<code>admin</code> and <code>12345678</code> by default).</p>
               
             </div>
           </div>
