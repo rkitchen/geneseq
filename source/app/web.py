@@ -56,6 +56,8 @@ class Login(Parent):
         logger.info('/ GET request')
         logger.debug('GET kwargs: %s' % str(kwargs))
         kwargs['Title'] = 'Login'
+        if 'ref' not in kwargs:
+            kwargs['ref'] = '/'
         kwargs = self.mako_args(kwargs)
         tmpl = lookup.get_template("login.html")
         try:
@@ -66,7 +68,6 @@ class Login(Parent):
     def POST(self, **kwargs):
         if 'user' in kwargs and 'pass' in kwargs:
             self.login(kwargs['user'], kwargs['pass'])
-        raise cherrypy.HTTPRedirect(kwargs['return'])
 
     def login(self, user, password):
         if _pipe.auth.auth(user, password):
