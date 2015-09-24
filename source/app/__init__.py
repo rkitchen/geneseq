@@ -12,6 +12,8 @@ _LOG_MAX_SIZE = 20000000
 # check if debug folder structure exists
 if not os.path.exists('%s/debug' % path):
     os.makedirs('%s/debug' % path)
+if not os.path.exists('%s/session' % path):
+    os.makedirs('%s/session' % path)
 for level in _LOG_LEVELS:
     if not os.path.exists('%s/debug/%s' % (path, level)):
         os.makedirs('%s/debug/%s' % (path, level))
