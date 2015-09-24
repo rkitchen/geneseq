@@ -10,6 +10,7 @@ from app.parent import Parent
 import app.mongo_pipe
 import app.settings
 import pprint
+import json
 
 logger = logging.getLogger(__name__)
 app.settings.init(cherrypy)
@@ -67,14 +68,17 @@ class Login(Parent):
 
     def POST(self, **kwargs):
         if 'user' in kwargs and 'pass' in kwargs:
-            self.login(kwargs['user'], kwargs['pass'])
+            ret = self.login(kwargs['user'], kwargs['pass'])
+            return json.dumps(ret)
+
 
     def login(self, user, password):
         if _pipe.auth.auth(user, password):
             cherrypy.session[app.settings.SESSION_KEY] = user
+            return {'success': True}
         else:
-            _pipe.auth.register(user, password)
-            # self.login(user, password)
+            # _pipe.auth.register(user, password)
+            return {'success': False}
 
 
 class Logout(Parent):
@@ -83,9 +87,9 @@ class Logout(Parent):
     def GET(self, **kwargs):
         cherrypy.session[app.settings.SESSION_KEY] = None
         logger.debug('logged out, session now %s' % cherrypy.session.get(app.settings.SESSION_KEY))
-        if 'return' not in kwargs:
-            kwargs['return'] = '/'
-        raise cherrypy.HTTPRedirect(kwargs['return'])
+        if 'ref' not in kwargs:
+            kwargs['ref'] = '/'
+        raise cherrypy.HTTPRedirect(kwargs['ref'])
 
 
 # mounts all webapps to cherrypy tree
