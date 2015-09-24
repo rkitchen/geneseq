@@ -1,0 +1,94 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "Welcome to MkDocs\n\n\nFor full documentation visit \nmkdocs.org\n.\n\n\nCommands\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nProject layout\n\n\nmkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.",
+            "title": "Home"
+        },
+        {
+            "location": "/#welcome-to-mkdocs",
+            "text": "For full documentation visit  mkdocs.org .",
+            "title": "Welcome to MkDocs"
+        },
+        {
+            "location": "/#commands",
+            "text": "mkdocs new [dir-name]  - Create a new project.  mkdocs serve  - Start the live-reloading docs server.  mkdocs build  - Build the documentation site.  mkdocs help  - Print this help message.",
+            "title": "Commands"
+        },
+        {
+            "location": "/#project-layout",
+            "text": "mkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.",
+            "title": "Project layout"
+        },
+        {
+            "location": "/about/",
+            "text": "Ducitur ac fuit ut nubilaque ignibus is\n\n\nCono optetis\n\n\nLorem markdownum lucis ferrataque \ncaelum fasque\n tantum\nSemeles \nte\n traiecta, et. At vis vos rates simulacra, ortus iam culpam\ncontingere hunc cumque illa. Bracchia qua silet clementissimus medere in demisit\napros servat vescitur rogavit memorante conanti. Iuvenem narretque lassata\nfacit. Et ventis numina sit quid fruetur cerae sub ducunt telluris!\n\n\nPeleus qui \nposse timentem de\n refert illo facta Minervae \nEuboica\n; haec\ninpune. Populi hostes nomen etiamnunc nulla considere et virtus senilibus\nIuppiter dulcedine, non parte Iunonis, est sed nec pulmonis. Ferrum Desine\ncondita me \nmulta meum\n, per et fama.\n\n\nVincitur cornibus. Spumaque pondera; nec Libys iners pingebat Iovis inpensius\ncadendum! Vastat in inrita, color radicibus Thebis clausaeque quodque inmemores\nnavigat harena aegide totaque spissatus; vestigia et sine.\n\n\nEt modo condas alta squamea\n\n\nVestigia inmunemque accedit sed signans nullis, longisque non me. Nunc et at\nministrarum plangoris obstat: e annos via rapit servabitur hactenus officio.\n\n\n\n\nCorymbis senex\n\n\nNec tecta mundi fecerat\n\n\nId undas Aeolidae\n\n\nLenaee commisit metum neque cultrosque pectora videt\n\n\n\n\nEx solvit o materna pando, iam \nPericlymeni ulla glacialis\n appellantque\ntantum amoris. Longaeva quae saxa superstes maduerunt fuit quateret fata\nconcipis sua, et amittere membra. Mater est Thereaque subit, illa quos \nquoque\naccipe\n, Cyanee securae, nos mixta, sedes. Inposita signa novatrix pingue\nThemis ter serta ante ubi illum parat, faciem! Et magis ut cingentia membris nox\nanimae victae ense est fiducia.\n\n\nPostquam flores percussamque gerit Iove perque utile pariter tacuit: iuvenis\nhiems: dicunt illic cupiens. Fine ego quo, vigebat recepta. Duo collo nocent\nlibera unda!",
+            "title": "About"
+        },
+        {
+            "location": "/about/#ducitur-ac-fuit-ut-nubilaque-ignibus-is",
+            "text": "",
+            "title": "Ducitur ac fuit ut nubilaque ignibus is"
+        },
+        {
+            "location": "/about/#cono-optetis",
+            "text": "Lorem markdownum lucis ferrataque  caelum fasque  tantum\nSemeles  te  traiecta, et. At vis vos rates simulacra, ortus iam culpam\ncontingere hunc cumque illa. Bracchia qua silet clementissimus medere in demisit\napros servat vescitur rogavit memorante conanti. Iuvenem narretque lassata\nfacit. Et ventis numina sit quid fruetur cerae sub ducunt telluris!  Peleus qui  posse timentem de  refert illo facta Minervae  Euboica ; haec\ninpune. Populi hostes nomen etiamnunc nulla considere et virtus senilibus\nIuppiter dulcedine, non parte Iunonis, est sed nec pulmonis. Ferrum Desine\ncondita me  multa meum , per et fama.  Vincitur cornibus. Spumaque pondera; nec Libys iners pingebat Iovis inpensius\ncadendum! Vastat in inrita, color radicibus Thebis clausaeque quodque inmemores\nnavigat harena aegide totaque spissatus; vestigia et sine.",
+            "title": "Cono optetis"
+        },
+        {
+            "location": "/about/#et-modo-condas-alta-squamea",
+            "text": "Vestigia inmunemque accedit sed signans nullis, longisque non me. Nunc et at\nministrarum plangoris obstat: e annos via rapit servabitur hactenus officio.   Corymbis senex  Nec tecta mundi fecerat  Id undas Aeolidae  Lenaee commisit metum neque cultrosque pectora videt   Ex solvit o materna pando, iam  Periclymeni ulla glacialis  appellantque\ntantum amoris. Longaeva quae saxa superstes maduerunt fuit quateret fata\nconcipis sua, et amittere membra. Mater est Thereaque subit, illa quos  quoque\naccipe , Cyanee securae, nos mixta, sedes. Inposita signa novatrix pingue\nThemis ter serta ante ubi illum parat, faciem! Et magis ut cingentia membris nox\nanimae victae ense est fiducia.  Postquam flores percussamque gerit Iove perque utile pariter tacuit: iuvenis\nhiems: dicunt illic cupiens. Fine ego quo, vigebat recepta. Duo collo nocent\nlibera unda!",
+            "title": "Et modo condas alta squamea"
+        },
+        {
+            "location": "/docker/",
+            "text": "Installation\n\n\nDependencies\n\n\nDocker\n\n\nFollow these \ninstructions\n to install docker on the host machine.\n\n\nImage\n\n\nRun \ndocker pull miclaraia/geneseq\n\nto get the image. It might take a while as it's downloading some 500MB of data.\n\n\nRunning Docker\n\n\nStart the image by running:\n\n\ndocker run -i -t miclaraia/geneseq\n\n\n\n\nTo open a port to the application:\n\n\ndocker run -p 80:8080 miclaraia/geneseq\n\n\n\n\nTo open a port to mongo gui mongo-express:\n\n\ndocker run -p 8081 -i -t miclaraia/geneseq\n\n\n\n\nTo mount the database directory as a volume:\n\n\ndocker run -v ${host_directory}:/data -i -t miclaraia/geneseq\n\n\n\n\nPutting it all together:\n\n\ndocker run -p 80:8080 -p 8081 -v {host_directory}:/data -i -t miclaraia/geneseq\n\n\n\n\nCommands Inside Docker\n\n\nSupervisor\n\n\nTo restart mongodb service:\n\n\nsupervisorctl restart mongo\n\n\n\n\nTo restart the python webserver:\n\n\nsupervisorctl restart uwsgi\n\n\n\n\nTo start and stop the mongo gui mongo-express\n\n\nsupervisorctl start mongo-express\nsupervisorctl stop mongo-express\n\n\n\n\nMongodb\n\n\nTo restore a database from a compressed tar.gz mongodump, first\nplace the archive inside the host directory mounted to /data \ninside the docker container. Then run these commands:\n\n\ncd /data\ntar -zxvf {mongodump.tar.gz}\nmongorestore --db dump/gene_locale gene_locale\n\n\n\n\nInclude the \n--drop\n option to mongorestore if a previous database exists\nto ensure data integrity.\n\n\nTo dump a database, run this command:\n\n\nmongodump --db gene-locale\n\n\n\n\nThis will create a directory \ndump\n in the current directory containing the \ndatabase files. This is useful for creating periodic backups of the database\nstructure. Compress this dump by running:\n\n\ntar -zcvf mongodump.tar.gz dump\n\n\n\n\nMongo Express\n\n\nA utility which makes it easier to manage a mongo database. It \nalso has the useful capability of editing single documents \ninside a databse. Start the service with supervisorctl and\nmake sure port 8081 is exposed in your docker instance.\n\n\nConfiguration\n\n\nConfiguration file lives at /node_modules/mongo-express/config.js.\nYou can set the \nusername\n and \npassword\n fields here required to\naccess the service from a browser",
+            "title": "Using Docker"
+        },
+        {
+            "location": "/docker/#installation",
+            "text": "",
+            "title": "Installation"
+        },
+        {
+            "location": "/docker/#dependencies",
+            "text": "Docker  Follow these  instructions  to install docker on the host machine.  Image  Run  docker pull miclaraia/geneseq \nto get the image. It might take a while as it's downloading some 500MB of data.",
+            "title": "Dependencies"
+        },
+        {
+            "location": "/docker/#running-docker",
+            "text": "Start the image by running:  docker run -i -t miclaraia/geneseq  To open a port to the application:  docker run -p 80:8080 miclaraia/geneseq  To open a port to mongo gui mongo-express:  docker run -p 8081 -i -t miclaraia/geneseq  To mount the database directory as a volume:  docker run -v ${host_directory}:/data -i -t miclaraia/geneseq  Putting it all together:  docker run -p 80:8080 -p 8081 -v {host_directory}:/data -i -t miclaraia/geneseq",
+            "title": "Running Docker"
+        },
+        {
+            "location": "/docker/#commands-inside-docker",
+            "text": "",
+            "title": "Commands Inside Docker"
+        },
+        {
+            "location": "/docker/#supervisor",
+            "text": "To restart mongodb service:  supervisorctl restart mongo  To restart the python webserver:  supervisorctl restart uwsgi  To start and stop the mongo gui mongo-express  supervisorctl start mongo-express\nsupervisorctl stop mongo-express",
+            "title": "Supervisor"
+        },
+        {
+            "location": "/docker/#mongodb",
+            "text": "To restore a database from a compressed tar.gz mongodump, first\nplace the archive inside the host directory mounted to /data \ninside the docker container. Then run these commands:  cd /data\ntar -zxvf {mongodump.tar.gz}\nmongorestore --db dump/gene_locale gene_locale  Include the  --drop  option to mongorestore if a previous database exists\nto ensure data integrity.  To dump a database, run this command:  mongodump --db gene-locale  This will create a directory  dump  in the current directory containing the \ndatabase files. This is useful for creating periodic backups of the database\nstructure. Compress this dump by running:  tar -zcvf mongodump.tar.gz dump",
+            "title": "Mongodb"
+        },
+        {
+            "location": "/docker/#mongo-express",
+            "text": "A utility which makes it easier to manage a mongo database. It \nalso has the useful capability of editing single documents \ninside a databse. Start the service with supervisorctl and\nmake sure port 8081 is exposed in your docker instance.  Configuration  Configuration file lives at /node_modules/mongo-express/config.js.\nYou can set the  username  and  password  fields here required to\naccess the service from a browser",
+            "title": "Mongo Express"
+        },
+        {
+            "location": "/python/",
+            "text": "Users\n\n\nRegistering",
+            "title": "Application"
+        },
+        {
+            "location": "/python/#users",
+            "text": "Registering",
+            "title": "Users"
+        }
+    ]
+}
