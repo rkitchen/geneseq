@@ -32,7 +32,7 @@ RUN pip3 install -r /tmp/pip_requirements.txt
 
 COPY system_configs /
 
-RUN echo 7
+RUN echo 8
 
 RUN  git clone https://github.com/miclaraia/geneseq.git \
     /opt/geneseq && \

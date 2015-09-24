@@ -4,5 +4,9 @@ repo_url: https://github.com/miclaraia/geneseq
 site_author: Michael Laraia <micheal.laraia@gmail.com>
 pages:
     - Home: index.md
-    - About: about.md
+    - About:
+        - About: about.md
+        - Using Docker: docker.md
+        - Application: python.md
+
 theme: readthedocs
