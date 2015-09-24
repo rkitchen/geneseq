@@ -13,3 +13,4 @@ d3
 *.sublime-workspace
 node_modules
 site/
+session/
