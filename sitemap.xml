@@ -10,25 +10,19 @@
     
 
     
-        
-    <url>
-     <loc>http://brain.gersteinlab.org/about/</loc>
-     <lastmod>2015-09-24</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
     <url>
      <loc>http://brain.gersteinlab.org/docker/</loc>
      <lastmod>2015-09-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
+    
+
+    
     <url>
      <loc>http://brain.gersteinlab.org/python/</loc>
      <lastmod>2015-09-24</lastmod>
      <changefreq>daily</changefreq>
     </url>
-        
     
 
 </urlset>
