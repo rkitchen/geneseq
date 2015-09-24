@@ -87,7 +87,7 @@ class Auth(object):
     def auth(self, username, password):
         pipe = self.pipe
         pipe.connect()
-        record = pipe.db.users.find_one({'_id': username})
+        record = pipe.db.users.find_one({'username': username})
         pipe.disconnect()
 
         if record is not None:
@@ -106,11 +106,11 @@ class Auth(object):
         pipe = self.pipe
         pipe.connect()
 
-        exists = pipe.db.users.find_one({'_id': username})
+        exists = pipe.db.users.find_one({'username': username})
 
         if exists is None:
             digest = self.getDigest(password)
-            pipe.db.users.insert_one({'_id': username,
+            pipe.db.users.insert_one({'username': username,
                                       'password': digest,
                                       'super': False})
 
@@ -122,7 +122,7 @@ class Auth(object):
 
             pipe = self.pipe
             pipe.connect()
-            pipe.db.users.update_one({'_id': username}, {'$set': {'password': digest}})
+            pipe.db.users.update_one({'username': username}, {'$set': {'password': digest}})
             pipe.disconnect()
 
             return True
@@ -133,7 +133,7 @@ class Auth(object):
         pipe = self.pipe
         pipe.connect()
 
-        pipe.db.users.remove({'_id': username})
+        pipe.db.users.remove({'username': username})
         pipe.disconnect()
 
     def isSuper(self, username):
@@ -143,7 +143,7 @@ class Auth(object):
         pipe = self.pipe
         pipe.connect()
 
-        record = pipe.db.users.find_one({'_id': username})
+        record = pipe.db.users.find_one({'username': username})
         pipe.disconnect()
 
         if record is not None and record['super']:
