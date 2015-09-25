@@ -9,23 +9,25 @@ logger = logging.getLogger(__name__)
 
 
 class Human(object):
-
+    """
+    container class for objects mounted under /mouse
+    """
     def __init__(self, mako):
         self.lookup = mako
-        self.gene = Gene(self)
-        self.table = Table(self)
-        self.chart = Chart(self)
+        self.gene = Gene(mako)
+        self.table = Table(mako)
+        self.chart = Chart(mako)
 
 
 class Gene(Parent):
     """webapp handling requests for specific genes
-    mounted on /gene
+    mounted on /human/gene
     """
 
     def GET(self, id=None, **kwargs):
         """responds to GET requests
         Args:
-            id: (int) mysql row id number of gene
+            id: (string) mysql row id number of gene
         Returns:
             html: gene.html with gene information and graphs
                 rendered
@@ -39,14 +41,7 @@ class Gene(Parent):
 
         if id is None:
             return 'No id given'
-        # else:
-        #     if not isinstance(id, int):
-        #         try:
-        #             id = int(id)
-        #         except ValueError as e:
-        #             print(e)
-        #             # TODO return proper error message
-        #             return 'invalid id given'
+
         tmpl = lookup.get_template("gene.html")
         kwargs['Title'] = id
         kwargs = self.mako_args(kwargs)
@@ -68,6 +63,11 @@ class Gene(Parent):
             return exceptions.html_error_template().render()
 
     def sort(self, header):
+        """
+        sorts details in for header
+        Args:
+            header: (list(Visual name, variable name)) list of data displayed in header
+        """
         order = app.settings.getOrder('human')
 
         ret = sorted(header, key=lambda i: order.index(i[1]))
@@ -76,6 +76,10 @@ class Gene(Parent):
 
 
 class Table(Parent):
+    """
+    displays mysql data in a table
+    mounted on /human/table
+    """
 
     def GET(self, **kwargs):
         """responds to data GET requests
@@ -172,33 +176,24 @@ class Table(Parent):
 
 
 class Chart(Parent):
+    """
+    container class for objects mounted under /mouse
+    """
+    exposed = False
 
     def __init__(self, pipe):
+        """
+        initializes class variables
+        """
         super().__init__(pipe)
         self.bodymap = Bodymap(pipe)
         self.brainspan = Brainspan(pipe)
 
-    def GET(self, gene_id, chart, **kwargs):
-        data = None
-        if (chart == 'bodymap'):
-            data = self.bodymap.getData(gene_id)
-        elif (chart == 'brainspan'):
-            data = self.brianspan.getData(gene_id)
-        return json.dumps(data)
-
-    def POST(self, gene_id, chart, **kwargs):
-        logger.debug('Charts POST')
-        logger.debug(pprint.pformat(kwargs))
-        data = None
-        if (chart == 'bodymap'):
-            data = self.bodymap.getData(gene_id)
-        elif (chart == 'brainspan'):
-            data = self.brianspan.getData(gene_id)
-        return json.dumps(data)
-
 
 class Bodymap(Parent):
-
+    """
+    processes and returns data for bodymap chart
+    """
     def GET(self, gene_id, **kwargs):
         data = self.getData(gene_id)
         return json.dumps(data)
@@ -210,6 +205,22 @@ class Bodymap(Parent):
         return json.dumps(data)
 
     def getData(self, human_id):
+        """
+        responds to data GET requests
+        Args:
+            gene_id: (int) human gene id
+        Returns:
+            dict:
+                title: (string)  chart title
+                names: (list(string)) list of axis names for axis
+                max: (float) max expression
+                min: (float) min expression
+                axis_length: (int) length of longest column name
+                    used to calculate bottom margin to fit name
+                values: (list(string, float))
+                    data to be rendered
+                    (name, value)
+        """
         logger.debug('getting charts for %s' % human_id)
 
         # TODO multiple charts
@@ -231,7 +242,9 @@ class Bodymap(Parent):
 
 
 class Brainspan(Parent):
-
+    """
+    processes and returns data for brainspan expression chart
+    """
     def GET(self, gene_id, **kwargs):
         data = self.getData(gene_id)
         return json.dumps(data)
@@ -243,6 +256,19 @@ class Brainspan(Parent):
         return json.dumps(data)
 
     def getData(self, human_id):
+        """
+        responds to data GET requests
+        Args:
+            gene_id: (int) human gene id
+        Returns:
+            dict:
+                title: (string)  chart title
+                duration: (int)max days to scale chart width
+                max&min: (float) max and min expression to scale height
+                names: (list(string)) names of brain regions being charted
+                ramainder: (list(list(int, float))) list of (x,y) coordinates
+                    key of field is name of brain region
+        """
         logger.debug('getting brainspan chart  for %s' % human_id)
 
         main_regions = app.settings.getBrainspanRegions()

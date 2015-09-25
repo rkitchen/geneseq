@@ -3,7 +3,6 @@ import os
 import logging
 from mako import exceptions
 from mako.lookup import TemplateLookup
-from app.data import Charts
 import app.mouse
 import app.human
 from app.parent import Parent
@@ -159,8 +158,6 @@ cherrypy.config.update({'tools.staticdir.root': path})
 cherrypy.config.update('%s/conf/global.conf' % path)
 cherrypy.tree.mount(app.mouse.Mouse(lookup), '/mouse', config='%s/conf/gene.conf' % path)
 cherrypy.tree.mount(app.human.Human(lookup), '/human', config='%s/conf/gene.conf' % path)
-cherrypy.tree.mount(Charts(), '/data', config='%s/conf/data.conf' % path)
-# cherrypy.tree.mount(Search(lookup), '/search', config='%s/conf/search.conf' % path)
 cherrypy.tree.mount(Root(), '/', config='%s/conf/root.conf' % path)
 # attaches config files to each webapp
 for item in [v[1] for v in cherrypy.tree.apps.items()]:

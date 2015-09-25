@@ -4,22 +4,24 @@ import logging
 from mako import exceptions
 # from mako.lookup import TemplateLookup
 import app.settings
-from app.parent import MouseParent as Parent
+from app.parent import Parent
 import pprint
 
 logger = logging.getLogger(__name__)
 
 
 class Mouse(object):
-
+    """
+    container class for objects mounted under /mouse
+    """
     def __init__(self, mako):
         self.lookup = mako
         self.session = app.settings.SESSION_KEY
 
-        self.table = Table(self)
-        self.gene = Gene(self)
-        self.chart = Chart(self)
-        self.search = Search(self)
+        self.table = Table(mako)
+        self.gene = Gene(mako)
+        self.chart = Chart(mako)
+        self.search = Search(mako)
 
 
 class Gene(Parent):
@@ -31,7 +33,7 @@ class Gene(Parent):
     def GET(self, id=None, **kwargs):
         """responds to GET requests
         Args:
-            id: (int) mysql row id number of gene
+            id: (string) mysql row id number of gene
         Returns:
             html: gene.html with gene information and graphs
                 rendered
@@ -46,14 +48,6 @@ class Gene(Parent):
 
         if id is None:
             return 'No id given'
-        # else:
-        #     if not isinstance(id, int):
-        #         try:
-        #             id = int(id)
-        #         except ValueError as e:
-        #             print(e)
-        #             # TODO return proper error message
-        #             return 'invalid id given'
         tmpl = lookup.get_template("gene.html")
         kwargs['Title'] = id
         kwargs = self.mako_args(kwargs)
@@ -75,6 +69,11 @@ class Gene(Parent):
             return exceptions.html_error_template().render()
 
     def sort(self, header):
+        """
+        sorts details in for header
+        Args:
+            header: (list(Visual name, variable name)) list of data displayed in header
+        """
         order = app.settings.getOrder('mouse')
 
         ret = sorted(header, key=lambda i: order.index(i[1]))
@@ -84,15 +83,18 @@ class Gene(Parent):
 
 class Table(Parent):
     """displays mysql data in a table
-    mounted on /data and /table"""
+    mounted on /mouse/table"""
     exposed = True
 
     def GET(self, **kwargs):
         """responds to data GET requests
         Args:
-            None yet
+            expression: (list(min,max)) constrains expression to bounds
+            enrichment: (list(min,max)) constrains enrichment to bounds
+            limit: (int) limits number of returned records
+            sort: (list(column,direction)) sorts returned records
         Returns:
-            str: table.html
+            html: table.html
         """
         logger.info('/data GET request')
         kwargs = self.fixInput(kwargs)
@@ -194,6 +196,10 @@ class Table(Parent):
 
 
 class Chart(Parent):
+    """
+    processes and returnsdata for mouse celltype
+    expression chart
+    """
     exposed = True
 
     def GET(self, **kwargs):
@@ -207,9 +213,20 @@ class Chart(Parent):
         return json.dumps(data)
 
     def getData(self, mouse_id):
+        """
+        responds to data GET requests
+        Args:
+            gene_id: (int) mouse gene id
+        Returns:
+            dict:
+               title: (string)  chart title
+               names: (list(string)) list of axis names for axis
+               colors: (list(string)) strings to group colors by
+               max: (int) max expression
+               min: (int) min expression
+        """
         logger.debug('getting charts for %s' % mouse_id)
 
-        # TODO multiple charts
         annotations = self.pipe.mouse.celltypeAnnotations(self.isSuper())
         mouse = self.pipe.mouse.plotExpression(mouse_id, self.isSuper())
         values = list()
@@ -230,13 +247,13 @@ class Chart(Parent):
         ret['min'] = min([x[-1] for x in values])
         ret['max'] = max([x[-1] for x in values])
         ret['axis_length'] = max(len(x) for x in names)
-        # logger.debug('data to return: %s' % pprint.pformat(ret))
+
         return ret
 
 
 class Search(Parent):
     """handles search functionality
-    mounted on /search
+    mounted on /mouse/search
     """
 
     def GET(self, **kwargs):

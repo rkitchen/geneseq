@@ -11,7 +11,7 @@
  * @constructor
  */
 var bodymap = new function() {
-    var debug_data;
+    var self = this;
     var margin = {};
     margin.left = 60;
     margin.right = 20;
@@ -75,7 +75,7 @@ var bodymap = new function() {
                 console.log('status: ' + status);
 
                 data = jQuery.parseJSON(data);
-                debug_data = data;
+                self.data = data;
 
                 margin.bottom = 10 + data.axis_length * 5;
                 xscale.domain(data.names)
