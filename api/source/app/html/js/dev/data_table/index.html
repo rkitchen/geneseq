@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data Table - Geneseq Documentation</title>
+  
+
+  <link rel="shortcut icon" href="../../../../../../../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../../../../../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../../css/highlight.css">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Data Table";
+  </script>
+  
+  <script src="../../../../../../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../../../../../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../../../../../../js/highlight.pack.js"></script>
+  <script src="../../../../../../../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../../../../../../.." class="icon icon-home"> Geneseq Documentation</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../../../../../../..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../../../../../../../docker/">Using Docker</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../../../../../../../python/">Application</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Api</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../expression_bodymap/">Bodymap</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../expression_mouse/">Mouse</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../expression_brainspan/">Brainspan</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../fit_worker/">Spline Worker</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Data Table</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#data_table">Data_Table</a></li>
+                
+                    <li><a class="toctree-l4" href="#class-data_table">Class: data_table</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../../../../..">Geneseq Documentation</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../../../../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Api &raquo;</li>
+        
+      
+    
+    <li>Data Table</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+          <a href="https://github.com/miclaraia/geneseq" class="icon icon-github"> Edit on GitHub</a>
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="data_table">Data_Table</h1>
+<p>module managing the data table and sidebar input.</p>
+<hr />
+<h2 id="class-data_table">Class: data_table</h2>
+<p>Manages the data table</p>
+<p><strong>sliders</strong>: <code>Array</code> , Contains sidebar slider objects
+<strong>sort</strong>: <code>Array</code> , Contains sort column and direction
+<strong>celltype</strong>: <code>Array</code> , Contains unselected celltypes from sidebar
+<strong>requests</strong>: <code>Array</code> , Contains requests for url builder</p>
+<h3 id="data_tabledata_tablegetsorticonitem">Data_Table.data_table.getSortIcon(item)</h3>
+<p>Gets sort icon (uparrow/downarrow/ellipses) for a column header</p>
+<p><strong>Parameters</strong></p>
+<p><strong>item</strong>: <code>string</code>, Column header value</p>
+<p><strong>Returns</strong>: <code>string</code>, Class name of icon</p>
+<h3 id="data_tabledata_tabletablelinks">Data_Table.data_table.tableLinks()</h3>
+<p>Attaches click listener to entire row based on <code>&lt;a&gt;</code> tag in first column</p>
+<h3 id="data_tabledata_tableinittableheaders">Data_Table.data_table.initTableHeaders()</h3>
+<p>Attaches click listener to column headers for sorting</p>
+<h3 id="data_tabledata_tableinitsliders">Data_Table.data_table.initSliders()</h3>
+<p>Initializes sidebar sliders with bootstrap-slider</p>
+<h3 id="data_tabledata_tableselection_setallinputgroup-state">Data_Table.data_table.selection_setAll(inputGroup, state)</h3>
+<p>Set all checkboxes in a group</p>
+<p><strong>Parameters</strong></p>
+<p><strong>inputGroup</strong>: <code>string</code>, CSS search string of input group</p>
+<p><strong>state</strong>: <code>boolean</code>, State to set checkboses to</p>
+<h3 id="data_tabledata_tableinitselection">Data_Table.data_table.initSelection()</h3>
+<p>Initializes sidebar options list
+by pushing all to celltype Array</p>
+<h3 id="data_tabledata_tableupdate_url">Data_Table.data_table.update_url()</h3>
+<p>Updates history with current request options</p>
+<h3 id="data_tabledata_tableadd_requestkey-value">Data_Table.data_table.add_request(key, value)</h3>
+<p>Adds key/value pair to requests for url generation</p>
+<p><strong>Parameters</strong></p>
+<p><strong>key</strong>: <code>string</code>, Variable name for server</p>
+<p><strong>value</strong>: <code>string | Array | number</code>, Value assigned to key</p>
+<h3 id="data_tabledata_tableremove_requestkey">Data_Table.data_table.remove_request(key)</h3>
+<p>Removes key/value pair from requests</p>
+<p><strong>Parameters</strong></p>
+<p><strong>key</strong>: <code>string</code>, Variable name</p>
+<h3 id="data_tabledata_tableinit_requests">Data_Table.data_table.init_requests()</h3>
+<p>Initializes request variable</p>
+<h3 id="data_tabledata_tabletableupdate">Data_Table.data_table.tableUpdate()</h3>
+<p>Performs POST request and updates table and window accordingly</p>
+<hr />
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../fit_worker/" class="btn btn-neutral" title="Spline Worker"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../fit_worker/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+
+</body>
+</html>

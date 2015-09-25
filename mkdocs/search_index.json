@@ -64,6 +64,76 @@
             "location": "/python/#registering",
             "text": "When a user registers from the provided login page, their credentials\nare added to the database, but they don't get privileges to the private data.\nThat has to be added manually through the mongo shell or\nthe mongo-express interface.  To give a user privileges, either   run the commands inside the mongo shell      use gene_locale    db.users.update({username: {USERNAME}}, {$set: {super: true}})    Manually edit the user's entry from mongo-express",
             "title": "Registering"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/expression_bodymap/",
+            "text": "Bodymap\n\n\nDraws plot for bodymap expression.\n\n\n\n\nClass: bodymap\n\n\nManages the bodymap chart\n\n\nBodymap.bodymap.get_width()\n\n\nGets width for plot\n\n\nReturns\n: \nint\n, width of plot\n\n\nBodymap.bodymap.get_height(width)\n\n\nGets height for plot\n\n\nParameters\n\n\nwidth\n: \nint\n, width of the plot\n\n\nReturns\n: \nint\n, height of plot\n\n\nBodymap.bodymap.draw_plot(id, source, params)\n\n\nDraws creates plot\n\n\nParameters\n\n\nid\n: \nstring\n, gene id to plot\n\n\nsource\n: \nstring\n, data source to POST to\n\n\nparams\n: \ndict\n, JSON object containing height, widht, and radius\n\n\nBodymap.bodymap.plot(id, source, params)\n\n\nPublic function to draw plot\n\n\nParameters\n\n\nid\n: \nstring\n, gene id to plot\n\n\nsource\n: \nstring\n, data source to POST to\n\n\nparams\n: \ndict\n, Public function to draw plot",
+            "title": "Bodymap"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/expression_bodymap/#bodymap",
+            "text": "Draws plot for bodymap expression.",
+            "title": "Bodymap"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/expression_bodymap/#class-bodymap",
+            "text": "Manages the bodymap chart  Bodymap.bodymap.get_width()  Gets width for plot  Returns :  int , width of plot  Bodymap.bodymap.get_height(width)  Gets height for plot  Parameters  width :  int , width of the plot  Returns :  int , height of plot  Bodymap.bodymap.draw_plot(id, source, params)  Draws creates plot  Parameters  id :  string , gene id to plot  source :  string , data source to POST to  params :  dict , JSON object containing height, widht, and radius  Bodymap.bodymap.plot(id, source, params)  Public function to draw plot  Parameters  id :  string , gene id to plot  source :  string , data source to POST to  params :  dict , Public function to draw plot",
+            "title": "Class: bodymap"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/expression_mouse/",
+            "text": "Mouse\n\n\nMouse celltype expression.\n\n\n\n\nClass: mouse\n\n\nManages the mouse celltype expression chart\n\n\nMouse.mouse.get_width()\n\n\nGets width for svg\n\n\nReturns\n: \nint\n, width of svg\n\n\nMouse.mouse.get_height(width)\n\n\nGets height for plot\n\n\nParameters\n\n\nwidth\n: \nint\n, width of the plot\n\n\nReturns\n: \nint\n, height of plot\n\n\nMouse.mouse.draw_plot(id, source, params)\n\n\nDraws creates plot\n\n\nParameters\n\n\nid\n: \nstring\n, gene id to plot\n\n\nsource\n: \nstring\n, data source to POST to\n\n\nparams\n: \ndict\n, JSON object containing height, widht, and radius\n\n\nMouse.mouse.plot(id, source, params)\n\n\nPublic function to draw plot\n\n\nParameters\n\n\nid\n: \nstring\n, gene id to plot\n\n\nsource\n: \nstring\n, data source to POST to\n\n\nparams\n: \ndict\n, Public function to draw plot",
+            "title": "Mouse"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/expression_mouse/#mouse",
+            "text": "Mouse celltype expression.",
+            "title": "Mouse"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/expression_mouse/#class-mouse",
+            "text": "Manages the mouse celltype expression chart  Mouse.mouse.get_width()  Gets width for svg  Returns :  int , width of svg  Mouse.mouse.get_height(width)  Gets height for plot  Parameters  width :  int , width of the plot  Returns :  int , height of plot  Mouse.mouse.draw_plot(id, source, params)  Draws creates plot  Parameters  id :  string , gene id to plot  source :  string , data source to POST to  params :  dict , JSON object containing height, widht, and radius  Mouse.mouse.plot(id, source, params)  Public function to draw plot  Parameters  id :  string , gene id to plot  source :  string , data source to POST to  params :  dict , Public function to draw plot",
+            "title": "Class: mouse"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/expression_brainspan/",
+            "text": "Brainspan\n\n\nBrainspan module.\n\n\n\n\nClass: brainspan\n\n\nManages the brainspan chart\n\n\ncanvases\n: \nObject\n , Contains each brain region chart being rendered\n\n\nBrainspan.brainspan.get_width(count)\n\n\nGets width for svg\n\n\nParameters\n\n\ncount\n: \nint\n, number of charts being rendered\n\n\nReturns\n: \nint\n, width of svg\n\n\nBrainspan.brainspan.get_height()\n\n\nGets height for svg including margins\n\n\nReturns\n: \nint\n, height of svg\n\n\nBrainspan.brainspan.get_ticks(max)\n\n\nGets tick locations for y axis\n\n\nDeprecated: true\n\n\nParameters\n\n\nmax\n: \nint\n, maximum value\n\n\nReturns\n: \nArray\n, with range of ticks\n\n\nBrainspan.brainspan.draw_plot(canvas, data, dimen, axis, scales)\n\n\nDraws a plot for one region\n\n\nParameters\n\n\ncanvas\n: \nObject\n, d3 \n to draw plot in\n\n\ndata\n: \nObject\n, object containing \nname\n of\nbrain region and \npoints\n (x, y) coordinates\n\n\ndimen\n: \nObject\n, object containing \nwidth\n and \nheight\n\n\naxis\n: \nObject\n, object containing \nx\n x-axis and \ny\n y-axis\n\n\nscales\n: \nObject\n, object containing \nx\n x-scale and \ny\n y-scale\n\n\nBrainspan.brainspan.draw_line(e)\n\n\nCallback function for spline-calculating worker\n\n\nParameters\n\n\ne\n: \nObject\n, message returned from worker containing Array\n\ndata\n list of (x,y) coordinates for spline\n\n\nBrainspan.brainspan.draw_svg(id, source, params)\n\n\nDraws svg plot and calls draw_plot for each brain region\n\n\nParameters\n\n\nid\n: \nstring\n, gene id to plot\n\n\nsource\n: \nstring\n, data source to POST to\n\n\nparams\n: \ndict\n, JSON object containing height, widht, and radius\n\n\nBrainspan.brainspan.avg(list)\n\n\nCalculates average of given Array\n\n\nParameters\n\n\nlist\n: \nArray\n, list to be averaged\n\n\nReturns\n: \nint\n, Average of list\n\n\nBrainspan.brainspan.plot(id, source, params)\n\n\nPublic function to draw plot\n\n\nParameters\n\n\nid\n: \nstring\n, gene id to plot\n\n\nsource\n: \nstring\n, data source to POST to\n\n\nparams\n: \ndict\n, optional",
+            "title": "Brainspan"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/expression_brainspan/#brainspan",
+            "text": "Brainspan module.",
+            "title": "Brainspan"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/expression_brainspan/#class-brainspan",
+            "text": "Manages the brainspan chart  canvases :  Object  , Contains each brain region chart being rendered  Brainspan.brainspan.get_width(count)  Gets width for svg  Parameters  count :  int , number of charts being rendered  Returns :  int , width of svg  Brainspan.brainspan.get_height()  Gets height for svg including margins  Returns :  int , height of svg  Brainspan.brainspan.get_ticks(max)  Gets tick locations for y axis  Deprecated: true  Parameters  max :  int , maximum value  Returns :  Array , with range of ticks  Brainspan.brainspan.draw_plot(canvas, data, dimen, axis, scales)  Draws a plot for one region  Parameters  canvas :  Object , d3   to draw plot in  data :  Object , object containing  name  of\nbrain region and  points  (x, y) coordinates  dimen :  Object , object containing  width  and  height  axis :  Object , object containing  x  x-axis and  y  y-axis  scales :  Object , object containing  x  x-scale and  y  y-scale  Brainspan.brainspan.draw_line(e)  Callback function for spline-calculating worker  Parameters  e :  Object , message returned from worker containing Array data  list of (x,y) coordinates for spline  Brainspan.brainspan.draw_svg(id, source, params)  Draws svg plot and calls draw_plot for each brain region  Parameters  id :  string , gene id to plot  source :  string , data source to POST to  params :  dict , JSON object containing height, widht, and radius  Brainspan.brainspan.avg(list)  Calculates average of given Array  Parameters  list :  Array , list to be averaged  Returns :  int , Average of list  Brainspan.brainspan.plot(id, source, params)  Public function to draw plot  Parameters  id :  string , gene id to plot  source :  string , data source to POST to  params :  dict , optional",
+            "title": "Class: brainspan"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/fit_worker/",
+            "text": "Spline Worker\n\n\nCalculates coordinates for spline fit-line.\n\n\n\n\nSpline Worker.done(name, values)\n\n\nReturns message to parent after calculations finish\n\n\nParameters\n\n\nname\n: \nstring\n, name of brain region\n\n\nvalues\n: \nArray\n, Array of (x,y) coordinates for fit line\n\n\nSpline Worker.avg(list)\n\n\nCalculates average of given Array\n\n\nParameters\n\n\nlist\n: \nArray\n, list to be averaged\n\n\nReturns\n: \nint\n, Average of list\n\n\nSpline Worker.fit_line(data, domain)\n\n\nCalculates fit line\n\n\nParameters\n\n\ndata\n: \nArray\n, Array of (x,y) brainspan coordinates\n\n\ndomain\n: \nint\n, Max time value being rendered in chart\n\n\nReturns\n: \nArray\n, - Array of (x,y) coordinates for fit line",
+            "title": "Spline Worker"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/fit_worker/#spline-worker",
+            "text": "Calculates coordinates for spline fit-line.   Spline Worker.done(name, values)  Returns message to parent after calculations finish  Parameters  name :  string , name of brain region  values :  Array , Array of (x,y) coordinates for fit line  Spline Worker.avg(list)  Calculates average of given Array  Parameters  list :  Array , list to be averaged  Returns :  int , Average of list  Spline Worker.fit_line(data, domain)  Calculates fit line  Parameters  data :  Array , Array of (x,y) brainspan coordinates  domain :  int , Max time value being rendered in chart  Returns :  Array , - Array of (x,y) coordinates for fit line",
+            "title": "Spline Worker"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/data_table/",
+            "text": "Data_Table\n\n\nmodule managing the data table and sidebar input.\n\n\n\n\nClass: data_table\n\n\nManages the data table\n\n\nsliders\n: \nArray\n , Contains sidebar slider objects\n\nsort\n: \nArray\n , Contains sort column and direction\n\ncelltype\n: \nArray\n , Contains unselected celltypes from sidebar\n\nrequests\n: \nArray\n , Contains requests for url builder\n\n\nData_Table.data_table.getSortIcon(item)\n\n\nGets sort icon (uparrow/downarrow/ellipses) for a column header\n\n\nParameters\n\n\nitem\n: \nstring\n, Column header value\n\n\nReturns\n: \nstring\n, Class name of icon\n\n\nData_Table.data_table.tableLinks()\n\n\nAttaches click listener to entire row based on \na\n tag in first column\n\n\nData_Table.data_table.initTableHeaders()\n\n\nAttaches click listener to column headers for sorting\n\n\nData_Table.data_table.initSliders()\n\n\nInitializes sidebar sliders with bootstrap-slider\n\n\nData_Table.data_table.selection_setAll(inputGroup, state)\n\n\nSet all checkboxes in a group\n\n\nParameters\n\n\ninputGroup\n: \nstring\n, CSS search string of input group\n\n\nstate\n: \nboolean\n, State to set checkboses to\n\n\nData_Table.data_table.initSelection()\n\n\nInitializes sidebar options list\nby pushing all to celltype Array\n\n\nData_Table.data_table.update_url()\n\n\nUpdates history with current request options\n\n\nData_Table.data_table.add_request(key, value)\n\n\nAdds key/value pair to requests for url generation\n\n\nParameters\n\n\nkey\n: \nstring\n, Variable name for server\n\n\nvalue\n: \nstring | Array | number\n, Value assigned to key\n\n\nData_Table.data_table.remove_request(key)\n\n\nRemoves key/value pair from requests\n\n\nParameters\n\n\nkey\n: \nstring\n, Variable name\n\n\nData_Table.data_table.init_requests()\n\n\nInitializes request variable\n\n\nData_Table.data_table.tableUpdate()\n\n\nPerforms POST request and updates table and window accordingly",
+            "title": "Data Table"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/data_table/#data_table",
+            "text": "module managing the data table and sidebar input.",
+            "title": "Data_Table"
+        },
+        {
+            "location": "/api/source/app/html/js/dev/data_table/#class-data_table",
+            "text": "Manages the data table  sliders :  Array  , Contains sidebar slider objects sort :  Array  , Contains sort column and direction celltype :  Array  , Contains unselected celltypes from sidebar requests :  Array  , Contains requests for url builder  Data_Table.data_table.getSortIcon(item)  Gets sort icon (uparrow/downarrow/ellipses) for a column header  Parameters  item :  string , Column header value  Returns :  string , Class name of icon  Data_Table.data_table.tableLinks()  Attaches click listener to entire row based on  a  tag in first column  Data_Table.data_table.initTableHeaders()  Attaches click listener to column headers for sorting  Data_Table.data_table.initSliders()  Initializes sidebar sliders with bootstrap-slider  Data_Table.data_table.selection_setAll(inputGroup, state)  Set all checkboxes in a group  Parameters  inputGroup :  string , CSS search string of input group  state :  boolean , State to set checkboses to  Data_Table.data_table.initSelection()  Initializes sidebar options list\nby pushing all to celltype Array  Data_Table.data_table.update_url()  Updates history with current request options  Data_Table.data_table.add_request(key, value)  Adds key/value pair to requests for url generation  Parameters  key :  string , Variable name for server  value :  string | Array | number , Value assigned to key  Data_Table.data_table.remove_request(key)  Removes key/value pair from requests  Parameters  key :  string , Variable name  Data_Table.data_table.init_requests()  Initializes request variable  Data_Table.data_table.tableUpdate()  Performs POST request and updates table and window accordingly",
+            "title": "Class: data_table"
         }
     ]
 }
