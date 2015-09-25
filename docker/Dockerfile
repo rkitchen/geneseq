@@ -37,7 +37,10 @@ RUN echo 9
 RUN  git clone https://github.com/miclaraia/geneseq.git \
     /opt/geneseq && \
     chown -R http:http /opt/geneseq && \
-    ln -s /opt/geneseq/source /usr/local/lib/geneseq
+    ln -s /opt/geneseq/source /usr/local/lib/geneseq \
+    ln -s /opt/geneseq/data/update_processed.py /usr/local/bin/update_processed \
+    ln -s /opt/geneseq/data/update_mouse_expression.py /usr/local/bin/update_mouse_expression \
+    ln -s /opt/geneseq/data/update_annotations.py /usr/local/bin/update_annotations
 
 VOLUME ['/data/db']
 

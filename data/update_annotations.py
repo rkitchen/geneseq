@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from pymongo import MongoClient
 import pymongo
 import csv
@@ -21,7 +22,7 @@ db.mouse_annotations.create_index('level1', unique=True)
 pp = pprint.PrettyPrinter(indent=4)
 
 f = open(filename, newline='\n')
-reader = csv.DictReader(f, delimiter='\t', quotechar='"')
+reader = csv.DictReader(f, delimiter=',', quotechar='"')
 
 for row in reader:
     _id = row['sampleID'].split(':')
