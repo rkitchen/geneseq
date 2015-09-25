@@ -24,8 +24,6 @@ celltypes = _pipe.mouse.getCellTypes()
 app.settings.setCellTypes('mouse', celltypes)
 
 
-# service mounted on /
-# currently renders nothing, eventually some kind of landing page
 class Root(Parent):
     """service mounted on /
     currently renders nothing, will be landing page
@@ -33,6 +31,7 @@ class Root(Parent):
     exposed = True
 
     def __init__(self):
+        """initializes class variables"""
         self.login = Login(lookup)
         self.logout = Logout(lookup)
         self.session = app.settings.SESSION_KEY
@@ -51,9 +50,18 @@ class Root(Parent):
 
 
 class Login(Parent):
+    """service mounted on /login and
+    login authentication manager
+    """
     exposed = True
 
     def GET(self, **kwargs):
+        """responds to GET requests
+        Args:
+            ref: (string) url to return to after successful login
+        Returns:
+            html: login.html
+        """
         logger.info('/ GET request')
         logger.debug('GET kwargs: %s' % str(kwargs))
         kwargs['Title'] = 'Login'
@@ -67,6 +75,13 @@ class Login(Parent):
             return exceptions.html_error_template().render()
 
     def POST(self, **kwargs):
+        """responds to GET requests
+        Args:
+            id: (int) mysql row id number of gene
+        Returns:
+            html: gene.html with gene information and graphs
+                rendered
+        """
         logger.info('/login POST request')
         logger.debug('POST kwargs: %s' % str(kwargs))
 
@@ -83,6 +98,14 @@ class Login(Parent):
         return json.dumps({'success': False})
 
     def login(self, user, _pass, **kwargs):
+        """authenticates user and adds to session
+        Args:
+            user: (string) username
+            _pass: (string) password, would have used pass but
+                thats a reserved keyword
+        Returns:
+            boolean: True if authentication was successful
+        """
         if _pipe.auth.auth(user, _pass):
             cherrypy.session[app.settings.SESSION_KEY] = user
             return {'success': True}
@@ -91,6 +114,17 @@ class Login(Parent):
             return {'success': False, 'invalid': 'Invalid Username or Password'}
 
     def register(self, user, _pass, _pass2, email, **kwargs):
+        """
+        Registers a user in the database. New user does not get
+            privileges to private data, those must be granted manually
+        Args:
+            user: (string) username
+            _pass: (string) password
+            _pass2: (string) make sure user entered matching passwords
+            email: (string) email so sysadmin has a reference for each user
+        Returns:
+            boolean: True if successful
+        """
         if _pass != _pass2:
             return {'success': False, 'invalid': 'Passwords must match'}
 
@@ -103,9 +137,16 @@ class Login(Parent):
 
 
 class Logout(Parent):
+    """service mounted on /logout. Manages a user logout"""
     exposed = True
 
     def GET(self, **kwargs):
+        """responds to GET requests
+        Args:
+            ref: (string) url to return to after successful login
+        Returns:
+            redirect to ref
+        """
         cherrypy.session[app.settings.SESSION_KEY] = None
         logger.debug('logged out, session now %s' % cherrypy.session.get(app.settings.SESSION_KEY))
         if 'ref' not in kwargs:

@@ -11,6 +11,11 @@ config = None
 
 
 def init(_cherrypy):
+    """
+    initializes singleton variables
+    Args:
+        _cherrypy: (cherrypy) common cherrypy object to manage sessions from any module
+    """
     global config
     global pipe
     global SESSION_KEY
@@ -34,11 +39,22 @@ def getConfig():
 
 
 def setCount():
+    """
+    Gets current database count of each collection and passes
+        to setCurrentCount
+    """
     setCurrentCount('human', pipe.human.count())
     setCurrentCount('mouse', pipe.mouse.count())
 
 
 def setCurrentCount(name, count):
+    """
+    Sets current count of given collections
+    to limit sliders and config dictionary
+    Args:
+        name: (string) name of collection in database
+        count: (int) count
+    """
     sliders = config['table_input'][name]
     config['count'] = count
     for slider in sliders:
@@ -49,6 +65,11 @@ def setCurrentCount(name, count):
 
 
 def setCellTypes(name, celltypes):
+    """
+    Sets sidebar option `celltype` to given celltype array
+    Args:
+        celltypes: (list(string)) list of celltypes
+    """
     for filter in config['table_input'][name]:
         if filter['type'] == 'selection' and filter['column'] == 'celltype':
             filter['options'] = celltypes
@@ -173,11 +194,33 @@ def getTableSliders(name):
 
 
 def getTableFilters(name):
+    """
+    gets all sliders of `name`. This contains both sliders and 
+    checkbox options
+    Args:
+        name: (string) name of collection
+    Returns:
+        list: list of filters
+    """
     return copy.deepcopy(config['table_input'][name])
 
 
 def getOrder(name):
+    """
+    gets order of collection `name` from config
+    Args:
+        name: (string) name of collection
+    Returns:
+        list: ordered list of collection `name`
+    """
     return copy.deepcopy(config['order'][name])
 
+
 def getBrainspanRegions():
+    """
+    gets explicit brainspan's brain regions. All others
+    will be grouped together as neocortex (NCX)
+    Returns:
+        list(string): explicit brainspan brain regions
+    """
     return copy.deepcopy(config['brainspan']['regions'])
