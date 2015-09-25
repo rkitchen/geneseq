@@ -20,9 +20,9 @@ def doRead(row):
     print(row)
     d = dict()
     expr = dict()
-    expr['type'] = row['celltype']
-    expr['expression'] = float(row['ExpressionInThisCellType(TPM)'])
-    expr['enrichment'] = float(row['FoldEnrichmentOverNextBestCellType'])
+    expr['type'] = row['Celltype']
+    expr['expression'] = float(row['Expression'])
+    expr['enrichment'] = float(row['Enrichment'])
     expr['human_id'] = row['GeneID_human']
     expr['human_name'] = row['GeneName']
 
