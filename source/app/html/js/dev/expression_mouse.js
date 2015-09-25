@@ -1,3 +1,15 @@
+/**
+ * @overview Mouse celltype expression.
+ * @module Mouse
+ * @author Michael Laraia
+ */
+
+/**
+ * Manages the mouse celltype expression chart
+ * @this - mouse namespace
+ * @class Mouse
+ * @constructor
+*/
 var mouse = new function() {
     var self = this;
     var margin = {};
@@ -9,22 +21,31 @@ var mouse = new function() {
     var max_width = 500;
     var default_radius = 5;
 
-
-
-    var get_data = function(id, source) {
-
-    };
-
+    /**
+     * Gets width for svg
+     * @return {int} width of svg
+     */
     var get_width = function() {
         var width = $(window).width();
         if (width > max_width) return max_width;
         else return width;
     };
 
+    /**
+     * Gets height for plot
+     * @param {int} width - width of the plot
+     * @return {int} height of plot
+     */
     var get_height = function(width) {
         return width / 1.6;
     };
 
+    /**
+     * Draws creates plot
+     * @param {string} id - gene id to plot
+     * @param {string} source data source to POST to
+     * @param {dict} params JSON object containing height, widht, and radius
+     */
     var draw_plot = function(id, source, params) {
         var width = params.width;
         var height = params.height;
@@ -127,6 +148,13 @@ var mouse = new function() {
 
     };
 
+    /**
+     * Public function to draw plot
+     * @param {string} id - gene id to plot
+     * @param {string} source - data source to POST to
+     * @param {dict} params
+     *  
+     */
     this.plot = function(id, source, params) {
         console.log(params);
         if (params.width == null) params.width = get_width();

@@ -6,8 +6,9 @@
  */
 
 /**
- * manages the brianspan chart
+ * Manages the brainspan chart
  * @this - brainspan namespace
+ * @class brainspan
  * @constructor
 */
 var brainspan = new function() {
@@ -24,8 +25,19 @@ var brainspan = new function() {
     var default_height = 400;
 
     var x_tick_values = [10, 100, 1000];
+
+    /**
+     * Contains each brain region chart being rendered
+     * @name brainspan.canvases
+     * @type Object
+     */
     self.canvases = {};
 
+    /**
+     * Gets width for svg
+     * @param {int} count - number of charts being rendered
+     * @return {int} width of svg
+     */
     var get_width = function(count) {
         var width = $(window).width() - 200;
         var ret = {'normal': width,
@@ -35,6 +47,10 @@ var brainspan = new function() {
 
     };
 
+    /**
+     * Gets height for svg including margins
+     * @return {int} height of svg
+     */
     var get_height = function() {
         var height = default_height;
         var ret = {'normal': height,
@@ -42,6 +58,12 @@ var brainspan = new function() {
         return ret;
     };
 
+    /**
+     * Gets tick locations for y axis
+     * @param {int} max - maximum value
+     * @return {Array} with range of ticks
+     * @deprecated
+     */
     var get_ticks = function(max) {
         for (var p = 4; p > -3; p--) {
             power = Math.pow(10, p);
@@ -54,6 +76,15 @@ var brainspan = new function() {
         }
     };
 
+    /**
+     * Draws a plot for one region
+     * @param {Object} canvas - d3 <g> to draw plot in
+     * @param {Object} data - object containing `name` of
+     * brain region and `points` (x, y) coordinates
+     * @param {Object} dimen - object containing `width` and `height`
+     * @param {Object} axis - object containing `x` x-axis and `y` y-axis
+     * @param {Object} scales - object containing `x` x-scale and `y` y-scale
+     */
     var draw_plot = function(canvas, data, dimen, axis, scales) {
         var width = dimen.width;
         var height = dimen.height;
@@ -65,6 +96,11 @@ var brainspan = new function() {
         })
         .interpolate('bundle');
 
+        /**
+         * Callback function for spline-calculating worker
+         * @param {Object} e - message returned from worker containing Array
+         * `data` list of (x,y) coordinates for spline
+         */
         var draw_line = function(e) {
             var params = e.data;
             var name = params.name;
@@ -137,9 +173,18 @@ var brainspan = new function() {
         self.canvases[data.title] = canvas;
         var worker = new Worker('/js/plot/fit_worker.js');
         worker.addEventListener('message', draw_line);
-        worker.postMessage({'name': data.title, 'domain': dimen.duration, 'values': JSON.stringify(data.points)});
+        worker.postMessage({'name': data.title,
+                            'domain': dimen.duration,
+                            'values': JSON.stringify(data.points)
+        });
     };
 
+    /**
+     * Draws svg plot and calls draw_plot for each brain region
+     * @param {string} id - gene id to plot
+     * @param {string} source data source to POST to
+     * @param {dict} params JSON object containing height, widht, and radius
+     */
     var draw_svg = function(id, source, params) {
         var width;
 
@@ -244,6 +289,11 @@ var brainspan = new function() {
 
     };
 
+    /**
+     * Calculates average of given Array
+     * @param {Array} list - list to be averaged
+     * @return {int} Average of list
+     */
     var avg = function(list) {
         var sum = 0;
         for (var i = 0; i < list.length; i++) {
@@ -254,6 +304,13 @@ var brainspan = new function() {
         return out;
     };
 
+    /**
+     * Public function to draw plot
+     * @param {string} id - gene id to plot
+     * @param {string} source - data source to POST to
+     * @param {dict} params - optional
+     *  
+     */
     this.plot = function(id, source, params) {
         console.log('brainspan');
         //if (params.width == null) params.width = get_width();

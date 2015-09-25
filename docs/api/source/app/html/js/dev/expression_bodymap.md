@@ -1,23 +1,23 @@
 # Bodymap
 
-Bodymap module.
+Draws plot for bodymap expression.
 
 
 
 * * *
 
 ## Class: bodymap
-manages the bodymap chart
+Manages the bodymap chart
 
 ### Bodymap.bodymap.get_width() 
 
-gets width for plot
+Gets width for plot
 
-**Returns**: , width of plot
+**Returns**: `int`, width of plot
 
 ### Bodymap.bodymap.get_height(width) 
 
-gets width for plot
+Gets height for plot
 
 **Parameters**
 
@@ -27,7 +27,7 @@ gets width for plot
 
 ### Bodymap.bodymap.draw_plot(id, source, params) 
 
-draws creates plot
+Draws creates plot
 
 **Parameters**
 
@@ -38,9 +38,9 @@ draws creates plot
 **params**: `dict`, JSON object containing height, widht, and radius
 
 
-### Bodymap.bodymap.plot(id, source, optional) 
+### Bodymap.bodymap.plot(id, source, params) 
 
-draws creates plot
+Public function to draw plot
 
 **Parameters**
 
@@ -48,7 +48,7 @@ draws creates plot
 
 **source**: `string`, data source to POST to
 
-**optional**: `dict`, params
+**params**: `dict`, Public function to draw plot
 
 
 

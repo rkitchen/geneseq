@@ -8,6 +8,9 @@ pages:
     - Application: python.md
     - Api:
         - Bodymap: api/source/app/html/js/dev/expression_bodymap.md
+        - Mouse: api/source/app/html/js/dev/expression_mouse.md
         - Brainspan: api/source/app/html/js/dev/expression_brainspan.md
+        - 'Spline Worker': api/source/app/html/js/dev/fit_worker.md
+        - 'Data Table': api/source/app/html/js/dev/data_table.md
 
 theme: readthedocs

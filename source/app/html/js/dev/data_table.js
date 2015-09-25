@@ -1,22 +1,3 @@
-/*$(document).ready(function() {
-    $('#data').DataTable({
-        'processing': true,
-        'serverSide': true,
-        'ajax': {
-            'url': '/table',
-            'type': 'POST'
-        },
-        'columns': [
-            {'data': 'geneName'},
-            {'data': 'cellType'},
-            {'data': 'geneType'},
-            {'data': 'expr'},
-            {'data': 'expr_next'},
-            {'data': 'expr_diff'}
-        ]
-    });
-} );*/
-
 var sliders = [];
 var returned_data;
 var global = {
@@ -24,6 +5,11 @@ var global = {
     'celltype': []
 };
 
+/**
+ * Gets sort icon (uparrow/downarrow/ellipses) for a column header
+ * @param {string} item - Column header value
+ * @return {string} Class name of icon
+ */
 var getSortIcon = function(item) {
     console.log('item: ' + item);
     console.log('sort: ' + global.sort);
@@ -33,6 +19,9 @@ var getSortIcon = function(item) {
     } else return 'more_horiz';
 };
 
+/**
+ * Attaches click listener to entire row based on `<a>` tag in first column
+ */
 var tableLinks = function() {
     $('#data tbody tr').click(function() {
         window.location = $(this).find('a').attr('href');
@@ -41,7 +30,9 @@ var tableLinks = function() {
     });
 };
 
-//attaches listener to column headers for sorting
+/**
+ * Attaches click listener to column headers for sorting
+ */
 var initTableHeaders = function() {
     $('table#data th').each(function(index, item) {
         var key = item.getAttribute('value');
@@ -58,9 +49,11 @@ var initTableHeaders = function() {
             tableUpdate();
         });
     });
-}
+};
 
-//creates sidebar sliders
+/**
+ * Initializes sidebar sliders with bootstrap-slider
+ */
 var initSliders = function() {
     $('input.table-filter.range').each(function(index, item) {
         var slider = new Slider(item);
@@ -78,8 +71,13 @@ var initSliders = function() {
         });
         sliders.push(slider);
     });
-}
+};
 
+/**
+ * Set all checkboxes in a group
+ * @param {string} inputGroup - CSS search string of input group
+ * @param {boolean} state - State to set checkboses to
+ */
 var selection_setAll = function(inputGroup, state) {
     options = [];
     $(inputGroup).find('input').each(function(index, item) {
@@ -91,7 +89,10 @@ var selection_setAll = function(inputGroup, state) {
     tableUpdate();
 };
 
-//initializes sidebar options list
+/**
+ * Initializes sidebar options list
+ * by pushing all to global celltype Array
+ */
 var initSelection = function() {
     var selections = $('li.table-filter.selection');
     selections.find('input.selection').change(function() {
@@ -114,33 +115,41 @@ var initSelection = function() {
         console.log(item);
         $(item).find('#select-all').click(function(event) {
             event.preventDefault();
-            inputGroup = $(this).parent().parent()
+            inputGroup = $(this).parent().parent();
             selection_setAll(inputGroup, true);
         });
         $(item).find('#deselect-all').click(function(event) {
             event.preventDefault();
-            inputGroup = $(this).parent().parent()
+            inputGroup = $(this).parent().parent();
             selection_setAll(inputGroup, false);
         });
     });
-}
+};
 
+/**
+ * Updates history with current request options
+ */
 var update_url = function() {
     var requests = global.requests;
     console.log('update_url requests: ' + requests);
     var url = [];
     if (requests.length > 0) {
         for (var i = 0; i < requests.length; i++) {
-            url.push(requests[i].join('='))
+            url.push(requests[i].join('='));
         }
         url = url.join('&');
         history.replaceState(null, null, './table?' + url);
     } else history.replaceState(null, null, './table');
     _menu.update_urls();
-}
+};
 
+/**
+ * Adds key/value pair to requests for url generation
+ * @param {string} key - Variable name for server
+ * @param {string|Array|number} - Value assigned to key
+ */
 var add_request = function(key, value) {
-    var requests = global.requests
+    var requests = global.requests;
     var exists = false;
     for (var i = 0; i < requests.length; i++) {
         if (key == requests[i][0]) {
@@ -159,6 +168,10 @@ var add_request = function(key, value) {
     console.log('global.requests after add: ' + global.requests);
 };
 
+/**
+ * Removes key/value pair from requests
+ * @param {string} key - Variable name
+ */
 var remove_request = function(key) {
     console.log('removing key ' + key);
     requests = global.requests;
@@ -174,22 +187,27 @@ var remove_request = function(key) {
 
         console.log('after remove: ' + global.requests);
     }
-}
+};
 
+/**
+ * Initializes request variable
+ */
 var init_requests = function() {
     console.log('initializing requests');
     var current = window.location.search.substring(1);
     if (current.length <= 0) global.requests = [];
     else {
-        var requests = []
+        var requests = [];
         $.each(current.split('&'), function(index, item) {
             requests.push(item.split('='));
         });
         global.requests = requests;
     }
-}
+};
 
-
+/**
+ * Performs POST request and updates table and window accordingly
+ */
 var tableUpdate = function() {
     $('#data tbody').empty();
 
@@ -220,12 +238,12 @@ var tableUpdate = function() {
 
     console.log(global.requests);
     update_url();
-    
+
     //convert data to json to prevent nested object data loss
     post_data = JSON.stringify(post_data);
     console.log(post_data);
 
-    $.post('./table', {'json': post_data}, 
+    $.post('./table', {'json': post_data},
     function(data, status) {
         console.log('data: ' + data);
         console.log('status: ' + status);

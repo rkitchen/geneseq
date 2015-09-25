@@ -1,15 +1,15 @@
 /**
- * @title test
- * @overview Bodymap module.
+ * @overview Draws plot for bodymap expression.
  * @module Bodymap
  * @author Michael Laraia
  */
 
 /**
- * manages the bodymap chart
+ * Manages the bodymap chart
  * @this bodymap namespace
+ * @class bodymap
  * @constructor
-*/
+ */
 var bodymap = new function() {
     var debug_data;
     var margin = {};
@@ -22,9 +22,9 @@ var bodymap = new function() {
     var default_radius = 5;
 
     /**
-     * gets width for plot
-     * @returns width of plot
-    */
+     * Gets width for plot
+     * @return {int} width of plot
+     */
     var get_width = function() {
         var width = $(window).width();
         if (width > max_width) return max_width;
@@ -32,20 +32,20 @@ var bodymap = new function() {
     };
 
     /**
-     * gets width for plot
+     * Gets height for plot
      * @param {int} width - width of the plot
-     * @returns {int} height of plot
-    */
+     * @return {int} height of plot
+     */
     var get_height = function(width) {
         return Math.floor(width / 1.6);
     };
 
     /**
-     * draws creates plot
+     * Draws creates plot
      * @param {string} id - gene id to plot
      * @param {string} source data source to POST to
      * @param {dict} params JSON object containing height, widht, and radius
-    */
+     */
     var draw_plot = function(id, source, params) {
         var width = params.width;
         var height = params.height;
@@ -149,12 +149,11 @@ var bodymap = new function() {
     };
 
     /**
-     * draws creates plot
+     * Public function to draw plot
      * @param {string} id - gene id to plot
      * @param {string} source - data source to POST to
-     * @param {dict} [optional] params
-     *  
-    */
+     * @param {dict} params
+     */
     this.plot = function(id, source, params) {
         console.log(params);
         if (params.width == null) params.width = get_width();
