@@ -1,5 +1,4 @@
 /**
- * @title test
  * @overview Brainspan module.
  * @module Brainspan
  * @author Michael Laraia

@@ -1,12 +1,19 @@
-# Global
+# Data_Table
 
-
+module managing the data table and sidebar input.
 
 
 
 * * *
 
-### getSortIcon(item) 
+## Class: data_table
+Manages the data table
+
+**sliders**: `Array` , Contains sidebar slider objects
+**sort**: `Array` , Contains sort column and direction
+**celltype**: `Array` , Contains unselected celltypes from sidebar
+**requests**: `Array` , Contains requests for url builder
+### Data_Table.data_table.getSortIcon(item) 
 
 Gets sort icon (uparrow/downarrow/ellipses) for a column header
 
@@ -16,26 +23,22 @@ Gets sort icon (uparrow/downarrow/ellipses) for a column header
 
 **Returns**: `string`, Class name of icon
 
-
-### tableLinks() 
+### Data_Table.data_table.tableLinks() 
 
 Attaches click listener to entire row based on `<a>` tag in first column
 
 
-
-### initTableHeaders() 
+### Data_Table.data_table.initTableHeaders() 
 
 Attaches click listener to column headers for sorting
 
 
-
-### initSliders() 
+### Data_Table.data_table.initSliders() 
 
 Initializes sidebar sliders with bootstrap-slider
 
 
-
-### selection_setAll(inputGroup, state) 
+### Data_Table.data_table.selection_setAll(inputGroup, state) 
 
 Set all checkboxes in a group
 
@@ -46,21 +49,18 @@ Set all checkboxes in a group
 **state**: `boolean`, State to set checkboses to
 
 
-
-### initSelection() 
+### Data_Table.data_table.initSelection() 
 
 Initializes sidebar options list
-by pushing all to global celltype Array
+by pushing all to celltype Array
 
 
-
-### update_url() 
+### Data_Table.data_table.update_url() 
 
 Updates history with current request options
 
 
-
-### add_request(key, ) 
+### Data_Table.data_table.add_request(key, value) 
 
 Adds key/value pair to requests for url generation
 
@@ -68,11 +68,10 @@ Adds key/value pair to requests for url generation
 
 **key**: `string`, Variable name for server
 
-**add_request**: `string | Array | number`, Value assigned to key
+**value**: `string | Array | number`, Value assigned to key
 
 
-
-### remove_request(key) 
+### Data_Table.data_table.remove_request(key) 
 
 Removes key/value pair from requests
 
@@ -81,14 +80,12 @@ Removes key/value pair from requests
 **key**: `string`, Variable name
 
 
-
-### init_requests() 
+### Data_Table.data_table.init_requests() 
 
 Initializes request variable
 
 
-
-### tableUpdate() 
+### Data_Table.data_table.tableUpdate() 
 
 Performs POST request and updates table and window accordingly
 
