@@ -197,7 +197,7 @@ class Table(Parent):
 
 class Chart(Parent):
     """
-    processes and returnsdata for mouse celltype
+    processes and returns data for mouse celltype
     expression chart
     """
     exposed = True
@@ -219,11 +219,16 @@ class Chart(Parent):
             gene_id: (int) mouse gene id
         Returns:
             dict:
-               title: (string)  chart title
-               names: (list(string)) list of axis names for axis
-               colors: (list(string)) strings to group colors by
-               max: (int) max expression
-               min: (int) min expression
+                title: (string)  chart title
+                names: (list(string)) list of axis names for axis
+                colors: (list(string)) strings to group colors by
+                max: (float) max expression
+                min: (float) min expression
+                axis_length: (int) length of longest column name
+                    used to calculate bottom margin to fit name
+                values: (list(string, string, string, float))
+                    data to be rendered
+                    (Name, region, color group, value)
         """
         logger.debug('getting charts for %s' % mouse_id)
 
