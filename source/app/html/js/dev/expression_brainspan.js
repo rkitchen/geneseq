@@ -171,7 +171,7 @@ var brainspan = new function() {
             .text(data.title);
 
         self.canvases[data.title] = canvas;
-        var worker = new Worker('/js/plot/fit_worker.js');
+        var worker = new Worker('/js/dev/fit_worker.js');
         worker.addEventListener('message', draw_line);
         worker.postMessage({'name': data.title,
                             'domain': dimen.duration,
