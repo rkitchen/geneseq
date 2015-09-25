@@ -96,6 +96,11 @@ make sure port 8081 is exposed in your docker instance.
 
 ### Configuration ###
 
-Configuration file lives at /node_modules/mongo-express/config.js.
+Configuration file lives at `/node_modules/mongo-express/config.js`.
 You can set the `username` and `password` fields here required to
 access the service from a browser
+
+### Viewing ###
+
+Simply point your browser to `localhost:8081` and authenticate with
+the credentials specified in `config.js` (`admin` and `12345678` by default).

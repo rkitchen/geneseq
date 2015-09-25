@@ -2,6 +2,12 @@ module.exports = function(grunt) {
   require('jit-grunt')(grunt);
 
   grunt.initConfig({
+    jsdox: {
+      generate: {
+        src: ['source/app/html/js/dev/*'],
+        dest: 'docs/api/'
+      }
+    },
     less: {
       development: {
         options: {
@@ -19,13 +25,15 @@ module.exports = function(grunt) {
     watch: {
       styles: {
         files: ["source/app/html/less/*"], // which files to watch
-        tasks: ['less'],
-        options: {
-          nospawn: true
-        }
+        tasks: ['less']
+      },
+      javascript: {
+        files: ['source/app/html/js/dev/*'],
+        tasks: ['jsdox']
       }
     }
   });
 
-  grunt.registerTask('default', ['less', 'watch']);
+  grunt.loadNpmTasks('grunt-jsdox');
+  grunt.registerTask('default', ['jsdox', 'less', 'watch']);
 };

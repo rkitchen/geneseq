@@ -1,3 +1,15 @@
+/**
+ * @title test
+ * @overview Brainspan module.
+ * @module Brainspan
+ * @author Michael Laraia
+ */
+
+/**
+ * manages the brianspan chart
+ * @this - brainspan namespace
+ * @constructor
+*/
 var brainspan = new function() {
     var self = this;
     var margin = {};

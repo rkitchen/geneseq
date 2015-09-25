@@ -12,6 +12,8 @@
     "grunt-contrib-less": "^1.0.1",
     "grunt-contrib-uglify": "^0.9.2",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-jsdoc-to-markdown": "^1.1.1",
+    "grunt-jsdox": "^0.1.7",
     "jit-grunt": "^0.9.1"
   },
   "scripts": {
