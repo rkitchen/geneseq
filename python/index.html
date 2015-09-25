@@ -74,6 +74,15 @@
                     <li><a class="toctree-l4" href="#registering">Registering</a></li>
                 
             
+                <li class="toctree-l3"><a href="#database-update">Database Update</a></li>
+                
+                    <li><a class="toctree-l4" href="#updating-mouse-expression">Updating Mouse Expression</a></li>
+                
+                    <li><a class="toctree-l4" href="#updating-mouse-annotations">Updating Mouse Annotations</a></li>
+                
+                    <li><a class="toctree-l4" href="#updating-processed-mouse-celltype-expression">Updating Processed Mouse Celltype Expression</a></li>
+                
+            
             </ul>
         
     </li>
@@ -179,6 +188,120 @@ the mongo-express interface.</p>
 <p><img alt="Screenshot" src="../img/user-2-2.png" /></p>
 </li>
 </ul>
+<h1 id="database-update">Database Update</h1>
+<p>It is <strong>strongly</strong> recommended to have thorough backups of the existing
+database before messing with anything. These scripts are potentially
+destructive and leave no way to recover the previous contents.</p>
+<h2 id="updating-mouse-expression">Updating Mouse Expression</h2>
+<p>Update the processed celltype data by running the update_processed script
+and passing the location of the data-file containing the information. The file
+must be set up as indicated below, and be a proper tab-seperated file
+using <code>\t</code> as the delimiter and <code>\n</code> as newline.</p>
+<p>Note: the column order doesn't matter, just the column headings. Any extraneous
+columns will be ignored. The trailing number denotes the sample number when 
+sets come from the same celltype and brain region.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>celltype1:region1:1</th>
+<th>celltype1:region1:2</th>
+<th>celltype2:region:1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ENSMUSG00000000001.4</td>
+<td>1.5773738</td>
+<td>55.4939338</td>
+<td>3383.5585858</td>
+</tr>
+</tbody>
+</table>
+<p>Comman to upload the data:</p>
+<pre><code>/usr/local/bin/update_mouse_expression PATH/TO/FILE
+</code></pre>
+
+<p>This command will drop the existing table and upload the data from file. Make sure to have a backup on hand.</p>
+<h2 id="updating-mouse-annotations">Updating Mouse Annotations</h2>
+<p>Update the mouse annotations collection by running the update_annotations script
+and passing the location of the csv file containing the information. The file
+must be set up as indicated below, and be a proper csv file
+using <code>,</code> as the delimiter and <code>\n</code> as the newline.</p>
+<p>Note: the column order doesn't matter, just the column headings. Any extraneous
+columns will be ignored.</p>
+<table>
+<thead>
+<tr>
+<th>protected</th>
+<th>method</th>
+<th>level1</th>
+<th>level2</th>
+<th>level3_celltype</th>
+<th>level4</th>
+<th>sampleID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public OR private</td>
+<td></td>
+<td>level1 name</td>
+<td>level2 group name</td>
+<td>level3 celltype</td>
+<td>level4 celltype</td>
+<td>level1:brain_region</td>
+</tr>
+<tr>
+<td>private</td>
+<td>TRAP</td>
+<td>Stard8_neuron</td>
+<td>midbrain</td>
+<td>neuron</td>
+<td>neuron</td>
+<td>neuron</td>
+</tr>
+</tbody>
+</table>
+<p>Comman to upload the data</p>
+<pre><code>/usr/local/bin/update_annotations PATH/TO/FILE.csv
+</code></pre>
+
+<p>This command will drop the existing table and upload the data from file. Make sure to have a backup on hand.</p>
+<h2 id="updating-processed-mouse-celltype-expression">Updating Processed Mouse Celltype Expression</h2>
+<p>Update the processed celltype data by running the update_processed script
+and passing the location of the data-file containing the information. The file
+must be set up as indicated below, and be a proper tab-seperated file
+using <code>\t</code> as the delimiter and <code>\n</code> as newline.</p>
+<p>Note: the column order doesn't matter, just the column headings. Any extraneous
+columns will be ignored.</p>
+<table>
+<thead>
+<tr>
+<th>Celltype</th>
+<th>Expression</th>
+<th>Enrichment</th>
+<th>GeneID_human</th>
+<th>GeneName</th>
+<th>GeneID_mouse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Astrocyte</td>
+<td>36.25311</td>
+<td>6.53970054</td>
+<td>ENSG000001343</td>
+<td>GRHL1</td>
+<td>ENSMUSG00000020656</td>
+</tr>
+</tbody>
+</table>
+<p>Comman to upload the data:</p>
+<pre><code>/usr/local/bin/update_processed PATH/TO/FILE
+</code></pre>
+
+<p>This command will not drop the existing table, but still make sure to have a backup on hand.</p>
               
             </div>
           </div>
