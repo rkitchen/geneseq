@@ -66,7 +66,7 @@ class Gene(Parent):
 
         if 'ENSMUSG' in id:
             raise cherrypy.HTTPRedirect('/mouse/gene?id=%s' % id)
-        elif 'ENSMUSG' in id:
+        elif 'ENSG' in id:
             raise cherrypy.HTTPRedirect('/human/gene?id=%s' % id)
 
 
