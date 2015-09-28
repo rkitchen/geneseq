@@ -117,12 +117,12 @@ order:
         - neuron
         - pyramidal neuron
         - interneuron
+	- medium spiny neuron
         - astrocyte
         - microglia
-        - endothelial
         - oligodendrocyte
-        - medium spiny neuron
-        - ependymal
+        - endothelial
+	- ependymal
 brainspan:
     regions:
         - HIP
