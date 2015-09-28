@@ -219,7 +219,7 @@ place the archive inside the host directory mounted to /data
 inside the docker container. Then run these commands:</p>
 <pre><code>cd /data
 tar -zxvf {mongodump.tar.gz}
-mongorestore --db dump/gene_locale gene_locale
+mongorestore --db gene_locale dump/gene_locale
 </code></pre>
 
 <p>Include the <code>--drop</code> option to mongorestore if a previous database exists
