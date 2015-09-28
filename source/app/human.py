@@ -101,8 +101,8 @@ class Table(Parent):
 
         tmpl = self.lookup.get_template("table.html")
 
-        logger.debug('kwargs sent to mako for data table: %s' %
-            pprint.pformat(kwargs))
+        # logger.debug('kwargs sent to mako for data table: %s' %
+        #    pprint.pformat(kwargs))
         try:
             return tmpl.render(**kwargs)
         except:

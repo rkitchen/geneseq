@@ -34,6 +34,8 @@ class Root(Parent):
         self.login = Login(lookup)
         self.logout = Logout(lookup)
         self.session = app.settings.SESSION_KEY
+        self.gene = Gene(lookup)
+        self.search = Search(lookup)
 
     def GET(self, **kwargs):
         logger.info('/ GET request')
@@ -42,6 +44,63 @@ class Root(Parent):
         kwargs['Title'] = 'Home'
         kwargs = self.mako_args(kwargs)
         tmpl = lookup.get_template("index.html")
+        try:
+            return tmpl.render(**kwargs)
+        except:
+            return exceptions.html_error_template().render()
+
+
+class Gene(Parent):
+    def GET(self, id=None, **kwargs):
+        """
+        responds to GET requests. Determines if 
+        human or mouse gene requested
+        Args:
+            id: (string) gene id
+        Returns:
+            HTTPRedirect
+        """
+        logger.info('/gene GET request id: %s' % str(id))
+        logger.info('GET kwargs: %s' % kwargs)
+        logger.info('cherrypy session %s' % super().getSession())
+
+        if 'ENSMUSG' in id:
+            raise cherrypy.HTTPRedirect('/mouse/gene?id=%s' % id)
+        elif 'ENSMUSG' in id:
+            raise cherrypy.HTTPRedirect('/human/gene?id=%s' % id)
+
+
+class Search(Parent):
+    """handles search functionality
+    mounted on /mouse/search
+    """
+
+    def GET(self, **kwargs):
+        """responds to data GET requests
+        Args:
+            query (str): query string for database
+        Returns:
+            str: table.html
+        """
+        logger.info('/data GET request')
+        logger.debug('GET kwargs: %s' % kwargs)
+        # logger.debug('global test %s' % app.settings.Settings.test)
+
+        if 'query' in kwargs:
+            query = kwargs['query']
+            data = self.pipe.textSearch(query)
+
+            kwargs = {'Title': 'Mouse Expression Table',
+                      'data': data,
+                      'columnNames': app.settings.getColumnNames('mouse'),
+                      'sidebar': False,
+                      'query': query}
+            kwargs = self.mako_args(kwargs)
+
+        tmpl = self.lookup.get_template("table.html")
+
+        logger.debug('kwargs sent to mako for data table: %s' %
+            pprint.pformat(kwargs))
         try:
             return tmpl.render(**kwargs)
         except:

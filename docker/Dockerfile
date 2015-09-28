@@ -26,23 +26,22 @@ RUN apt-get update && apt-get install -q -y python3 \
    && chown -R http:http /var/log/uwsgi \
    && npm install mongo-express
 
+VOLUME ['/data/db']
+
+EXPOSE 8080
+ENTRYPOINT /bin/bash -c "supervisord; /bin/bash"
 
 COPY pip_requirements.txt /tmp/
 RUN pip3 install -r /tmp/pip_requirements.txt
 
 COPY system_configs /
 
-RUN echo 9
+RUN echo 1
 
 RUN  git clone https://github.com/miclaraia/geneseq.git \
     /opt/geneseq && \
     chown -R http:http /opt/geneseq && \
-    ln -s /opt/geneseq/source /usr/local/lib/geneseq \
-    ln -s /opt/geneseq/data/update_processed.py /usr/local/bin/update_processed \
-    ln -s /opt/geneseq/data/update_mouse_expression.py /usr/local/bin/update_mouse_expression \
+    ln -s /opt/geneseq/source /usr/local/lib/geneseq && \
+    ln -s /opt/geneseq/data/update_processed.py /usr/local/bin/update_processed && \
+    ln -s /opt/geneseq/data/update_mouse_expression.py /usr/local/bin/update_mouse_expression && \
     ln -s /opt/geneseq/data/update_annotations.py /usr/local/bin/update_annotations
-
-VOLUME ['/data/db']
-
-EXPOSE 8080
-ENTRYPOINT /bin/bash -c "supervisord; /bin/bash"

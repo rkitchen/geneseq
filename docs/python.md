@@ -14,7 +14,7 @@ To give a user privileges, either
 * run the commands inside the mongo shell  
 ```
 > use gene_locale  
-> db.users.update({username: {USERNAME}}, {$set: {super: true}})
+> db.users.update({username: '{USERNAME}'}, {$set: {super: true}})
 ```
 * Manually edit the user's entry from mongo-express
     ![Screenshot](img/user-1-1.png)    

@@ -108,6 +108,7 @@ order:
         - expression
         - enrichment
     human:
+        - human_id
         - _id
         - gene_name
         - chr

@@ -70,7 +70,7 @@ inside the docker container. Then run these commands:
 ```
 cd /data
 tar -zxvf {mongodump.tar.gz}
-mongorestore --db dump/gene_locale gene_locale
+mongorestore --db gene_locale dump/gene_locale
 ```
 Include the `--drop` option to mongorestore if a previous database exists
 to ensure data integrity.

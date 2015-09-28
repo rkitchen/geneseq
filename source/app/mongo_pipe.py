@@ -79,6 +79,24 @@ class Pipe(object):
         self.db = None
         self.client.close()
 
+    def textSearch(self, query):
+        mouse = self.mouse.textSearch(query)
+        human = self.human.textSearch(query)
+
+        logger.debug('mouse %s' % mouse)
+        logger.debug('human %s' % human)
+
+        mouse_names = list()
+        for item in mouse:
+            mouse_names.append(item['human_name'])
+
+        for index, item in enumerate(human):
+            if item['human_name'] not in mouse_names:
+                mouse.append(item)
+
+        return mouse
+
+
 
 class Auth(object):
     def __init__(self, pipe):
@@ -217,7 +235,7 @@ class Human(Parent):
         cursor = pipe.db.human.find_one({'_id': human_id})
 
         document = dict()
-        document['_id'] = cursor['_id']
+        document['human_id'] = cursor['_id']
         document['gene_name'] = cursor['gene_name']
         document['chr'] = cursor['gene_chr']
         document['source'] = cursor['source']
@@ -339,6 +357,29 @@ class Human(Parent):
         for item in data:
             item['bodymap'] = 1
 
+        return data
+
+    def textSearch(self, query):
+        logger.debug('searching db for key %s' % query)
+        query = '.*%s.*' % query
+        logger.debug('regex query: %s' % query)
+        regx = re.compile(query, re.IGNORECASE)
+
+        projection = {'_id': 1, 'human_name': '$gene_name'}
+
+        find = [{'$match': {'gene_name': regx}}, {'$project': projection}]
+
+        pipe = self.pipe
+        pipe.connect()
+        cursor = pipe.db.human.aggregate(find)
+        data = list()
+        for item in cursor:
+            item['expression'] = 'NA'
+            item['enrichment'] = 'NA'
+            item['cell'] = 'NA'
+            data.append(item)
+        pipe.disconnect()
+        logger.debug('returning data %s' % pprint.pformat(data))
         return data
 
 
