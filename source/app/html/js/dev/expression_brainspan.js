@@ -23,7 +23,7 @@ var brainspan = new function() {
     var default_radius = 1.25;
     var default_height = 400;
 
-    var x_tick_values = [10, 100, 1000];
+    var x_tick_values = [50, 100, 500, 1000, 5000, 10000];
 
     /**
      * Contains each brain region chart being rendered
@@ -110,7 +110,7 @@ var brainspan = new function() {
             .attr('fill', 'none')
             .attr('stroke', 'red')
             .attr('stroke-width', 2)
-            .attr('opacity', .7);
+            .attr('opacity', .9);
         };
 
         console.log('dimen', dimen);
@@ -150,9 +150,9 @@ var brainspan = new function() {
             .attr('transform', 'translate(0,' + height + ')')
             .call(axis.x)
             .selectAll('text')
-            .attr('x', '-.3em')
-            .attr('y', '-.3em')
-            .attr('transform', 'rotate(-90)');
+            .attr('x', '-.9em')
+            .attr('y', '-.2em')
+            .attr('transform', 'rotate(-45)');
 
         canvas.append('g')
             .attr('class', 'birth')
@@ -226,7 +226,8 @@ var brainspan = new function() {
                 yaxis.innerTickSize(-width.normal);
                 //.tickValues(get_ticks(data.max));
 
-                xscale.domain([10, data.duration])
+                //xscale.domain([10, data.duration])
+                xscale.domain([30, 20000])
                       .range([0, width.inner]);
 
                 yscale.domain([0, data.max])

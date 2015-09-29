@@ -112,13 +112,16 @@ var mouse = new function() {
                     .attr('transform', 'translate(0,' + height + ')')
                     .call(xaxis)
                     .selectAll('text')
-                    .attr('x', '-.3em')
-                    .attr('y', '-.3em')
+                    .attr('x', '-.9em')
+                    .attr('y', '-.2em')
                     .attr('transform', 'rotate(-65)');
 
                 canvas.append('g')
                     .attr('class', 'axis')
-                    .call(yaxis);
+                    .call(yaxis)i
+                    .selectAll('text')
+                    .attr('x', '-.9em')
+                    .attr('y', '-.0em');
 
                 canvas.selectAll('circle')
                     .data(data.values)
